@@ -3,9 +3,12 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.IO;
 
 using UnityEngine.SceneManagement;
 using System.Net;
+using System.Net.Sockets;
+using System.Threading;
 
 #if !UNITY_EDITOR && UNITY_WSA_10_0
 using HoloToolkit.Unity;
@@ -22,7 +25,8 @@ namespace UWBNetworkingPackage
 #region Private Properties
 
         private static string _version = "1";   // Should be set to the current version of your application 
-
+        private DateTime lastRoomUpdate = DateTime.MinValue;
+        private NodeType lastNodeType = NodeType.MasterClient;
 #endregion
 
 #region Public Properties
@@ -35,7 +39,7 @@ namespace UWBNetworkingPackage
         [Tooltip("The name of the room that this project will attempt to connect to. This room must be created by a \"Master Client\".")]    
         public string RoomName;
 
-        public AssetBundle networkAssets;
+        //public AssetBundle networkAssets;
 
         #endregion
 
@@ -62,6 +66,18 @@ namespace UWBNetworkingPackage
             Connect();
         }
 
+        public virtual void Update()
+        {
+            //bool isMasterClient = GameObject.Find("NetworkManager").GetComponent<NetworkManager>().MasterClient;
+
+
+            // ERROR TESTING - Aiming to make it so that all things in Config update appropriately, but the code has been previously optimized to say if it's a master client or not.
+            // Any way to get whether a node is a certain kind of thing, like Oculus?
+
+            // Need to set custom properties PhotonPlayer.SetCustomProperties({{"nodeType", NodeType.MasterClient}})
+            //http://forum.photonengine.com/discussion/1590/how-to-use-custom-player-properties
+        }
+
         /// <summary>
         /// Joins the specified Room Name if already connected to the Photon Network; otherwise, connect to the master server using the current version
         /// number
@@ -78,15 +94,139 @@ namespace UWBNetworkingPackage
             }
         }
 
-        /// <summary>
-        /// Send mesh to a host specified by networkConfig.
-        /// Currently, only the HoloLens implements this method
-        /// </summary>
-        /// <param name="networkConfig">IP and port number of the host. Format: IP:Port</param>
         [PunRPC]
-        public virtual void SendMesh(String networkConfig)
+        public virtual void SendAssetBundle(int id, string path, int port)
         {
-            Debug.Log("Callee is not HoloLens and this is a HoloLens only method");
+            TcpListener bundleListener = new TcpListener(IPAddress.Any, port);
+
+            bundleListener.Start();
+            new Thread(() =>
+            {
+                var client = bundleListener.AcceptTcpClient();
+
+                using (var stream = client.GetStream())
+                {
+                    //needs to be changed back
+                    byte[] data = File.ReadAllBytes(path);
+                    stream.Write(data, 0, data.Length);
+                    client.Close();
+                }
+
+                bundleListener.Stop();
+            }).Start();
+        }
+
+        [PunRPC]
+        public virtual void ReceiveAssetBundle(string networkConfig)
+        {
+            string bundlePath;
+            ReceiveAssetBundle(networkConfig, out bundlePath);
+        }
+
+        public virtual void ReceiveAssetBundle(string networkConfig, out string bundlePath)
+        {
+            //var networkConfigArray = networkConfig.Split(':');
+            //Debug.Log("Start receiving bundle.");
+            //TcpClient client = new TcpClient();
+            //Debug.Log("IP Address = " + IPAddress.Parse(networkConfigArray[0]).ToString());
+            //Debug.Log("networkConfigArray[1] = " + Int32.Parse(networkConfigArray[1]));
+            //client.Connect(IPAddress.Parse(networkConfigArray[0]), Int32.Parse(networkConfigArray[1]));
+
+
+            TcpClient client = new TcpClient();
+            client.Connect(IPAddress.Parse(IPManager.ExtractIPAddress(networkConfig)), Int32.Parse(IPManager.ExtractPort(networkConfig)));
+            Debug.Log("Client connected to server!");
+            using (var stream = client.GetStream())
+            {
+                byte[] data = new byte[1024];
+                Debug.Log("Byte array allocated");
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    Debug.Log("MemoryStream created");
+                    int numBytesRead;
+                    while ((numBytesRead = stream.Read(data, 0, data.Length)) > 0)
+                    {
+                        ms.Write(data, 0, numBytesRead);
+                        Debug.Log("Data received! Size = " + numBytesRead);
+                    }
+                    Debug.Log("Finish receiving bundle: size = " + ms.Length);
+                    client.Close();
+
+                    AssetBundle bundle = AssetBundle.LoadFromMemory(ms.ToArray());
+                    string bundleName = bundle.name;
+
+                    // Save the asset bundle
+                    bundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(Config.AssetBundle.Current.CompileFilename(bundleName));
+
+                    File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/StreamingAssets/AssetBundlesPC/" + bundleName + ".asset"), ms.ToArray());
+                    File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/StreamingAssets/AssetBundlesAndroid/" + bundleName + ".asset"), ms.ToArray());
+
+                    //AssetBundle newBundle = AssetBundle.LoadFromMemory(ms.ToArray());
+                    //bundles.Add(bundleName, newBundle);
+                    Debug.Log("You loaded the bundle successfully.");
+
+                    bundle.Unload(true);
+                }
+            }
+
+            client.Close();
+        }
+
+        ///// <summary>
+        ///// Send mesh to a host specified by networkConfig.
+        ///// Currently, only the HoloLens implements this method
+        ///// </summary>
+        ///// <param name="networkConfig">IP and port number of the host. Format: IP:Port</param>
+        //[PunRPC]
+        //public virtual void SendMesh(String networkConfig)
+        //{
+        //    Debug.Log("Callee is not HoloLens and this is a HoloLens only method");
+        //}
+
+        [PunRPC]
+        public virtual void SendAssetBundles(int id)
+        {
+            string directory = "";
+
+            // ERROR TESTING - MUST GET NODETYPE OF PLAYER BASED OFF OF ID AND THE CORRESPONDING PLAYER'S CUSTOM SETTINGS
+            NodeType bundleType = NodeType.PC;
+
+            switch (bundleType)
+            {
+                case NodeType.Android:
+                    directory = Config.AssetBundle.Android.CompileAbsoluteBundleDirectory();
+                    break;
+                case NodeType.Hololens:
+                    directory = Config.AssetBundle.Hololens.CompileAbsoluteBundleDirectory();
+                    break;
+                case NodeType.Kinect:
+                    directory = Config.AssetBundle.Kinect.CompileAbsoluteBundleDirectory();
+                    break;
+                case NodeType.MasterClient:
+                    directory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
+                    break;
+                case NodeType.Oculus:
+                    directory = Config.AssetBundle.Oculus.CompileAbsoluteBundleDirectory();
+                    break;
+                case NodeType.PC:
+                    directory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
+                    break;
+                case NodeType.Vive:
+                    directory = Config.AssetBundle.Vive.CompileAbsoluteBundleDirectory();
+                    break;
+            }
+
+            if (Directory.Exists(directory)) {
+                foreach (string file in Directory.GetFiles(directory))
+                {
+                    if (!file.Contains("manifest") && !file.Contains("meta"))
+                    {
+                        SendAssetBundle(id, file, Config.Ports.Bundle);
+                        photonView.RPC("ReceiveAssetBundle", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(Config.Ports.Bundle));
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -95,122 +235,141 @@ namespace UWBNetworkingPackage
         /// </summary>
         /// <param name="id">The player id that will sent the mesh</param>
         [PunRPC]
-        public virtual void SendMesh(int id)
+        public virtual void SendRoomModel(int id)
         {
-            Debug.Log("Callee is not MasterClient and this is a MasterClient only method");
+            //Debug.Log("Callee is not MasterClient and this is a MasterClient only method");
+            SendAssetBundle(id, UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename()), Config.Ports.RoomBundle);
+            photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(Config.Ports.RoomBundle));
         }
 
-        //Virtual client method for sending mesh
-        public virtual void SendMesh()
+        [PunRPC]
+        public virtual void ReceiveRoomModel(string networkConfig)
         {
-
+            ReceiveAssetBundle(networkConfig);
+            UWB_Texturing.BundleHandler.UnpackFinalRoomTextureBundle();
         }
 
-        //Virtual client method for sending addMesh
-        public virtual void SendAddMesh()
+        [PunRPC]
+        public virtual void SendRawRoomModelInfo(int id)
         {
-
+            SendAssetBundle(id, UWB_Texturing.Config.AssetBundle.RawPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename()), Config.Ports.RawRoomBundle);
+            photonView.RPC("ReceiveRawRoomModelInfo", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(Config.Ports.RawRoomBundle));
         }
+
+        [PunRPC]
+        public virtual void ReceiveRawRoomModelInfo(string networkConfig)
+        {
+            ReceiveAssetBundle(networkConfig);
+            UWB_Texturing.BundleHandler.UnpackRoomTextureBundle();
+        }
+
+        ////Virtual client method for sending mesh
+        //public virtual void SendMesh()
+        //{
+
+        //}
+
+        ////Virtual client method for sending addMesh
+        //public virtual void SendAddMesh()
+        //{
+
+        //}
 
         /// <summary>
         /// Receive room mesh from specified network configuration.
         /// Currently, only the ReveivingClient class implements this method
         /// </summary>
-        /// <param name="networkConfig">The IP and port number that client can reveice room mesh from. The format is IP:Port</param>
-        [PunRPC]
-        public virtual void ReceiveMesh(String networkConfig)
-        {
-            Debug.Log("Callee is not a regular client and this is a regular client only method");
-        }
+        /// <param name="networkConfig">The IP and port number that client can receive room mesh from. The format is IP:Port</param>
+        //[PunRPC]
+        //public virtual void ReceiveMesh(String networkConfig)
+        //{
+        //    Debug.Log("Callee is not a regular client and this is a regular client only method");
+        //}
 
         /// <summary>
         /// Receive room mesh from specifed PhotonNetwork.Player.ID. 
         /// Currently, only the MasterClient implements this method
         /// </summary>
         /// <param name="id">The player id that will receive mesh</param>
-        [PunRPC]
-        public virtual void ReceiveMesh(int id)
-        {
-            Debug.Log("Callee is not MasterClient and this is a MasterClient only method");
-        }
+        //[PunRPC]
+        //public virtual void ReceiveMesh(int id)
+        //{
+        //    Debug.Log("Callee is not MasterClient and this is a MasterClient only method");
+        //}
 
-        /// <summary>
-        /// This will send a call to delete all meshes held by the clients
-        /// This is a RPC method that will be called by ReceivingClient
-        /// </summary>
-        [PunRPC]
-        public virtual void DeleteMesh()
-        {
+        ///// <summary>
+        ///// This will send a call to delete all meshes held by the clients
+        ///// This is a RPC method that will be called by ReceivingClient
+        ///// </summary>
+        //[PunRPC]
+        //public virtual void DeleteRoomInfo()
+        //{
 
-        }
+        //}
 
         /// <summary>
         /// Deletes local copy of the mesh
         /// </summary>
         [PunRPC]
-        public void DeleteLocalMesh()
+        public void DeleteLocalRoomModelInfo()
         {
-            if (Database.GetMeshAsBytes() != null)
-            {
-                Database.DeleteMesh();
-            }
-            foreach (GameObject gameObject in FindObjectsOfType(typeof(GameObject)))
-            {
-                if (gameObject.name == "mesh")
-                {
-                    Destroy(gameObject);
-                }
-            }
-
+            //UWB_Texturing.PrefabHandler.DeletePrefabs();
+            UWB_Texturing.BundleHandler.RemoveRoomObject();
+            UWB_Texturing.BundleHandler.RemoveRawInfo();
+            UWB_Texturing.BundleHandler.RemoveRoomResources();
         }
 
-        /// <summary>
-        /// Needs to be called in order to instatite an object from asset bundle.
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <param name="rot"></param>
-        /// <param name="id1"></param>
-        /// <param name="np"></param>
-        [PunRPC]
-        public void SpawnNetworkObject(Vector3 pos, Quaternion rot, int id1, String assetName)
-        {
-            GameObject networkObject = networkAssets.LoadAsset(assetName) as GameObject;
-            Instantiate(networkObject, pos, rot);
-            PhotonView[] nViews = networkObject.GetComponentsInChildren<PhotonView>();
-            nViews[0].viewID = id1;
-        }
 
-        /// <summary>
-        /// Initiates the sending of a Mesh from ReceivingClient
-        /// </summary>
-        /// <param name="networkConfig"></param>
-        [PunRPC]
-        public virtual void SendAddMesh(string networkConfig)
-        {
+        // ERROR TESTING - REWORK AND REIMPLEMENT
 
-        }
+        ///// <summary>
+        ///// Needs to be called in order to instantiate an object from asset bundle.
+        ///// </summary>
+        ///// <param name="pos"></param>
+        ///// <param name="rot"></param>
+        ///// <param name="id1"></param>
+        ///// <param name="np"></param>
+        //[PunRPC]
+        //public void SpawnNetworkObject(Vector3 pos, Quaternion rot, int id1, String assetName)
+        //{
+        //    GameObject networkObject = networkAssets.LoadAsset(assetName) as GameObject;
+        //    Instantiate(networkObject, pos, rot);
+        //    PhotonView[] nViews = networkObject.GetComponentsInChildren<PhotonView>();
+        //    nViews[0].viewID = id1;
+        //}
 
-        /// <summary>
-        /// Receive room mesh to add to total mesh (MasterClient)
-        /// and add it to the total roommesh
-        /// </summary>
-        /// <param name="id">The player id that will receive mesh</param>
-        [PunRPC]
-        public virtual void ReceiveAddMesh(int id)
-        {
 
-        }
+        ///// <summary>
+        ///// Initiates the sending of a Mesh from ReceivingClient
+        ///// </summary>
+        ///// <param name="networkConfig"></param>
+        //[PunRPC]
+        //public virtual void SendAddMesh(string networkConfig)
+        //{
 
-        /// <summary>
-        /// Receive room mesh to add to total mesh (ReceiveClientLauncher)
-        /// and add it to the total roommesh
-        /// </summary>
-        /// <param name="networkConfig">The player id that will receive mesh</param>
-        [PunRPC]
-        public virtual void ReceiveAddMesh(string networkConfig)
-        {
+        //}
 
-        }
+        ///// <summary>
+        ///// Receive room mesh to add to total mesh (MasterClient)
+        ///// and add it to the total roommesh
+        ///// </summary>
+        ///// <param name="id">The player id that will receive mesh</param>
+        //[PunRPC]
+        //public virtual void ReceiveAddMesh(int id)
+        //{
+
+        //}
+
+        ///// <summary>
+        ///// Receive room mesh to add to total mesh (ReceiveClientLauncher)
+        ///// and add it to the total roommesh
+        ///// </summary>
+        ///// <param name="networkConfig">The player id that will receive mesh</param>
+        //[PunRPC]
+        //public virtual void ReceiveAddMesh(string networkConfig)
+        //{
+
+        //}
     }
 
     //NEEDED FOR HOLOLENS BUT NOTHING ELSE-------------------------------------------------------------------------------------
