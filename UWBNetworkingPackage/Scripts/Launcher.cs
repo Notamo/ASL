@@ -159,8 +159,14 @@ namespace UWBNetworkingPackage
                     // Save the asset bundle
                     bundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(Config.AssetBundle.Current.CompileFilename(bundleName));
 
-                    File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/StreamingAssets/AssetBundlesPC/" + bundleName + ".asset"), ms.ToArray());
-                    File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/StreamingAssets/AssetBundlesAndroid/" + bundleName + ".asset"), ms.ToArray());
+                    if (!Directory.Exists(Config.AssetBundle.Current.CompileAbsoluteBundleDirectory())) { 
+                        Directory.CreateDirectory(Config.AssetBundle.Current.CompileAbsoluteBundleDirectory());
+                    }
+
+                    File.WriteAllBytes(bundlePath, ms.ToArray());
+
+                    //File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/StreamingAssets/AssetBundlesPC/" + bundleName + ".asset"), ms.ToArray());
+                    //File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/StreamingAssets/AssetBundlesAndroid/" + bundleName + ".asset"), ms.ToArray());
 
                     //AssetBundle newBundle = AssetBundle.LoadFromMemory(ms.ToArray());
                     //bundles.Add(bundleName, newBundle);
