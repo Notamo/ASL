@@ -95,7 +95,7 @@ namespace UWBNetworkingPackage
         }
 
         [PunRPC]
-        public virtual void SendAssetBundle(int id, string path, int port)
+        public static void SendAssetBundle(int id, string path, int port)
         {
             TcpListener bundleListener = new TcpListener(IPAddress.Any, port);
 
@@ -123,7 +123,7 @@ namespace UWBNetworkingPackage
             ReceiveAssetBundle(networkConfig, out bundlePath);
         }
 
-        public virtual void ReceiveAssetBundle(string networkConfig, out string bundlePath)
+        public static void ReceiveAssetBundle(string networkConfig, out string bundlePath)
         {
             //var networkConfigArray = networkConfig.Split(':');
             //Debug.Log("Start receiving bundle.");
@@ -244,7 +244,10 @@ namespace UWBNetworkingPackage
         public virtual void SendRoomModel(int id)
         {
             //Debug.Log("Callee is not MasterClient and this is a MasterClient only method");
-            SendAssetBundle(id, UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename()), Config.Ports.RoomBundle);
+            //string bundlePath = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+            string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
+            string bundlePath = Config.AssetBundle.PC.CompileAbsoluteAssetPath(Config.AssetBundle.PC.CompileFilename(bundleName));
+            SendAssetBundle(id, bundlePath, Config.Ports.RoomBundle);
             photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(Config.Ports.RoomBundle));
         }
 
@@ -252,7 +255,13 @@ namespace UWBNetworkingPackage
         public virtual void ReceiveRoomModel(string networkConfig)
         {
             ReceiveAssetBundle(networkConfig);
-            UWB_Texturing.BundleHandler.UnpackFinalRoomTextureBundle();
+            //UWB_Texturing.BundleHandler.UnpackFinalRoomTextureBundle();
+            
+            string bundlePath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(Config.AssetBundle.Current.CompileFilename(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename()));
+            string roomMatrixPath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.MatrixArray.CompileFilename());
+
+            UWB_Texturing.BundleHandler.UnpackFinalRoomTextureBundle(bundlePath, roomMatrixPath);
+
         }
 
         [PunRPC]
