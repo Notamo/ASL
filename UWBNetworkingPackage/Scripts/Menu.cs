@@ -9,6 +9,19 @@ using System.IO;
 
 namespace UWBNetworkingPackage {
     public static class Menu {
+#if UNITY_EDITOR
+        [UnityEditor.MenuItem("ASL/Room Texture/Pack Raw Resources (Offline)", false, 0)]
+        public static void PackRawResourcesBundle()
+        {
+            MenuHandler.PackRawResourcesBundle();
+        }
+
+        [UnityEditor.MenuItem("ASL/Room Texture/Pack Room Bundle (Offline)", false, 0)]
+        public static void PackRoomBundle()
+        {
+            MenuHandler.PackRoomBundle();
+        }
+
         /// <summary>
         /// Exports to master client.
         /// </summary>
@@ -21,5 +34,6 @@ namespace UWBNetworkingPackage {
         public static void ExportFinalRoom() {
             MenuHandler.ExportRoom(PhotonNetwork.masterClient.ID);
         }
+#endif
     }
 }

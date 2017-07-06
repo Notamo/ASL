@@ -22,9 +22,23 @@ namespace UWBNetworkingPackage
             // ERROR TESTING
         }
 
-        public static void ExportRawResources(int targetID)
+#if UNITY_EDITOR
+        public static void PackRawResourcesBundle()
         {
             string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
+            UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
+        }
+
+        public static void PackRoomBundle()
+        {
+            string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
+            UWB_Texturing.BundleHandler.PackFinalRoomBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
+        }
+#endif
+
+        public static void ExportRawResources(int targetID)
+        {
+            //string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
 
             //BuildTarget[] targetPlatforms = new BuildTarget[4];
             //targetPlatforms[0] = BuildTarget.StandaloneWindows;
@@ -46,7 +60,7 @@ namespace UWBNetworkingPackage
             //    UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(destinationDirectory, target);
             //}
 
-            UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
+            // UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
             string bundleName = UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename();
             string bundlePath = Config.AssetBundle.PC.CompileAbsoluteBundlePath(Config.AssetBundle.PC.CompileFilename(bundleName)); // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
             int rawRoomBundlePort = Config.Ports.RawRoomBundle;
@@ -56,15 +70,26 @@ namespace UWBNetworkingPackage
 
         public static void ExportRoom(int targetID)
         {
-            string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
+            Debug.Log("Export Room entered");
+            //string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
 
-            UWB_Texturing.BundleHandler.PackFinalRoomBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
+            //UWB_Texturing.BundleHandler.PackFinalRoomBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
             string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
             string bundlePath = Config.AssetBundle.PC.CompileAbsoluteBundlePath(Config.AssetBundle.PC.CompileFilename(bundleName)); // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
+
+            Debug.Log("bundlename = " + bundleName);
+            Debug.Log("bundle path = " + bundlePath);
+
             int finalRoomBundlePort = Config.Ports.RoomBundle;
             Launcher.SendAssetBundle(targetID, bundlePath, finalRoomBundlePort);
-            photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(targetID), IPManager.CompileNetworkConfigString(finalRoomBundlePort));
 
+            Debug.Log("bundle sent");
+
+            PhotonPlayer.Find(targetID);
+
+            Debug.Log("Photon Player found");
+
+            photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(targetID), IPManager.CompileNetworkConfigString(finalRoomBundlePort));
         }
     }
 }

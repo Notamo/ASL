@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 namespace UWBNetworkingPackage
 {
@@ -18,6 +19,30 @@ namespace UWBNetworkingPackage
                 public Android()
                 {
                     NodeType = NodeType.Android;
+                }
+
+                public new static string AssetSubFolder = "ASL/Resources";
+                public new static string BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesAndroid";
+
+                public new static string CompileUnityBundleDirectory()
+                {
+                    return "Assets/" + BundleSubFolder;
+                }
+                public new static string CompileUnityBundlePath(string filename)
+                {
+                    return CompileUnityBundleDirectory() + '/' + filename;
+                }
+                public new static string CompileAbsoluteBundleDirectory()
+                {
+#if UNITY_WSA_10_0
+            return AbsoluteAssetRootFolder;
+#else
+                    return Path.Combine(AbsoluteAssetRootFolder, BundleSubFolder);
+#endif
+                }
+                public new static string CompileAbsoluteBundlePath(string filename)
+                {
+                    return Path.Combine(CompileAbsoluteBundleDirectory(), filename);
                 }
             }
 
@@ -58,6 +83,30 @@ namespace UWBNetworkingPackage
                 public PC()
                 {
                     NodeType = NodeType.PC;
+                }
+                
+                public new static string AssetSubFolder = "ASL/Resources";
+                public new static string BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesPC";
+
+                public new static string CompileUnityBundleDirectory()
+                {
+                    return "Assets/" + BundleSubFolder;
+                }
+                public new static string CompileUnityBundlePath(string filename)
+                {
+                    return CompileUnityBundleDirectory() + '/' + filename;
+                }
+                public new static string CompileAbsoluteBundleDirectory()
+                {
+#if UNITY_WSA_10_0
+            return AbsoluteAssetRootFolder;
+#else
+                    return Path.Combine(AbsoluteAssetRootFolder, BundleSubFolder);
+#endif
+                }
+                public new static string CompileAbsoluteBundlePath(string filename)
+                {
+                    return Path.Combine(CompileAbsoluteBundleDirectory(), filename);
                 }
             }
 
