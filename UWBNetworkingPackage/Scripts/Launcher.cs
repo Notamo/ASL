@@ -97,89 +97,96 @@ namespace UWBNetworkingPackage
         }
 
         [PunRPC]
-        public static void SendAssetBundle(int id, string path, int port)
+        public static void SendAssetBundle(string path, int port)
+        //public static void SendAssetBundle(int id, string path, int port)
         {
-            TcpListener bundleListener = new TcpListener(IPAddress.Any, port);
+            TcpListener listener = TCPManager.GetListener(port);
+            TCPManager.SendDataFromFile(listener, path);
 
-            bundleListener.Start();
-            new Thread(() =>
-            {
-                var client = bundleListener.AcceptTcpClient();
+            //TcpListener bundleListener = new TcpListener(IPAddress.Any, port);
 
-                using (var stream = client.GetStream())
-                {
-                    //needs to be changed back
-                    byte[] data = File.ReadAllBytes(path);
-                    stream.Write(data, 0, data.Length);
-                    client.Close();
-                }
+            //bundleListener.Start();
+            //new Thread(() =>
+            //{
+            //    var client = bundleListener.AcceptTcpClient();
 
-                bundleListener.Stop();
-            }).Start();
+            //    using (var stream = client.GetStream())
+            //    {
+            //        //needs to be changed back
+            //        byte[] data = File.ReadAllBytes(path);
+            //        stream.Write(data, 0, data.Length);
+            //        client.Close();
+            //    }
+
+            //    bundleListener.Stop();
+            //}).Start();
         }
 
         [PunRPC]
-        public virtual void ReceiveAssetBundle(string networkConfig)
+        public virtual void ReceiveAssetBundle(string networkConfig, string bundleName)
         {
-            string bundlePath;
-            ReceiveAssetBundle(networkConfig, out bundlePath);
+            string bundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(Config.AssetBundle.Current.CompileFilename(bundleName));
+            TCPManager.ReceiveDataToFile(networkConfig, bundlePath);
+
+            //string bundlePath;
+            //ReceiveAssetBundle(networkConfig, out bundlePath);
         }
 
-        public static void ReceiveAssetBundle(string networkConfig, out string bundlePath)
-        {
-            //var networkConfigArray = networkConfig.Split(':');
-            //Debug.Log("Start receiving bundle.");
-            //TcpClient client = new TcpClient();
-            //Debug.Log("IP Address = " + IPAddress.Parse(networkConfigArray[0]).ToString());
-            //Debug.Log("networkConfigArray[1] = " + Int32.Parse(networkConfigArray[1]));
-            //client.Connect(IPAddress.Parse(networkConfigArray[0]), Int32.Parse(networkConfigArray[1]));
+        //public static void ReceiveAssetBundle(string networkConfig, out string bundlePath)
+        //{
+        //    //var networkConfigArray = networkConfig.Split(':');
+        //    //Debug.Log("Start receiving bundle.");
+        //    //TcpClient client = new TcpClient();
+        //    //Debug.Log("IP Address = " + IPAddress.Parse(networkConfigArray[0]).ToString());
+        //    //Debug.Log("networkConfigArray[1] = " + Int32.Parse(networkConfigArray[1]));
+        //    //client.Connect(IPAddress.Parse(networkConfigArray[0]), Int32.Parse(networkConfigArray[1]));
 
 
-            TcpClient client = new TcpClient();
-            client.Connect(IPAddress.Parse(IPManager.ExtractIPAddress(networkConfig)), Int32.Parse(IPManager.ExtractPort(networkConfig)));
-            Debug.Log("Client connected to server!");
-            using (var stream = client.GetStream())
-            {
-                byte[] data = new byte[1024];
-                Debug.Log("Byte array allocated");
+        //    TcpClient client = new TcpClient();
+        //    client.Connect(IPAddress.Parse(IPManager.ExtractIPAddress(networkConfig)), Int32.Parse(IPManager.ExtractPort(networkConfig)));
+        //    Debug.Log("Client connected to server!");
+        //    using (var stream = client.GetStream())
+        //    {
+        //        byte[] data = new byte[1024];
+        //        Debug.Log("Byte array allocated");
 
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    Debug.Log("MemoryStream created");
-                    int numBytesRead;
-                    while ((numBytesRead = stream.Read(data, 0, data.Length)) > 0)
-                    {
-                        ms.Write(data, 0, numBytesRead);
-                        Debug.Log("Data received! Size = " + numBytesRead);
-                    }
-                    Debug.Log("Finish receiving bundle: size = " + ms.Length);
-                    client.Close();
+        //        using (MemoryStream ms = new MemoryStream())
+        //        {
+        //            Debug.Log("MemoryStream created");
+        //            int numBytesRead;
+        //            while ((numBytesRead = stream.Read(data, 0, data.Length)) > 0)
+        //            {
+        //                ms.Write(data, 0, numBytesRead);
+        //                Debug.Log("Data received! Size = " + numBytesRead);
+        //            }
+        //            Debug.Log("Finish receiving bundle: size = " + ms.Length);
+        //            client.Close();
 
-                    AssetBundle bundle = AssetBundle.LoadFromMemory(ms.ToArray());
-                    string bundleName = bundle.name;
+        //            AssetBundle bundle = AssetBundle.LoadFromMemory(ms.ToArray());
+        //            string bundleName = bundle.name;
 
-                    // Save the asset bundle
-                    bundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(Config.AssetBundle.Current.CompileFilename(bundleName));
+        //            // Save the asset bundle
+        //            bundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(Config.AssetBundle.Current.CompileFilename(bundleName));
 
-                    if (!Directory.Exists(Config.AssetBundle.Current.CompileAbsoluteBundleDirectory())) { 
-                        Directory.CreateDirectory(Config.AssetBundle.Current.CompileAbsoluteBundleDirectory());
-                    }
+        //            if (!Directory.Exists(Config.AssetBundle.Current.CompileAbsoluteBundleDirectory())) { 
+        //                Directory.CreateDirectory(Config.AssetBundle.Current.CompileAbsoluteBundleDirectory());
+        //            }
 
-                    File.WriteAllBytes(bundlePath, ms.ToArray());
+        //            File.WriteAllBytes(bundlePath, ms.ToArray());
 
-                    //File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/StreamingAssets/AssetBundlesPC/" + bundleName + ".asset"), ms.ToArray());
-                    //File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/StreamingAssets/AssetBundlesAndroid/" + bundleName + ".asset"), ms.ToArray());
+        //            //File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/StreamingAssets/AssetBundlesPC/" + bundleName + ".asset"), ms.ToArray());
+        //            //File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/StreamingAssets/AssetBundlesAndroid/" + bundleName + ".asset"), ms.ToArray());
 
-                    //AssetBundle newBundle = AssetBundle.LoadFromMemory(ms.ToArray());
-                    //bundles.Add(bundleName, newBundle);
-                    Debug.Log("You loaded the bundle successfully.");
+        //            //AssetBundle newBundle = AssetBundle.LoadFromMemory(ms.ToArray());
+        //            //bundles.Add(bundleName, newBundle);
+        //            Debug.Log("You loaded the bundle successfully.");
 
-                    bundle.Unload(true);
-                }
-            }
+        //            bundle.Unload(true);
+        //        }
+        //    }
 
-            client.Close();
-        }
+        //    client.Close();
+        //}
 
         ///// <summary>
         ///// Send mesh to a host specified by networkConfig.
@@ -225,13 +232,16 @@ namespace UWBNetworkingPackage
                     break;
             }
 
+            int bundlePort = Config.Ports.GetPort(Config.Ports.Types.Bundle);
             if (Directory.Exists(directory)) {
                 foreach (string file in Directory.GetFiles(directory))
                 {
                     if (!file.Contains("manifest") && !file.Contains("meta"))
                     {
-                        SendAssetBundle(id, file, Config.Ports.Bundle);
-                        photonView.RPC("ReceiveAssetBundle", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(Config.Ports.Bundle));
+                        //TCPManager.SendDataFromFile(Config.Ports.Types.RoomBundle, file);
+                        SendAssetBundle(file, bundlePort);
+                        //SendAssetBundle(id, file, Config.Ports.Bundle);
+                        photonView.RPC("ReceiveAssetBundle", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(bundlePort));
                     }
                 }
             }
@@ -249,34 +259,41 @@ namespace UWBNetworkingPackage
             //string bundlePath = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
             string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
             string bundlePath = Config.AssetBundle.PC.CompileAbsoluteAssetPath(Config.AssetBundle.PC.CompileFilename(bundleName));
-            SendAssetBundle(id, bundlePath, Config.Ports.RoomBundle);
-            photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(Config.Ports.RoomBundle));
+            int roomModelPort = Config.Ports.GetPort(Config.Ports.Types.RoomBundle);
+            //SendAssetBundle(id, bundlePath, Config.Ports.RoomBundle);
+            SendAssetBundle(bundlePath, roomModelPort);
+            photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(roomModelPort));
         }
 
         [PunRPC]
-        public virtual void ReceiveRoomModel(string networkConfig)
+        public virtual void ReceiveRoomModel(string networkConfig, string bundleName)
         {
-            ReceiveAssetBundle(networkConfig);
+            //ReceiveAssetBundle(networkConfig);
+            ReceiveAssetBundle(networkConfig, bundleName);
             //UWB_Texturing.BundleHandler.UnpackFinalRoomTextureBundle();
             
             string bundlePath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(Config.AssetBundle.Current.CompileFilename(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename()));
             string roomMatrixPath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.MatrixArray.CompileFilename());
 
             UWB_Texturing.BundleHandler.UnpackFinalRoomTextureBundle(bundlePath, roomMatrixPath);
-
         }
 
         [PunRPC]
         public virtual void SendRawRoomModelInfo(int id)
         {
-            SendAssetBundle(id, UWB_Texturing.Config.AssetBundle.RawPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename()), Config.Ports.RawRoomBundle);
-            photonView.RPC("ReceiveRawRoomModelInfo", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(Config.Ports.RawRoomBundle));
+            //SendAssetBundle(id, UWB_Texturing.Config.AssetBundle.RawPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename()), Config.Ports.RawRoomBundle);
+            string bundleName = UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename();
+            string bundlePath = UWB_Texturing.Config.AssetBundle.RawPackage.CompileAbsoluteAssetPath(bundleName);
+            int port = Config.Ports.RawRoomBundle;
+            SendAssetBundle(bundlePath, port);
+            photonView.RPC("ReceiveRawRoomModelInfo", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(port));
         }
 
         [PunRPC]
-        public virtual void ReceiveRawRoomModelInfo(string networkConfig)
+        public virtual void ReceiveRawRoomModelInfo(string networkConfig, string bundleName)
         {
-            ReceiveAssetBundle(networkConfig);
+            //ReceiveAssetBundle(networkConfig);
+            ReceiveAssetBundle(networkConfig, bundleName);
             UWB_Texturing.BundleHandler.UnpackRoomTextureBundle();
         }
 
@@ -318,6 +335,8 @@ namespace UWBNetworkingPackage
         [PunRPC]
         public void DeleteLocalRoomModelInfo()
         {
+            // ERROR TESTING -> these might point to the wrong folders -> update to search through appropriate folders
+
             //UWB_Texturing.PrefabHandler.DeletePrefabs();
             UWB_Texturing.BundleHandler.RemoveRoomObject();
             UWB_Texturing.BundleHandler.RemoveRawInfo();

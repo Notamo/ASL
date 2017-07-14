@@ -114,6 +114,28 @@ namespace UWBNetworkingPackage
 
         public static class Ports
         {
+            public enum Types
+            {
+                Bundle,
+                RawRoomBundle,
+                RoomBundle
+            }
+
+            public static int GetPort(Types portType)
+            {
+                switch (portType)
+                {
+                    case Types.Bundle:
+                        return Base;
+                    case Types.RawRoomBundle:
+                        return RawRoomBundle;
+                    case Types.RoomBundle:
+                        return RoomBundle;
+                }
+
+                return Base;
+            }
+
             private static int port = 21288;
             public static int Base
             {
