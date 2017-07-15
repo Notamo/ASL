@@ -42,7 +42,7 @@ namespace UWBNetworkingPackage
         // Used for SendMesh/ReceiveMesh compatibility
         // Locally stores version of assetbundle received
         public AssetBundle networkAssets;
-
+        
         #endregion
 
         /// <summary>
@@ -258,10 +258,11 @@ namespace UWBNetworkingPackage
             //Debug.Log("Callee is not MasterClient and this is a MasterClient only method");
             //string bundlePath = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
             string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
-            string bundlePath = Config.AssetBundle.PC.CompileAbsoluteAssetPath(Config.AssetBundle.PC.CompileFilename(bundleName));
+            string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
+            RoomTextureManager.UpdateRoomBundle();
             int roomModelPort = Config.Ports.GetPort(Config.Ports.Types.RoomBundle);
             //SendAssetBundle(id, bundlePath, Config.Ports.RoomBundle);
-            SendAssetBundle(bundlePath, roomModelPort);
+            SendAssetBundle(ASLBundlePath, roomModelPort);
             photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(roomModelPort));
         }
 
@@ -282,11 +283,14 @@ namespace UWBNetworkingPackage
         public virtual void SendRawRoomModelInfo(int id)
         {
             //SendAssetBundle(id, UWB_Texturing.Config.AssetBundle.RawPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename()), Config.Ports.RawRoomBundle);
+            
+            // Pinpoint the bundle's location and copy it if 
             string bundleName = UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename();
-            string bundlePath = UWB_Texturing.Config.AssetBundle.RawPackage.CompileAbsoluteAssetPath(bundleName);
-            int port = Config.Ports.RawRoomBundle;
-            SendAssetBundle(bundlePath, port);
-            photonView.RPC("ReceiveRawRoomModelInfo", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(port));
+            string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
+            RoomTextureManager.UpdateRawRoomBundle();
+            int rawRoomBundlePort = Config.Ports.RawRoomBundle;
+            SendAssetBundle(ASLBundlePath, rawRoomBundlePort);
+            photonView.RPC("ReceiveRawRoomModelInfo", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(rawRoomBundlePort));
         }
 
         [PunRPC]
@@ -496,6 +500,18 @@ namespace UWBNetworkingPackage
         public virtual void ReceiveAddMesh(string networkConfig)
         {
 
+        }
+
+        public static Launcher GetLauncherInstance()
+        {
+            Launcher launcher = null;
+            launcher = GameObject.Find("NetworkManager").GetComponent<MasterClientLauncher>();
+            if (launcher == null)
+            {
+                launcher = GameObject.Find("NetworkManager").GetComponent<ReceivingClientLauncher>();
+            }
+
+            return launcher;
         }
 
         //NEEDED FOR HOLOLENS BUT NOTHING ELSE-------------------------------------------------------------------------------------

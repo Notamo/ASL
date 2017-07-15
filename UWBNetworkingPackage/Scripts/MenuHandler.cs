@@ -64,7 +64,9 @@ namespace UWBNetworkingPackage
             string bundleName = UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename();
             string bundlePath = Config.AssetBundle.PC.CompileAbsoluteBundlePath(Config.AssetBundle.PC.CompileFilename(bundleName)); // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
             int rawRoomBundlePort = Config.Ports.RawRoomBundle;
-            Launcher.SendAssetBundle(targetID, bundlePath, rawRoomBundlePort);
+            //Launcher.SendAssetBundle(targetID, bundlePath, rawRoomBundlePort);
+            Launcher launcher = Launcher.GetLauncherInstance();
+            launcher.SendRawRoomModelInfo(targetID);
             photonView.RPC("ReceiveRawRoomModelInfo", PhotonPlayer.Find(targetID), IPManager.CompileNetworkConfigString(rawRoomBundlePort));
         }
 
@@ -81,13 +83,15 @@ namespace UWBNetworkingPackage
             Debug.Log("bundle path = " + bundlePath);
 
             int finalRoomBundlePort = Config.Ports.RoomBundle;
-            Launcher.SendAssetBundle(targetID, bundlePath, finalRoomBundlePort);
+            //Launcher.SendAssetBundle(targetID, bundlePath, finalRoomBundlePort);
+            Launcher launcher = Launcher.GetLauncherInstance();
+            launcher.SendRoomModel(targetID);
 
-            Debug.Log("bundle sent");
+            //Debug.Log("bundle sent");
 
-            PhotonPlayer.Find(targetID);
+            //PhotonPlayer.Find(targetID);
 
-            Debug.Log("Photon Player found");
+            //Debug.Log("Photon Player found");
 
             photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(targetID), IPManager.CompileNetworkConfigString(finalRoomBundlePort));
         }
