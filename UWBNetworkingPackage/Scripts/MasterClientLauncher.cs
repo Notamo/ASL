@@ -24,7 +24,20 @@ namespace UWBNetworkingPackage
 
         private DateTime _lastUpdate = DateTime.MinValue;   // Used for keeping the Room Mesh up to date
         private bool testing = false; // Used to enable debugging keys for testing
-#endregion
+        #endregion
+
+        /// <summary>
+        /// Setup OnEvent as callback handler
+        /// </summary>
+        public override void Awake()
+        {
+            base.Awake();
+            PhotonNetwork.OnEventCall += this.OnEvent;
+            Debug.Log("MasterClientLauncher: Awake completed.");
+            /// Prevent GameObjects from being cleaned up after their original owner leaves the room
+            PhotonNetwork.autoCleanUpPlayerObjects = false;
+            Debug.Log("Disabled autoCleanUpPlayerObjects");
+        }
 
         /// <summary>
         /// Attempts to connect to the specified Room Name on start, and adds MeshDisplay component
@@ -403,9 +416,27 @@ namespace UWBNetworkingPackage
             photonView.RPC("SendAddMesh", PhotonPlayer.Find(id), GetLocalIpAddress() + ":" + (Port + 4));
         }
 
-#endregion
+        #endregion
 
+        #region EventHandler
+        private void OnEvent(byte eventcode, object content, int senderid)
+        {
+            if (eventcode == 101)
+            {
+                PhotonPlayer sender = PhotonPlayer.Find(senderid);
+
+                // Retrieve PhotonView of the object to take control of
+                int viewID = (int)content;
+                PhotonView view = PhotonView.Find(viewID);
+
+                Debug.Log("Heard Event 101 from " + sender.name + " re: " + viewID);
+
+                view.TransferOwnership(PhotonNetwork.masterClient);
+            }
+        }
+
+        #endregion
 #endif
+
     }
 }
-
