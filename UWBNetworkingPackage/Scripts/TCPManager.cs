@@ -21,7 +21,7 @@ namespace UWBNetworkingPackage
         {
             public static class Errors
             {
-                public static string ListenerNotPending = "TCPListener is either uninitialized or has no clients waiting to send/request messages.";
+                public static string ListenerNotPending = "TCPListener is uninitialized";//"TCPListener is either uninitialized or has no clients waiting to send/request messages.";
                 public static string SendFileFailed = "Sending of file data failed. File not found.";
                 public static string SendDataFailed = "Sending of data failed. Byte array is zero length or null.";
                 public static string ReceiveDataFailed = "Data stream was empty.";
@@ -64,7 +64,7 @@ namespace UWBNetworkingPackage
         
         public static bool SendData(TcpListener listener, byte[] data)
         {
-            if (listener != null && listener.Pending())
+            if (listener != null)
             {
                 if (data != null && data.Length > 0)
                 {
@@ -104,7 +104,7 @@ namespace UWBNetworkingPackage
 
         public static bool SendDataFromFile(TcpListener listener, string filepath)
         {
-            if (listener != null && listener.Pending())
+            if (listener != null)
             {
                 if (File.Exists(filepath))
                 {
@@ -209,7 +209,13 @@ namespace UWBNetworkingPackage
                     //    Directory.CreateDirectory(Config.AssetBundle.Current.CompileAbsoluteBundleDirectory());
                     //}
 
-                    Directory.CreateDirectory(filepath);
+                    try
+                    {
+                        Directory.CreateDirectory(filepath);
+                    }
+                    catch (IOException e) {
+                        Debug.Log("File overwritten at " + filepath);
+                    }
 
                     if (fileOverwritten && ms.Length <= 0)
                     {

@@ -40,6 +40,8 @@ public class UWBPhotonTransformView : MonoBehaviour, IPunObservable
     PhotonTransformViewRotationControl m_RotationControl;
     PhotonTransformViewScaleControl m_ScaleControl;
 
+    Color netColor;
+
     PhotonView m_PhotonView;
 
     bool m_ReceivedNetworkUpdate = false;
@@ -56,6 +58,8 @@ public class UWBPhotonTransformView : MonoBehaviour, IPunObservable
         this.m_PositionControl = new PhotonTransformViewPositionControl(this.m_PositionModel);
         this.m_RotationControl = new PhotonTransformViewRotationControl(this.m_RotationModel);
         this.m_ScaleControl = new PhotonTransformViewScaleControl(this.m_ScaleModel);
+
+        netColor = this.gameObject.GetComponent<Renderer>().material.color;
     }
 
     void OnEnable()
@@ -205,5 +209,17 @@ public class UWBPhotonTransformView : MonoBehaviour, IPunObservable
     public void enableSyncScale()
     {
         this.m_ScaleModel.SynchronizeEnabled = true;
+    }
+
+    [PunRPC]
+    public void ChangeColor(float r, float g, float b)
+    {
+        if(this.gameObject.GetComponent<Renderer>() == null)
+        {
+            Debug.LogWarning("RPC [ChangeColor] called on object with no Renderer");
+            return;
+        }
+
+        this.gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
     }
 }

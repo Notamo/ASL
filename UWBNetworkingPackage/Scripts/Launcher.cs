@@ -26,7 +26,7 @@ namespace UWBNetworkingPackage
 
         private static string _version = "1";   // Should be set to the current version of your application 
         private DateTime lastRoomUpdate = DateTime.MinValue;
-        private NodeType lastNodeType = NodeType.MasterClient;
+        private NodeType lastNodeType = Config.AssetBundle.Current.NodeType;
 #endregion
 
 #region Public Properties
@@ -202,35 +202,32 @@ namespace UWBNetworkingPackage
         [PunRPC]
         public virtual void SendAssetBundles(int id)
         {
-            string directory = "";
+            string directory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory(); ;
 
-            // ERROR TESTING - MUST GET NODETYPE OF PLAYER BASED OFF OF ID AND THE CORRESPONDING PLAYER'S CUSTOM SETTINGS
-            NodeType bundleType = NodeType.PC;
+            //// ERROR TESTING - MUST GET NODETYPE OF PLAYER BASED OFF OF ID AND THE CORRESPONDING PLAYER'S CUSTOM SETTINGS
+            //NodeType bundleType = Config.AssetBundle.Current.NodeType;
 
-            switch (bundleType)
-            {
-                case NodeType.Android:
-                    directory = Config.AssetBundle.Android.CompileAbsoluteBundleDirectory();
-                    break;
-                case NodeType.Hololens:
-                    directory = Config.AssetBundle.Hololens.CompileAbsoluteBundleDirectory();
-                    break;
-                case NodeType.Kinect:
-                    directory = Config.AssetBundle.Kinect.CompileAbsoluteBundleDirectory();
-                    break;
-                case NodeType.MasterClient:
-                    directory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
-                    break;
-                case NodeType.Oculus:
-                    directory = Config.AssetBundle.Oculus.CompileAbsoluteBundleDirectory();
-                    break;
-                case NodeType.PC:
-                    directory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
-                    break;
-                case NodeType.Vive:
-                    directory = Config.AssetBundle.Vive.CompileAbsoluteBundleDirectory();
-                    break;
-            }
+            //switch (bundleType)
+            //{
+            //    case NodeType.Android:
+            //        directory = Config.AssetBundle.Android.CompileAbsoluteBundleDirectory();
+            //        break;
+            //    case NodeType.Hololens:
+            //        directory = Config.AssetBundle.Hololens.CompileAbsoluteBundleDirectory();
+            //        break;
+            //    case NodeType.Kinect:
+            //        directory = Config.AssetBundle.Kinect.CompileAbsoluteBundleDirectory();
+            //        break;
+            //    case NodeType.Oculus:
+            //        directory = Config.AssetBundle.Oculus.CompileAbsoluteBundleDirectory();
+            //        break;
+            //    case NodeType.PC:
+            //        directory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
+            //        break;
+            //    case NodeType.Vive:
+            //        directory = Config.AssetBundle.Vive.CompileAbsoluteBundleDirectory();
+            //        break;
+            //}
 
             int bundlePort = Config.Ports.GetPort(Config.Ports.Types.Bundle);
             if (Directory.Exists(directory)) {
@@ -241,7 +238,8 @@ namespace UWBNetworkingPackage
                         //TCPManager.SendDataFromFile(Config.Ports.Types.RoomBundle, file);
                         SendAssetBundle(file, bundlePort);
                         //SendAssetBundle(id, file, Config.Ports.Bundle);
-                        photonView.RPC("ReceiveAssetBundle", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(bundlePort));
+                        string bundleName = Path.GetFileName(file);
+                        photonView.RPC("ReceiveAssetBundle", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(bundlePort), bundleName);
                     }
                 }
             }
@@ -263,7 +261,7 @@ namespace UWBNetworkingPackage
             int roomModelPort = Config.Ports.GetPort(Config.Ports.Types.RoomBundle);
             //SendAssetBundle(id, bundlePath, Config.Ports.RoomBundle);
             SendAssetBundle(ASLBundlePath, roomModelPort);
-            photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(roomModelPort));
+            photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(roomModelPort), bundleName);
         }
 
         [PunRPC]
@@ -290,7 +288,7 @@ namespace UWBNetworkingPackage
             RoomTextureManager.UpdateRawRoomBundle();
             int rawRoomBundlePort = Config.Ports.RawRoomBundle;
             SendAssetBundle(ASLBundlePath, rawRoomBundlePort);
-            photonView.RPC("ReceiveRawRoomModelInfo", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(rawRoomBundlePort));
+            photonView.RPC("ReceiveRawRoomModelInfo", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(rawRoomBundlePort), bundleName);
         }
 
         [PunRPC]

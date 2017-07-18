@@ -7,7 +7,6 @@ namespace UWBNetworkingPackage
 {
     public enum NodeType
     {
-        MasterClient,
         Android,
         Hololens,
         Kinect,
@@ -18,8 +17,8 @@ namespace UWBNetworkingPackage
 
     public class Config_Base
     {
-        private NodeType nodeType = NodeType.MasterClient;
-        public NodeType NodeType
+        private static NodeType nodeType = NodeType.PC;
+        public static NodeType NodeType
         {
             get
             {

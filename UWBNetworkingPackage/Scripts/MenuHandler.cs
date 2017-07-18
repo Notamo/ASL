@@ -67,7 +67,7 @@ namespace UWBNetworkingPackage
             //Launcher.SendAssetBundle(targetID, bundlePath, rawRoomBundlePort);
             Launcher launcher = Launcher.GetLauncherInstance();
             launcher.SendRawRoomModelInfo(targetID);
-            photonView.RPC("ReceiveRawRoomModelInfo", PhotonPlayer.Find(targetID), IPManager.CompileNetworkConfigString(rawRoomBundlePort));
+            //photonView.RPC("ReceiveRawRoomModelInfo", PhotonPlayer.Find(targetID), IPManager.CompileNetworkConfigString(rawRoomBundlePort));
         }
 
         public static void ExportRoom(int targetID)
@@ -93,7 +93,7 @@ namespace UWBNetworkingPackage
 
             //Debug.Log("Photon Player found");
 
-            photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(targetID), IPManager.CompileNetworkConfigString(finalRoomBundlePort));
+            //photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(targetID), IPManager.CompileNetworkConfigString(finalRoomBundlePort));
         }
     }
 }

@@ -11,7 +11,120 @@ namespace UWBNetworkingPackage
         {
             public class Current : Config_Base_AssetBundle
             {
+                public new static string AssetSubFolder = "ASL/Resources";
+                public new static string BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesAndroid";
 
+                public Current()
+                {
+                    // Set the node type depending on what platform this is (PC, Android, etc.)
+                    // if PC, NodeType = NodeType.PC;
+
+                    AssetSubFolder = "ASL/Resources";
+                    switch (NodeType)
+                    {
+                        case NodeType.PC:
+                            BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesPC";
+                            break;
+                        case NodeType.Android:
+                            BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesAndroid";
+                            break;
+                        case NodeType.Hololens:
+                            break;
+                        case NodeType.Kinect:
+                            break;
+                        case NodeType.Oculus:
+                            break;
+                        case NodeType.Vive:
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                public new static string CompileUnityBundleDirectory()
+                {
+                    switch (NodeType)
+                    {
+                        case NodeType.PC:
+                            return PC.CompileUnityBundleDirectory();
+                        case NodeType.Android:
+                            return Android.CompileUnityBundleDirectory();
+                        case NodeType.Hololens:
+                            return Hololens.CompileUnityBundleDirectory();
+                        case NodeType.Kinect:
+                            return Kinect.CompileUnityBundleDirectory();
+                        case NodeType.Oculus:
+                            return Oculus.CompileUnityBundleDirectory();
+                        case NodeType.Vive:
+                            return Vive.CompileUnityBundleDirectory();
+                        default:
+                            throw new System.Exception("Unrecognized platform.");
+                    }
+                }
+
+                public new static string CompileUnityBundlePath(string filename)
+                {
+                    switch (NodeType)
+                    {
+                        case NodeType.PC:
+                            return PC.CompileUnityBundlePath(filename);
+                        case NodeType.Android:
+                            return Android.CompileUnityBundlePath(filename);
+                        case NodeType.Hololens:
+                            return Hololens.CompileUnityBundlePath(filename);
+                        case NodeType.Kinect:
+                            return Kinect.CompileUnityBundlePath(filename);
+                        case NodeType.Oculus:
+                            return Oculus.CompileUnityBundlePath(filename);
+                        case NodeType.Vive:
+                            return Vive.CompileUnityBundlePath(filename);
+                        default:
+                            throw new System.Exception("Unrecognized platform.");
+                    }
+                }
+
+                public new static string CompileAbsoluteBundleDirectory()
+                {
+                    switch (NodeType)
+                    {
+                        case NodeType.PC:
+                            return PC.CompileAbsoluteBundleDirectory();
+                        case NodeType.Android:
+                            return Android.CompileAbsoluteBundleDirectory();
+                        case NodeType.Hololens:
+                            return Hololens.CompileAbsoluteBundleDirectory();
+                        case NodeType.Kinect:
+                            return Kinect.CompileAbsoluteBundleDirectory();
+                        case NodeType.Oculus:
+                            return Oculus.CompileAbsoluteBundleDirectory();
+                        case NodeType.Vive:
+                            return Vive.CompileAbsoluteBundleDirectory();
+                        default:
+                            throw new System.Exception("Unrecognized platform.");
+                    }
+                }
+
+                public new static string CompileAbsoluteBundlePath(string filename)
+                {
+
+                    switch (NodeType)
+                    {
+                        case NodeType.PC:
+                            return PC.CompileAbsoluteBundlePath(filename);
+                        case NodeType.Android:
+                            return Android.CompileAbsoluteBundlePath(filename);
+                        case NodeType.Hololens:
+                            return Hololens.CompileAbsoluteBundlePath(filename);
+                        case NodeType.Kinect:
+                            return Kinect.CompileAbsoluteBundlePath(filename);
+                        case NodeType.Oculus:
+                            return Oculus.CompileAbsoluteBundlePath(filename);
+                        case NodeType.Vive:
+                            return Vive.CompileAbsoluteBundlePath(filename);
+                        default:
+                            throw new System.Exception("Unrecognized platform.");
+                    }
+                }
             }
 
             public class Android : Config_Base_AssetBundle

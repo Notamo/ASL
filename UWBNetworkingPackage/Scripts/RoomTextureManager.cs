@@ -50,9 +50,10 @@ namespace UWBNetworkingPackage
         public static void UpdateRoomBundle()
         {
             string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
-            string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
+            string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(Config.AssetBundle.Current.CompileFilename(bundleName));
             string GeneratedBundlePath = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(bundleName);
             //string GeneratedBundlePath = Config.AssetBundle.PC.CompileAbsoluteAssetPath(Config.AssetBundle.PC.CompileFilename(bundleName));
+            Debug.Log("ASL Bundle Path = " + ASLBundlePath);
             if (!File.Exists(ASLBundlePath))
             {
                 if (File.Exists(GeneratedBundlePath))
