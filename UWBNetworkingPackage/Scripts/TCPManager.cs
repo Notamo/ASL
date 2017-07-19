@@ -209,19 +209,7 @@ namespace UWBNetworkingPackage
                     //    Directory.CreateDirectory(Config.AssetBundle.Current.CompileAbsoluteBundleDirectory());
                     //}
 
-                    try
-                    {
-                        if (!Path.HasExtension(filepath))
-                        {
-                            // Assumes that the only filetype that has no extension is an asset bundle
-                            filepath = AppendCustomAssetBundleExtension(filepath);
-                        }
-                        Directory.CreateDirectory(filepath);
-                        filepath = DetachCustomAssetBundleExtension(filepath);
-                    }
-                    catch (IOException e) {
-                        Debug.Log("File overwritten at " + filepath);
-                    }
+                    AbnormalDirectoryHandler.CreateDirectoryFromFile(filepath);
 
                     if(ms.Length <= 0)
                     {
@@ -247,32 +235,6 @@ namespace UWBNetworkingPackage
 
             //client.Close();
             return true;
-        }
-
-
-        public static string AppendCustomAssetBundleExtension(string filepath)
-        {
-            string customExtension = ".ABE";
-            return filepath + customExtension;
-        }
-
-        public static string DetachCustomAssetBundleExtension(string filepath)
-        {
-            string customExtension = "ABE";
-            string[] pathComponents = filepath.Split('.');
-            if(pathComponents[pathComponents.Length - 1].Equals(customExtension))
-            {
-                string result = "";
-                for(int i = 0; i < pathComponents.Length - 1; i++)
-                {
-                    result += pathComponents[i];
-                }
-                return result;
-            }
-            else
-            {
-                return filepath;
-            }
         }
 
         //public static void ReceiveAssetBundle(string networkConfig, out string bundlePath)
