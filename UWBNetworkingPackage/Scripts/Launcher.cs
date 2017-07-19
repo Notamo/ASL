@@ -270,9 +270,11 @@ namespace UWBNetworkingPackage
             //ReceiveAssetBundle(networkConfig);
             ReceiveAssetBundle(networkConfig, bundleName);
             //UWB_Texturing.BundleHandler.UnpackFinalRoomTextureBundle();
-            
-            string bundlePath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(Config.AssetBundle.Current.CompileFilename(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename()));
-            string roomMatrixPath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.MatrixArray.CompileFilename());
+
+            //string bundlePath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(Config.AssetBundle.Current.CompileFilename(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename()));
+            string bundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(Config.AssetBundle.Current.CompileFilename(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename()));
+            //string roomMatrixPath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.MatrixArray.CompileFilename());
+            string roomMatrixPath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.MatrixArray.CompileFilename());
 
             UWB_Texturing.BundleHandler.UnpackFinalRoomTextureBundle(bundlePath, roomMatrixPath);
         }

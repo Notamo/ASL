@@ -29,8 +29,8 @@ namespace UWBNetworkingPackage
                 nodeType = value;
             }
         }
-        
-        public static string absoluteAssetRootFolder = Application.dataPath;
+
+        public static string absoluteAssetRootFolder = Directory.GetCurrentDirectory();//Application.persistentDataPath;
         public static string AbsoluteAssetRootFolder
         {
             get
@@ -48,12 +48,13 @@ namespace UWBNetworkingPackage
             }
         }
 
-        public static string AssetSubFolder = "ASL/Resources";
+        public static string AssetSubFolder = "Assets/ASL/Resources";
         public static string BundleSubFolder = AssetSubFolder + "/StreamingAssets";
 
         public static string CompileUnityAssetDirectory()
         {
-            return "Assets/" + AssetSubFolder;
+            //return "Assets/" + AssetSubFolder;
+            return AssetSubFolder;
         }
         public static string CompileUnityAssetPath(string filename)
         {
@@ -79,7 +80,8 @@ namespace UWBNetworkingPackage
 
         public static string CompileUnityBundleDirectory()
         {
-            return "Assets/" + BundleSubFolder;
+            //return "Assets/" + BundleSubFolder;
+            return BundleSubFolder;
         }
         public static string CompileUnityBundlePath(string filename)
         {

@@ -134,12 +134,12 @@ namespace UWBNetworkingPackage
                     NodeType = NodeType.Android;
                 }
 
-                public new static string AssetSubFolder = "ASL/Resources";
+                public new static string AssetSubFolder = "Assets/ASL/Resources";
                 public new static string BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesAndroid";
 
                 public new static string CompileUnityBundleDirectory()
                 {
-                    return "Assets/" + BundleSubFolder;
+                    return BundleSubFolder;
                 }
                 public new static string CompileUnityBundlePath(string filename)
                 {
@@ -198,12 +198,12 @@ namespace UWBNetworkingPackage
                     NodeType = NodeType.PC;
                 }
                 
-                public new static string AssetSubFolder = "ASL/Resources";
+                public new static string AssetSubFolder = "Assets/ASL/Resources";
                 public new static string BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesPC";
 
                 public new static string CompileUnityBundleDirectory()
                 {
-                    return "Assets/" + BundleSubFolder;
+                    return BundleSubFolder;
                 }
                 public new static string CompileUnityBundlePath(string filename)
                 {
