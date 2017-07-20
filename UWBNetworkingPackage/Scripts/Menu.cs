@@ -25,9 +25,18 @@ namespace UWBNetworkingPackage {
         /// <summary>
         /// Exports to master client.
         /// </summary>
-        [UnityEditor.MenuItem("ASL/Room Texture/Export Raw Resources", false, 0)]
+        [UnityEditor.MenuItem("ASL/Room Texture/Export Room Resources", false, 0)]
         public static void ExportRawResources() {
             MenuHandler.ExportRawResources(PhotonNetwork.masterClient.ID);
+        }
+
+        /// <summary>
+        /// Processes room resources to generate final room, room prefab, and appropraite bundle.
+        /// </summary>
+        [UnityEditor.MenuItem("ASL/Room Texture/Generate Room", false, 0)]
+        public static void ProcessRoomResources()
+        {
+            MenuHandler.ProcessRoomResources();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Export Room", false, 0)]

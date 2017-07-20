@@ -296,9 +296,12 @@ namespace UWBNetworkingPackage
         [PunRPC]
         public virtual void ReceiveRawRoomModelInfo(string networkConfig, string bundleName)
         {
+            string bundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
+            string destinationDirectory = Config.AssetBundle.Current.CompileAbsoluteAssetDirectory();
+
             //ReceiveAssetBundle(networkConfig);
             ReceiveAssetBundle(networkConfig, bundleName);
-            UWB_Texturing.BundleHandler.UnpackRoomTextureBundle();
+            UWB_Texturing.BundleHandler.UnpackRoomTextureBundle(bundlePath, destinationDirectory, destinationDirectory, destinationDirectory, destinationDirectory);
         }
 
         /// <summary>
@@ -340,11 +343,14 @@ namespace UWBNetworkingPackage
         public void DeleteLocalRoomModelInfo()
         {
             // ERROR TESTING -> these might point to the wrong folders -> update to search through appropriate folders
+            string materialDirectory = Config.AssetBundle.Current.CompileAbsoluteAssetDirectory();
+            string meshesDirectory = materialDirectory;
+            string texturesDirectory = materialDirectory;
 
             //UWB_Texturing.PrefabHandler.DeletePrefabs();
             UWB_Texturing.BundleHandler.RemoveRoomObject();
             UWB_Texturing.BundleHandler.RemoveRawInfo();
-            UWB_Texturing.BundleHandler.RemoveRoomResources();
+            UWB_Texturing.BundleHandler.RemoveRoomResources(materialDirectory, meshesDirectory, texturesDirectory);
         }
 
 

@@ -30,7 +30,8 @@ namespace UWBNetworkingPackage
             }
         }
 
-        public static string absoluteAssetRootFolder = Directory.GetCurrentDirectory();//Application.persistentDataPath;
+        //public static string absoluteAssetRootFolder = Directory.GetCurrentDirectory();//Application.persistentDataPath;
+        public static string absoluteAssetRootFolder = Path.Combine(Directory.GetCurrentDirectory(), "Assets");
         public static string AbsoluteAssetRootFolder
         {
             get
@@ -48,7 +49,7 @@ namespace UWBNetworkingPackage
             }
         }
 
-        public static string AssetSubFolder = "Assets/ASL/Resources";
+        public static string AssetSubFolder = "ASL/Resources";
         public static string BundleSubFolder = AssetSubFolder + "/StreamingAssets";
 
         public static string CompileUnityAssetDirectory()
@@ -77,15 +78,20 @@ namespace UWBNetworkingPackage
             return AssetSubFolder.Substring(AssetSubFolder.IndexOf("Resources") + "Resources".Length + 1) + '/' + assetNameWithoutExtension;
             //return ResourcesSubFolder + '/' + assetNameWithoutExtension;
         }
+        public static string CompileResourcesLoadPath(string assetSubDirectory, string assetNameWithoutExtension)
+        {
+            return assetSubDirectory.Substring(assetSubDirectory.IndexOf("Resources") + "Resources".Length + 1) + '/' + assetNameWithoutExtension;
+        }
 
         public static string CompileUnityBundleDirectory()
         {
-            //return "Assets/" + BundleSubFolder;
-            return BundleSubFolder;
+            return "Assets/" + BundleSubFolder;
+            //return BundleSubFolder;
         }
         public static string CompileUnityBundlePath(string filename)
         {
-            return CompileUnityBundleDirectory() + '/' + filename;
+            //return CompileUnityBundleDirectory() + '/' + filename;
+            return Path.Combine(CompileUnityBundleDirectory(), filename);
         }
         public static string CompileAbsoluteBundleDirectory()
         {

@@ -95,5 +95,23 @@ namespace UWBNetworkingPackage
 
             //photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(targetID), IPManager.CompileNetworkConfigString(finalRoomBundlePort));
         }
+
+        public static void ProcessRoomResources()
+        {
+            string customOrientationFilepath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.CustomOrientation.CompileFilename());
+            string unityMeshesRelativeDirectory = Config.AssetBundle.Current.AssetSubFolder;
+            string materialsRelativeDirectory = Config.AssetBundle.Current.AssetSubFolder;
+            if (File.Exists(customOrientationFilepath))
+            {
+                // Build room object
+                string[] customOrientationFileLines = File.ReadAllLines(customOrientationFilepath);
+                UWB_Texturing.RoomModel.BuildRoomObject(customOrientationFileLines, unityMeshesRelativeDirectory, materialsRelativeDirectory);
+            }
+            else
+            {
+                Debug.Log("Unable to build room!");
+            }
+            //UWB_Texturing.RoomModel.BuildRoomObject(File.ReadAllLines(Config.CustomOrientation.CompileAbsoluteAssetPath(Config.CustomOrientation.CompileFilename())));
+        }
     }
 }
