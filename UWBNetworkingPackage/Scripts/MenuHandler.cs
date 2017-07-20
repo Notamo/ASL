@@ -98,7 +98,8 @@ namespace UWBNetworkingPackage
 
         public static void ProcessRoomResources()
         {
-            string customOrientationFilepath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.CustomOrientation.CompileFilename());
+            //string customOrientationFilepath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.CustomOrientation.CompileFilename());
+            string customOrientationFilepath = UWB_Texturing.Config.CustomOrientation.CompileAbsoluteAssetPath(UWB_Texturing.Config.CustomOrientation.CompileFilename());
             string unityMeshesRelativeDirectory = Config.AssetBundle.Current.AssetSubFolder;
             string materialsRelativeDirectory = Config.AssetBundle.Current.AssetSubFolder;
             if (File.Exists(customOrientationFilepath))

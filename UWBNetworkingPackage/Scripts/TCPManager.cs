@@ -84,6 +84,8 @@ namespace UWBNetworkingPackage
                 }
                 else
                 {
+                    var client = listener.AcceptTcpClient();
+                    client.Close();
                     Debug.Log(Messages.Errors.SendDataFailed);
                 }
             }
@@ -117,7 +119,7 @@ namespace UWBNetworkingPackage
                         //needs to be changed back
                         byte[] data = File.ReadAllBytes(filepath);
                             stream.Write(data, 0, data.Length);
-                            //client.Close();
+                            client.Close();
                         }
                     }).Start();
 
@@ -125,6 +127,8 @@ namespace UWBNetworkingPackage
                 }
                 else
                 {
+                    var client = listener.AcceptTcpClient();
+                    client.Close();
                     Debug.Log(Messages.Errors.SendFileFailed);
                 }
             }
