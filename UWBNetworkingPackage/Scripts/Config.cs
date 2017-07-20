@@ -11,7 +11,7 @@ namespace UWBNetworkingPackage
         {
             public class Current : Config_Base_AssetBundle
             {
-                public new static string AssetSubFolder = "Assets/ASL/Resources";
+                public new static string AssetSubFolder = "ASL/Resources";
                 public new static string BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesPC";
 
                 public Current()
@@ -134,7 +134,7 @@ namespace UWBNetworkingPackage
                     NodeType = NodeType.Android;
                 }
 
-                public new static string AssetSubFolder = "Assets/ASL/Resources";
+                public new static string AssetSubFolder = "ASL/Resources";
                 public new static string BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesAndroid";
 
                 public new static string CompileUnityBundleDirectory()
@@ -198,7 +198,7 @@ namespace UWBNetworkingPackage
                     NodeType = NodeType.PC;
                 }
                 
-                public new static string AssetSubFolder = "Assets/ASL/Resources";
+                public new static string AssetSubFolder = "ASL/Resources";
                 public new static string BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesPC";
 
                 public new static string CompileUnityBundleDirectory()
