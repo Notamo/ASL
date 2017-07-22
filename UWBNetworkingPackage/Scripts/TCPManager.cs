@@ -12,10 +12,18 @@ using System.Threading;
 
 namespace UWBNetworkingPackage
 {
-    public static class TCPManager
+    public static partial class TCPManager
     {
-
+#if !UNITY_UWP
         public static Dictionary<int, TcpListener> PortListenerMap;
+
+        [Serializable]
+        public struct TCPHeader
+        {
+            public long MessageSize;
+            public short FilepathLength;
+            public string Filepath;
+        }
 
         public static class Messages
         {
@@ -241,6 +249,41 @@ namespace UWBNetworkingPackage
             return true;
         }
 
+        public static TCPHeader ConstructTCPHeader(string filepath)
+        {
+            FileInfo info = new FileInfo(filepath);
+            long filesize = info.Length;
+            byte[] filepathBytes = System.Text.Encoding.UTF8.GetBytes(filepath);
+
+            TCPHeader header = new TCPHeader()
+            {
+                MessageSize = filesize,
+                FilepathLength = (short)filepathBytes.Length,
+                Filepath = filepath
+            };
+
+            return header;
+        }
+
+        public static void ConstructTCPHeaderBytes(string filepath)
+        {
+
+        }
+
+        public static void SendDataFromFile(string targetNetworkConfig, string filepath)
+        {
+            byte[] data = File.ReadAllBytes(filepath);
+            StreamSocket socket = new StreamSocket();
+
+            using (DataWriter writer = new DataWriter(socket.OutputStream))
+            {
+                string port = IPManager.ExtractPort(targetNetworkConfig).ToString();
+                string ip = IPManager.ExtractIPAddress(targetNetworkConfig);
+
+                HostName localHostName = new HostName(ip);
+            }
+        }
+
         //public static void ReceiveAssetBundle(string networkConfig, out string bundlePath)
         //{
         //    //var networkConfigArray = networkConfig.Split(':');
@@ -312,5 +355,6 @@ namespace UWBNetworkingPackage
                 return ports;
             }
         }
+#endif
     }
 }

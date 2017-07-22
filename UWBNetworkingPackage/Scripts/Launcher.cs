@@ -353,6 +353,21 @@ namespace UWBNetworkingPackage
             UWB_Texturing.BundleHandler.RemoveRoomResources(materialDirectory, meshesDirectory, texturesDirectory);
         }
 
+        // ERROR TESTING - REMOVE if not needed
+        [PunRPC]
+        public virtual void SendNetworkConfig(int id, int port)
+        {
+            string networkConfig = IPManager.CompileNetworkConfigString(port);
+            int networkConfigPort = Config.Ports.GetPort(Config.Ports.Types.NetworkConfig);
+            photonView.RPC("ReceiveNetworkConfig", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(networkConfigPort));
+        }
+
+        // ERROR TESTING - REMOVE if not needed
+        [PunRPC]
+        public virtual string ReceiveNetworkConfig(string networkConfig, string networkConfigToUse)
+        {
+            return networkConfigToUse;
+        }
 
         // ERROR TESTING - REWORK AND REIMPLEMENT
 

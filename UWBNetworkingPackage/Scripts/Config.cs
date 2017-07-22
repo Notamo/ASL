@@ -230,8 +230,9 @@ namespace UWBNetworkingPackage
             public enum Types
             {
                 Bundle,
-                RawRoomBundle,
-                RoomBundle
+                RoomResourceBundle,
+                RoomBundle,
+                NetworkConfig
             }
 
             public static int GetPort(Types portType)
@@ -240,16 +241,18 @@ namespace UWBNetworkingPackage
                 {
                     case Types.Bundle:
                         return Base;
-                    case Types.RawRoomBundle:
+                    case Types.RoomResourceBundle:
                         return RawRoomBundle;
                     case Types.RoomBundle:
                         return RoomBundle;
+                    case Types.NetworkConfig:
+                        return NetworkConfig;
                 }
 
                 return Base;
             }
 
-            private static int port = 21288;
+            private static int port = GameObject.Find("NetworkManager").GetComponent<NetworkManager>().Port;
             public static int Base
             {
                 get
@@ -288,6 +291,13 @@ namespace UWBNetworkingPackage
                 get
                 {
                     return Base + 4;
+                }
+            }
+            public static int NetworkConfig
+            {
+                get
+                {
+                    return Base + 5;
                 }
             }
         }
