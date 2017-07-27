@@ -10,10 +10,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-#if !UNITY_EDITOR && UNITY_WSA_10_0
-using HoloToolkit.Unity;
-#endif
-
 namespace UWBNetworkingPackage
 {
     /// <summary>
@@ -57,7 +53,7 @@ namespace UWBNetworkingPackage
             Port = gameObject.GetComponent<NetworkManager>().Port;
             RoomName = gameObject.GetComponent<NetworkManager>().RoomName;
 
-            Debug.Log("Laucher awaken");
+            Debug.Log("Launcher awaken");
         }
 
         /// <summary>
@@ -97,11 +93,12 @@ namespace UWBNetworkingPackage
         }
 
         [PunRPC]
-        public static void SendAssetBundle(string path, int port)
+        public virtual void SendAssetBundle(string path, int port)
         //public static void SendAssetBundle(int id, string path, int port)
         {
-            TcpListener listener = TCPManager.GetListener(port);
-            TCPManager.SendDataFromFile(listener, path);
+            //TcpListener listener = TCPManager.GetListener(port);
+            //TCPManager.SendDataFromFile(listener, path);
+            TCPManager.SendDataFromFile(port, path);
 
             //TcpListener bundleListener = new TcpListener(IPAddress.Any, port);
 
@@ -353,21 +350,21 @@ namespace UWBNetworkingPackage
             UWB_Texturing.BundleHandler.RemoveRoomResources(materialDirectory, meshesDirectory, texturesDirectory);
         }
 
-        // ERROR TESTING - REMOVE if not needed
-        [PunRPC]
-        public virtual void SendNetworkConfig(int id, int port)
-        {
-            string networkConfig = IPManager.CompileNetworkConfigString(port);
-            int networkConfigPort = Config.Ports.GetPort(Config.Ports.Types.NetworkConfig);
-            photonView.RPC("ReceiveNetworkConfig", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(networkConfigPort));
-        }
+        //// ERROR TESTING - REMOVE if not needed
+        //[PunRPC]
+        //public virtual void SendNetworkConfig(int id, int port)
+        //{
+        //    string networkConfig = IPManager.CompileNetworkConfigString(port);
+        //    int networkConfigPort = Config.Ports.GetPort(Config.Ports.Types.NetworkConfig);
+        //    photonView.RPC("ReceiveNetworkConfig", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(networkConfigPort));
+        //}
 
-        // ERROR TESTING - REMOVE if not needed
-        [PunRPC]
-        public virtual string ReceiveNetworkConfig(string networkConfig, string networkConfigToUse)
-        {
-            return networkConfigToUse;
-        }
+        //// ERROR TESTING - REMOVE if not needed
+        //[PunRPC]
+        //public virtual string ReceiveNetworkConfig(string networkConfig, string networkConfigToUse)
+        //{
+        //    return networkConfigToUse;
+        //}
 
         // ERROR TESTING - REWORK AND REIMPLEMENT
 

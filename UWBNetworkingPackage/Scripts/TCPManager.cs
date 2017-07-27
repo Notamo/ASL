@@ -14,17 +14,17 @@ namespace UWBNetworkingPackage
 {
     public static partial class TCPManager
     {
-#if !UNITY_UWP
+#if !WINDOWS_UWP
         public static Dictionary<int, TcpListener> PortListenerMap;
 
-        [Serializable]
-        public struct TCPHeader
-        {
-            public long MessageSize;
-            public short FilepathLength;
-            public string Filepath;
-        }
+        public static Queue<TcpListener> listenerQueue; // accepts socket requests from clients
+        public static int numListeners = 15; // 
 
+        //public static Dictionary<int, Queue<Socket>> socketMap;
+
+        // Thread signal for client connection
+        //public static ManualResetEvent clientConnected = new ManualResetEvent(false);
+        
         public static class Messages
         {
             public static class Errors
@@ -39,7 +39,88 @@ namespace UWBNetworkingPackage
         public static void Start()
         {
             PortListenerMap = new Dictionary<int, TcpListener>();
+
+            listenerQueue = new Queue<TcpListener>();
+            string networkConfigString = IPManager.CompileNetworkConfigString(Config.Ports.ClientServerConnection);
+            string ip = IPManager.ExtractIPAddress(networkConfigString);
+            IPAddress ipAddress = IPAddress.Parse(ip);
+            //string port = IPManager.ExtractPort(networkConfigString).ToString();
+            int port = Int32.Parse(IPManager.ExtractPort(networkConfigString));
+
+            //for(int i = 0; i < numListeners; i++)
+            //{
+                TcpListener listener = new TcpListener(ipAddress, port);
+                // bind
+                EndPoint localEP = new IPEndPoint(ipAddress, port);
+                listener.Server.Bind(localEP);
+                // listen
+                listener.Server.Listen(numListeners);
+                // start accepting the socket
+                listener.BeginAcceptSocket(new AsyncCallback(AcceptSocketCallback), listener);
+                listenerQueue.Enqueue(listener);
+            //}
         }
+
+        public static void AcceptSocketCallback(IAsyncResult ar)
+        {
+            // Retrieve the listener
+            TcpListener listener = (TcpListener)ar.AsyncState;
+
+            Debug.Log("Listener socket accept started");
+
+            // Accept the socket
+            Socket clientSocket = listener.EndAcceptSocket(ar);
+
+            Debug.Log("Socket found");
+
+            // Needs to tell the client socket what the server's ip is
+            string configString = IPManager.CompileNetworkConfigString(Config.Ports.ClientServerConnection);
+            byte[] serverIPData = System.Text.Encoding.ASCII.GetBytes(IPManager.ExtractIPAddress(configString));
+            clientSocket.Send(serverIPData);
+
+            Debug.Log("Sending server ip data to client socket; IP = " + IPManager.ExtractIPAddress(configString) + "; port = " + IPManager.ExtractPort(configString));
+            
+            // Save the socket to the map after determining the port
+            int clientPort = ((IPEndPoint)clientSocket.RemoteEndPoint).Port;
+            //if (!socketMap.ContainsKey(clientPort))
+            //{
+            //    socketMap.Add(clientPort, new Queue<Socket>());
+            //    Debug.Log("socket queue generated");
+            //}
+            //socketMap[clientPort].Enqueue(clientSocket);
+
+            //if(socketMap[clientPort].Count > 0)
+            //    Debug.Log("socket added to queue");
+
+            // Raise the appropriate event saying that a client of the appropriate port type has been found
+            // ERROR TESTING - NOT YET IMPLEMENTED
+
+            Debug.Log("Resetting socket");
+
+            // Reset the listener and enqueue it again
+            listener.BeginAcceptSocket(new AsyncCallback(AcceptSocketCallback), listener);
+            listenerQueue.Enqueue(listener);
+
+            Debug.Log("Socket reset for additional clients");
+        }
+
+        public static void CloseSocket(Socket socket)
+        {
+            socket.Shutdown(SocketShutdown.Both);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public static TcpListener GetListener(int port)
         {
@@ -112,7 +193,13 @@ namespace UWBNetworkingPackage
             return SendData(portListener, data);
         }
 
-        public static bool SendDataFromFile(TcpListener listener, string filepath)
+        public static bool SendDataFromFile(int port, string filepath)
+        {
+            TcpListener portListener = GetListener(port);
+            return SendDataFromFile(portListener, filepath);
+        }
+
+        private static bool SendDataFromFile(TcpListener listener, string filepath)
         {
             if (listener != null)
             {
@@ -151,8 +238,7 @@ namespace UWBNetworkingPackage
         public static bool SendDataFromFile(Config.Ports.Types portType, string filepath)
         {
             int port = Config.Ports.GetPort(portType);
-            TcpListener portListener = GetListener(port);
-            return SendDataFromFile(portListener, filepath);
+            return SendDataFromFile(port, filepath);
         }
 
         public static byte[] ReceiveData(string networkConfig)
@@ -249,39 +335,39 @@ namespace UWBNetworkingPackage
             return true;
         }
 
-        public static TCPHeader ConstructTCPHeader(string filepath)
-        {
-            FileInfo info = new FileInfo(filepath);
-            long filesize = info.Length;
-            byte[] filepathBytes = System.Text.Encoding.UTF8.GetBytes(filepath);
+        //public static TCPHeader ConstructTCPHeader(string filepath)
+        //{
+        //    FileInfo info = new FileInfo(filepath);
+        //    long filesize = info.Length;
+        //    byte[] filepathBytes = System.Text.Encoding.UTF8.GetBytes(filepath);
 
-            TCPHeader header = new TCPHeader()
-            {
-                MessageSize = filesize,
-                FilepathLength = (short)filepathBytes.Length,
-                Filepath = filepath
-            };
+        //    TCPHeader header = new TCPHeader()
+        //    {
+        //        MessageSize = filesize,
+        //        FilepathLength = (short)filepathBytes.Length,
+        //        Filepath = filepath
+        //    };
 
-            return header;
-        }
+        //    return header;
+        //}
 
-        public static void ConstructTCPHeaderBytes(string filepath)
-        {
+        //public static void ConstructTCPHeaderBytes(string filepath)
+        //{
 
-        }
+        //}
 
         public static void SendDataFromFile(string targetNetworkConfig, string filepath)
         {
-            byte[] data = File.ReadAllBytes(filepath);
-            StreamSocket socket = new StreamSocket();
+            //byte[] data = File.ReadAllBytes(filepath);
+            //StreamSocket socket = new StreamSocket();
 
-            using (DataWriter writer = new DataWriter(socket.OutputStream))
-            {
-                string port = IPManager.ExtractPort(targetNetworkConfig).ToString();
-                string ip = IPManager.ExtractIPAddress(targetNetworkConfig);
+            //using (DataWriter writer = new DataWriter(socket.OutputStream))
+            //{
+            //    string port = IPManager.ExtractPort(targetNetworkConfig).ToString();
+            //    string ip = IPManager.ExtractIPAddress(targetNetworkConfig);
 
-                HostName localHostName = new HostName(ip);
-            }
+            //    HostName localHostName = new HostName(ip);
+            //}
         }
 
         //public static void ReceiveAssetBundle(string networkConfig, out string bundlePath)

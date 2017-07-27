@@ -32,6 +32,7 @@ namespace UWBNetworkingPackage
         {
             // ERROR TESTING - REMOVE THIS METHOD - NOTHING SPECIAL HAPPENS IN IT UNIQUE TO THE MASTER CLIENT ANYMORE
             base.Start();
+            UWB_Texturing.BundleMenu.InstantiateRoom();
         }
 
         /// <summary>

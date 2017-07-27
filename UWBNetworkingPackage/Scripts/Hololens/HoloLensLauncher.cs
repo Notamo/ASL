@@ -19,15 +19,38 @@ namespace UWBNetworkingPackage
     public class HoloLensLauncher : Launcher
     {
 
+#if !UNITY_EDITOR && UNITY_WSA_10_0
+        #region Fields
+        public static SpatialMappingManager SpatialMappingManager; // Needed for room scanning / Room Mesh
+        private StreamSocket holoClient; // Async network client (async I/O needed for Hololens
+        private IAsyncAction connection; // Used for creating an asynchronous connection to the MasterClient
+#endregion
+
+        public override void Awake()
+        {
+            base.Awake();
+
+            SpatialMappingManager = gameObject.AddComponent<SpatialMappingManager>();
+        }
+
+#endif
+
+
+
+
+
+
+
+
 //        // Only included if HoloLens
-//#if !UNITY_EDITOR && UNITY_WSA_10_0
-        
+//        //#if !UNITY_EDITOR && UNITY_WSA_10_0
+
 //        public static SpatialMappingManager SpatialMappingManager;  // Needed for Room Scanning / Room Mesh
 //        private StreamSocket holoClient;    // Async network client (asynchronous I/O needed for HoloLens)
 //        private IAsyncAction connection;    // Used for creating an asynchronous connection to the Master Client
 //#endif
 
-//#if !UNITY_EDITOR && UNITY_WSA_10_0
+////#if !UNITY_EDITOR && UNITY_WSA_10_0
         
 //        /// <summary>
 //        /// Sets Photon Network settings and retrieves reference to the Spatial Mapping Manager on awake
@@ -189,7 +212,7 @@ namespace UWBNetworkingPackage
 //        #region Private Method
 
 //        // Only included if HoloLens
-//#if !UNITY_EDITOR && UNITY_WSA_10_0
+////#if !UNITY_EDITOR && UNITY_WSA_10_0
 
 //        /// <summary>
 //        /// Called when the async action is completed (establishing a connection within SendMesh(string networkConfig))

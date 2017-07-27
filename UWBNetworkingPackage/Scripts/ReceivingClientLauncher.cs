@@ -94,29 +94,31 @@ namespace UWBNetworkingPackage
         /// </summary>
         public override void OnJoinedRoom()
         {
-            Debug.Log("Client joined room.");
-            //photonView.RPC("SendMesh", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
-            //photonView.RPC("SendRoomPrefabBundle", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
-            photonView.RPC("SendAssetBundles", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
-            //#if UNITY_ANDROID
-            //            photonView.RPC("SendAndroidBundles", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
-            //#elif !UNITY_EDITOR && UNITY_WSA_10_0
-            //            photonView.RPC("SendHololensBundles", PhotonTargets.MasterClient. PhotonNetwork.player.ID);
-            //#else
-            //            photonView.RPC("SendPCBundles", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
-            //#endif
-            ////photonView.RPC("SendRoomModel", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
+            //Debug.Log("Client joined room.");
+            ////photonView.RPC("SendMesh", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
+            ////photonView.RPC("SendRoomPrefabBundle", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
+            //photonView.RPC("SendAssetBundles", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
+            ////#if UNITY_ANDROID
+            ////            photonView.RPC("SendAndroidBundles", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
+            ////#elif !UNITY_EDITOR && UNITY_WSA_10_0
+            ////            photonView.RPC("SendHololensBundles", PhotonTargets.MasterClient. PhotonNetwork.player.ID);
+            ////#else
+            ////            photonView.RPC("SendPCBundles", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
+            ////#endif
+            //////photonView.RPC("SendRoomModel", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
 
 
-            string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
-            //string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
-            //RoomTextureManager.UpdateRoomBundle();
-            int roomModelPort = Config.Ports.GetPort(Config.Ports.Types.RoomBundle);
-            //SendAssetBundle(id, bundlePath, Config.Ports.RoomBundle);
-            //SendAssetBundle(ASLBundlePath, roomModelPort);
-            //photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(roomModelPort), bundleName);
-            photonView.RPC("SendRoomModel", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
-            ReceiveRoomModel(IPManager.CompileNetworkConfigString(Config.Ports.RoomBundle), bundleName);
+            //string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
+            ////string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
+            ////RoomTextureManager.UpdateRoomBundle();
+            //int roomModelPort = Config.Ports.GetPort(Config.Ports.Types.RoomBundle);
+            ////SendAssetBundle(id, bundlePath, Config.Ports.RoomBundle);
+            ////SendAssetBundle(ASLBundlePath, roomModelPort);
+            ////photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(roomModelPort), bundleName);
+            //photonView.RPC("SendRoomModel", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
+            //ReceiveRoomModel(IPManager.CompileNetworkConfigString(Config.Ports.RoomBundle), bundleName);
+
+            SocketClient.ConnectTest(Config.Ports.Base);
         }
 
         /// <summary>

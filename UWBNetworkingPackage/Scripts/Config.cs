@@ -232,7 +232,8 @@ namespace UWBNetworkingPackage
                 Bundle,
                 RoomResourceBundle,
                 RoomBundle,
-                NetworkConfig
+                NetworkConfig,
+                ClientServerConnection
             }
 
             public static int GetPort(Types portType)
@@ -247,6 +248,8 @@ namespace UWBNetworkingPackage
                         return RoomBundle;
                     case Types.NetworkConfig:
                         return NetworkConfig;
+                    case Types.ClientServerConnection:
+                        return ClientServerConnection;
                 }
 
                 return Base;
@@ -272,6 +275,13 @@ namespace UWBNetworkingPackage
                 }
             }
 
+            public static int ClientServerConnection
+            {
+                get
+                {
+                    return Base + 1;
+                }
+            }
             public static int Bundle
             {
                 get
