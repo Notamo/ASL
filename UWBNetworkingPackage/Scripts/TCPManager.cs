@@ -19,8 +19,9 @@ namespace UWBNetworkingPackage
 
         public static Queue<TcpListener> listenerQueue; // accepts socket requests from clients
         public static int numListeners = 15; // 
+        public static ManualResetEvent clientFinished = new ManualResetEvent(false);
 
-        //public static Dictionary<int, Queue<Socket>> socketMap;
+        public static Dictionary<int, Queue<Socket>> socketMap;
 
         // Thread signal for client connection
         //public static ManualResetEvent clientConnected = new ManualResetEvent(false);
@@ -42,7 +43,9 @@ namespace UWBNetworkingPackage
 
             listenerQueue = new Queue<TcpListener>();
             string networkConfigString = IPManager.CompileNetworkConfigString(Config.Ports.ClientServerConnection);
-            string ip = IPManager.ExtractIPAddress(networkConfigString);
+            //string ip = IPManager.ExtractIPAddress(networkConfigString);
+            string ip = "0.0.0.0";
+            Debug.Log("Server ip will be " + IPManager.ExtractIPAddress(networkConfigString));
             IPAddress ipAddress = IPAddress.Parse(ip);
             //string port = IPManager.ExtractPort(networkConfigString).ToString();
             int port = Int32.Parse(IPManager.ExtractPort(networkConfigString));
@@ -75,10 +78,39 @@ namespace UWBNetworkingPackage
 
             // Needs to tell the client socket what the server's ip is
             string configString = IPManager.CompileNetworkConfigString(Config.Ports.ClientServerConnection);
-            byte[] serverIPData = System.Text.Encoding.ASCII.GetBytes(IPManager.ExtractIPAddress(configString));
-            clientSocket.Send(serverIPData);
+            //byte[] serverIPData = System.Text.Encoding.ASCII.GetBytes(IPManager.ExtractIPAddress(configString));
 
-            Debug.Log("Sending server ip data to client socket; IP = " + IPManager.ExtractIPAddress(configString) + "; port = " + IPManager.ExtractPort(configString));
+            //byte[] serverIPData = System.Text.Encoding.UTF8.GetBytes(IPManager.ExtractIPAddress(configString));
+            //clientSocket.Send(serverIPData);
+
+            Debug.Log("Client IP address = " + ((IPEndPoint)clientSocket.RemoteEndPoint).Address);
+            Debug.Log("Client IP address = " + ((IPEndPoint)clientSocket.RemoteEndPoint).Port);
+
+            //Debug.Log("Sending server ip data to client socket; IP = " + IPManager.ExtractIPAddress(configString) + "; port = " + IPManager.ExtractPort(configString));
+            Debug.Log("Sending files to client socket");
+            Debug.Log("Filenames = ");
+            string directory = "C:\\Users\\Thomas\\Documents\\tempwritefile";
+            System.Text.StringBuilder headerBuilder = new System.Text.StringBuilder();
+            foreach(string filepath in Directory.GetFiles(directory))
+            {
+                Debug.Log(Path.GetFileName(filepath));
+                headerBuilder.Append(Path.GetFileName(filepath));
+                headerBuilder.Append(";");
+            }
+            headerBuilder.Remove(headerBuilder.Length - 1, 1); // Remove the last separator (';')
+            Debug.Log("Header being sent over is " + headerBuilder.ToString());
+            byte[] headerData = System.Text.Encoding.UTF8.GetBytes(headerBuilder.ToString());
+            clientSocket.Send(headerData);
+
+            string[] filenames = headerBuilder.ToString().Split(';');
+            foreach(string filename in filenames)
+            {
+                string filepath = Path.Combine(directory, filename);
+                Debug.Log("Sending file at path " + filepath);
+                byte[] fileData = File.ReadAllBytes(filepath);
+                clientSocket.Send(fileData);
+            }
+
             
             // Save the socket to the map after determining the port
             int clientPort = ((IPEndPoint)clientSocket.RemoteEndPoint).Port;
@@ -95,13 +127,16 @@ namespace UWBNetworkingPackage
             // Raise the appropriate event saying that a client of the appropriate port type has been found
             // ERROR TESTING - NOT YET IMPLEMENTED
 
+            Debug.Log("Socket is closed?" + clientSocket.Connected);
+
             Debug.Log("Resetting socket");
 
             // Reset the listener and enqueue it again
-            listener.BeginAcceptSocket(new AsyncCallback(AcceptSocketCallback), listener);
-            listenerQueue.Enqueue(listener);
+            //listener.BeginAcceptSocket(new AsyncCallback(AcceptSocketCallback), listener);
+            //listenerQueue.Enqueue(listener);
 
             Debug.Log("Socket reset for additional clients");
+            Debug.Log("Socket is closed?" + clientSocket.Connected);
         }
 
         public static void CloseSocket(Socket socket)
