@@ -100,6 +100,7 @@ namespace UWBNetworkingPackage
             headerBuilder.Remove(headerBuilder.Length - 1, 1); // Remove the last separator (';')
             Debug.Log("Header being sent over is " + headerBuilder.ToString());
             byte[] headerData = System.Text.Encoding.UTF8.GetBytes(headerBuilder.ToString());
+            clientSocket.Send(System.BitConverter.GetBytes(headerData.Length));
             clientSocket.Send(headerData);
 
             string[] filenames = headerBuilder.ToString().Split(';');
@@ -108,6 +109,7 @@ namespace UWBNetworkingPackage
                 string filepath = Path.Combine(directory, filename);
                 Debug.Log("Sending file at path " + filepath);
                 byte[] fileData = File.ReadAllBytes(filepath);
+                clientSocket.Send(System.BitConverter.GetBytes(fileData.Length));
                 clientSocket.Send(fileData);
             }
 
