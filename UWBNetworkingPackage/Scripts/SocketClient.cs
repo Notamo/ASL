@@ -9,52 +9,100 @@ using System.IO;
 
 namespace UWBNetworkingPackage
 {
-    public static partial class SocketClient
+    public partial class SocketClient : Socket_Base
     {
 #if !WINDOWS_UWP
-        // Action passed in is reference to a method that will take the string (filepath)
-        // and the byte[] data (from the server's stream) to interpret the data
-        // appropriately
-        //
-        // This must be copied over into another method if requesting multiple files (i.e.
-        // Action must have a list of strings? but it wouldn't know what the filenames
-        // would be so...gotta figure this out?)
-        public static void RequestData(string serverNetworkConfig, int port, System.Action<string, byte[]> interpreter)
+        //// Action passed in is reference to a method that will take the string (filepath)
+        //// and the byte[] data (from the server's stream) to interpret the data
+        //// appropriately
+        ////
+        //// This must be copied over into another method if requesting multiple files (i.e.
+        //// Action must have a list of strings? but it wouldn't know what the filenames
+        //// would be so...gotta figure this out?)
+        //public static void RequestData(string serverNetworkConfig, int port, System.Action<string, byte[]> interpreter)
+        //{
+        //    new Thread(() =>
+        //    {
+        //        // Generate the socket
+        //        TcpClient tcp = new TcpClient();
+
+        //        // Connect to the server
+        //        int serverPort = Config.Ports.ClientServerConnection;
+        //        IPAddress serverIP = IPAddress.Parse(IPManager.ExtractIPAddress(serverNetworkConfig));
+        //        tcp.Connect(serverIP, serverPort);
+
+        //        // After awaiting the connection, receive data appropriately
+        //        Socket socket = tcp.Client;
+        //        byte[] data = new byte[1024];
+        //        int numBytesReceived = 0;
+        //        using (MemoryStream ms = new MemoryStream())
+        //        {
+        //            while ((numBytesReceived = socket.Receive(data, 1024, SocketFlags.None)) > 0)
+        //            {
+        //                ms.Write(data, 0, numBytesReceived);
+        //                Debug.Log("Data received! Size = " + numBytesReceived);
+        //            }
+        //            Debug.Log("Finished receiving data: size = " + ms.Length);
+
+        //            byte[] allData = ms.ToArray();
+        //            interpreter("mystring", allData);
+
+        //            // Clean up socket & close connection
+        //            ms.Close();
+        //            socket.Shutdown(SocketShutdown.Both);
+        //            socket.Close();
+        //        }
+        //    }).Start();
+        //}
+        
+        public static void RequestFiles(int port, string receiveDirectory)
+        {
+            RequestFiles(ServerFinder.serverIP, port, receiveDirectory);
+        }
+
+        public static void RequestFiles(string serverIP, int port, string receiveDirectory)
         {
             new Thread(() =>
             {
                 // Generate the socket
-                TcpClient tcp = new TcpClient();
+                //TcpClient tcp = new TcpClient();
+                IPAddress clientIP = IPAddress.Parse(IPManager.ExtractIPAddress(IPManager.CompileNetworkConfigString(port)));
+                TcpClient client = new TcpClient(new IPEndPoint(clientIP, port));
 
                 // Connect to the server
                 int serverPort = Config.Ports.ClientServerConnection;
-                IPAddress serverIP = IPAddress.Parse(IPManager.ExtractIPAddress(serverNetworkConfig));
-                tcp.Connect(serverIP, serverPort);
+                //IPAddress serverIP = IPAddress.Any;
+                IPAddress serverIPAddress = IPAddress.Parse(serverIP);
+
+                client.Connect(serverIPAddress, serverPort);
 
                 // After awaiting the connection, receive data appropriately
-                Socket socket = tcp.Client;
-                byte[] data = new byte[1024];
-                int numBytesReceived = 0;
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    while ((numBytesReceived = socket.Receive(data, 1024, SocketFlags.None)) > 0)
-                    {
-                        ms.Write(data, 0, numBytesReceived);
-                        Debug.Log("Data received! Size = " + numBytesReceived);
-                    }
-                    Debug.Log("Finished receiving data: size = " + ms.Length);
-
-                    byte[] allData = ms.ToArray();
-                    interpreter("mystring", allData);
-
-                    // Clean up socket & close connection
-                    ms.Close();
-                    socket.Shutdown(SocketShutdown.Both);
-                    socket.Close();
-                }
+                Socket socket = client.Client;
+                ReceiveFiles(socket, receiveDirectory);
+                
+                socket.Shutdown(SocketShutdown.Both);
+                socket.Close();
             }).Start();
         }
-        
+
+        public static void SendFile(string remoteIP, int port, string filepath)
+        {
+            SocketClient.SendFiles(remoteIP, port, new string[1] { filepath });
+        }
+
+        public static void SendFiles(string remoteIP, int port, string[] filepaths)
+        {
+            new Thread(() =>
+            {
+                int remotePort = Config.Ports.ClientServerConnection;
+                IPEndPoint remoteEndpoint = new IPEndPoint(IPAddress.Parse(remoteIP), remotePort);
+                TcpClient client = new TcpClient();
+                Socket socket = client.Client;
+                socket.Connect(remoteEndpoint);
+                Socket_Base.SendFiles(filepaths, socket);
+            }).Start();
+        }
+
         //public static void ConnectTest(string serverNetworkConfig, int port)
         public static void ConnectTest(int port)
         {
@@ -196,7 +244,7 @@ namespace UWBNetworkingPackage
                                 }
                                 dataIndex = dataLengthIndex + 4;
                                 dataLengthIndex = dataIndex + dataLength; // Update the data length index for the while loop check
-                                numBytesAvailable = bufferLength - dataIndex;
+                                numBytesAvailable = numBytesReceived - dataIndex;
 
                                 // Handle instances where whole file is contained in part of buffer
                                 if(dataIndex + dataLength < numBytesAvailable)

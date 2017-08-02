@@ -78,6 +78,12 @@ namespace UWBNetworkingPackage
         //    }
         //}
 
+        public override void Start()
+        {
+            base.Start();
+            ServerFinder.FindServer();
+        }
+
         /// <summary>
         /// After connect to master server, join the room that's specify by Laucher.RoomName
         /// </summary>
@@ -118,7 +124,16 @@ namespace UWBNetworkingPackage
             //photonView.RPC("SendRoomModel", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
             //ReceiveRoomModel(IPManager.CompileNetworkConfigString(Config.Ports.RoomBundle), bundleName);
 
-            SocketClient.ConnectTest(Config.Ports.Base);
+            ///////////SocketClient.ConnectTest(Config.Ports.Base);
+
+
+            string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+            SocketClient.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomBundle, roomBundleDirectory);
+            string rawRoomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+            SocketClient.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomResourceBundle, rawRoomBundleDirectory);
+            string assetBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+            SocketClient.RequestFiles(ServerFinder.serverIP, Config.Ports.Bundle, assetBundleDirectory);
+
         }
 
         /// <summary>
@@ -165,15 +180,24 @@ namespace UWBNetworkingPackage
         /// </summary>
         public void UpdateRoomInfoImmediately()
         {
-            if (File.Exists(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename())))
+            //if (File.Exists(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename())))
+            //{
+            //    photonView.RPC("DeleteLocalRoomModelInfo", PhotonTargets.MasterClient);
+            //    SendRoomModel(PhotonNetwork.player.ID);
+            //}
+            ////if (Database.GetMeshAsBytes() != null)
+            ////{
+            ////    photonView.RPC("DeleteMesh", PhotonTargets.MasterClient);
+            ////}
+
+            string filepath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+            if (!PhotonNetwork.isMasterClient
+                && File.Exists(filepath))
             {
                 photonView.RPC("DeleteLocalRoomModelInfo", PhotonTargets.MasterClient);
-                SendRoomModel(PhotonNetwork.player.ID);
+                int roomBundlePort = Config.Ports.RoomBundle_ClientToServer;
+                SocketClient.SendFile(ServerFinder.serverIP, roomBundlePort, filepath);
             }
-            //if (Database.GetMeshAsBytes() != null)
-            //{
-            //    photonView.RPC("DeleteMesh", PhotonTargets.MasterClient);
-            //}
         }
 
 

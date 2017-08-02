@@ -230,10 +230,13 @@ namespace UWBNetworkingPackage
             public enum Types
             {
                 Bundle,
+                Bundle_ClientToServer,
                 RoomResourceBundle,
+                RoomResourceBundle_ClientToServer,
                 RoomBundle,
-                NetworkConfig,
-                ClientServerConnection
+                RoomBundle_ClientToServer,
+                ClientServerConnection,
+                FindServer
             }
 
             public static int GetPort(Types portType)
@@ -241,15 +244,21 @@ namespace UWBNetworkingPackage
                 switch (portType)
                 {
                     case Types.Bundle:
-                        return Base;
+                        return Bundle;
+                    case Types.Bundle_ClientToServer:
+                        return Bundle_ClientToServer;
                     case Types.RoomResourceBundle:
-                        return RawRoomBundle;
+                        return RoomResourceBundle;
+                    case Types.RoomResourceBundle_ClientToServer:
+                        return RoomResourceBundle_ClientToServer;
                     case Types.RoomBundle:
                         return RoomBundle;
-                    case Types.NetworkConfig:
-                        return NetworkConfig;
+                    case Types.RoomBundle_ClientToServer:
+                        return RoomBundle_ClientToServer;
                     case Types.ClientServerConnection:
                         return ClientServerConnection;
+                    case Types.FindServer:
+                        return FindServer;
                 }
 
                 return Base;
@@ -274,40 +283,60 @@ namespace UWBNetworkingPackage
                     }
                 }
             }
-
-            public static int ClientServerConnection
+            public static int FindServer
             {
                 get
                 {
                     return Base + 1;
                 }
             }
-            public static int Bundle
+            public static int ClientServerConnection
             {
                 get
                 {
                     return Base + 2;
                 }
             }
-            public static int RawRoomBundle
+            public static int Bundle
             {
                 get
                 {
                     return Base + 3;
                 }
             }
-            public static int RoomBundle
+            public static int Bundle_ClientToServer
             {
                 get
                 {
                     return Base + 4;
                 }
             }
-            public static int NetworkConfig
+            public static int RoomResourceBundle
             {
                 get
                 {
                     return Base + 5;
+                }
+            }
+            public static int RoomResourceBundle_ClientToServer
+            {
+                get
+                {
+                    return Base + 6;
+                }
+            }
+            public static int RoomBundle
+            {
+                get
+                {
+                    return Base + 7;
+                }
+            }
+            public static int RoomBundle_ClientToServer
+            {
+                get
+                {
+                    return Base + 8;
                 }
             }
         }

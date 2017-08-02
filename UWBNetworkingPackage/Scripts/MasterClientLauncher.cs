@@ -33,6 +33,7 @@ namespace UWBNetworkingPackage
             // ERROR TESTING - REMOVE THIS METHOD - NOTHING SPECIAL HAPPENS IN IT UNIQUE TO THE MASTER CLIENT ANYMORE
             base.Start();
             UWB_Texturing.BundleMenu.InstantiateRoom();
+            ServerFinder.ServerStart();
         }
 
         /// <summary>
@@ -74,7 +75,8 @@ namespace UWBNetworkingPackage
                     lastRoomUpdate = f.LastWriteTime;
                     for (int i = 0; i < PhotonNetwork.otherPlayers.Length; i++)
                     {
-                        SendRoomModel(PhotonNetwork.otherPlayers[i].ID);
+                        //SendRoomModel(PhotonNetwork.otherPlayers[i].ID);
+                        PhotonNetwork.RPC(photonView, "RequestRoomModel", PhotonTargets.Others, false);
                     }
                 }
             }
@@ -86,13 +88,13 @@ namespace UWBNetworkingPackage
         public override void OnConnectedToMaster()
         {
             PhotonNetwork.CreateRoom(RoomName);
-            foreach (PhotonPlayer player in PhotonNetwork.otherPlayers)
-            {
-                // ERROR TESTING - MUST APPROPRIATELY GET THE NODE TYPE OF THE OTHER PLAYER (HAS TO BE SET IN CUSTOM PROPERTIES)
-                // LOOK AT UPDATE() IN LAUNCHER, AND SET APPROPRIATELY
-                // NODETYPE.PC USED AS STOPGAP
-                SendAssetBundles(player.ID);
-            }
+            //foreach (PhotonPlayer player in PhotonNetwork.otherPlayers)
+            //{
+            //    // ERROR TESTING - MUST APPROPRIATELY GET THE NODE TYPE OF THE OTHER PLAYER (HAS TO BE SET IN CUSTOM PROPERTIES)
+            //    // LOOK AT UPDATE() IN LAUNCHER, AND SET APPROPRIATELY
+            //    // NODETYPE.PC USED AS STOPGAP
+            //    SendAssetBundles(player.ID);
+            //}
             BeginRoomRefreshCycle();
         }
 

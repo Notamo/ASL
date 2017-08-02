@@ -7,7 +7,7 @@ using Windows.Networking.Sockets;
 #endif
 
 namespace UWBNetworkingPackage {
-    public static partial class TCPManager
+    public partial class TCPManager
     {
 #if !UNITY_EDITOR && UNITY_WSA_10_0
 

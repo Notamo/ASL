@@ -38,62 +38,73 @@ namespace UWBNetworkingPackage
 
         public static void ExportRawResources(int targetID)
         {
-            //string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
+            ////string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
 
-            //BuildTarget[] targetPlatforms = new BuildTarget[4];
-            //targetPlatforms[0] = BuildTarget.StandaloneWindows;
-            //targetPlatforms[1] = BuildTarget.Android;
+            ////BuildTarget[] targetPlatforms = new BuildTarget[4];
+            ////targetPlatforms[0] = BuildTarget.StandaloneWindows;
+            ////targetPlatforms[1] = BuildTarget.Android;
 
-            //foreach (BuildTarget target in targetPlatforms)
-            //{
-            //    // Set destination directory
-            //    switch (target)
-            //    {
-            //        case BuildTarget.StandaloneWindows:
-            //            destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
-            //            break;
-            //        case BuildTarget.Android:
-            //            destinationDirectory = Config.AssetBundle.Android.CompileAbsoluteBundleDirectory();
-            //            break;
-            //    }
+            ////foreach (BuildTarget target in targetPlatforms)
+            ////{
+            ////    // Set destination directory
+            ////    switch (target)
+            ////    {
+            ////        case BuildTarget.StandaloneWindows:
+            ////            destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
+            ////            break;
+            ////        case BuildTarget.Android:
+            ////            destinationDirectory = Config.AssetBundle.Android.CompileAbsoluteBundleDirectory();
+            ////            break;
+            ////    }
 
-            //    UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(destinationDirectory, target);
-            //}
+            ////    UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(destinationDirectory, target);
+            ////}
 
-            // UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
-            string bundleName = UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename();
-            string bundlePath = Config.AssetBundle.PC.CompileAbsoluteBundlePath(Config.AssetBundle.PC.CompileFilename(bundleName)); // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
-            int rawRoomBundlePort = Config.Ports.RawRoomBundle;
-            //Launcher.SendAssetBundle(targetID, bundlePath, rawRoomBundlePort);
-            Launcher launcher = Launcher.GetLauncherInstance();
-            launcher.SendRawRoomModelInfo(targetID);
-            //photonView.RPC("ReceiveRawRoomModelInfo", PhotonPlayer.Find(targetID), IPManager.CompileNetworkConfigString(rawRoomBundlePort));
+            //// UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
+            //string bundleName = UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename();
+            //string bundlePath = Config.AssetBundle.PC.CompileAbsoluteBundlePath(Config.AssetBundle.PC.CompileFilename(bundleName)); // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
+            //int rawRoomBundlePort = Config.Ports.RawRoomBundle;
+            ////Launcher.SendAssetBundle(targetID, bundlePath, rawRoomBundlePort);
+            //Launcher launcher = Launcher.GetLauncherInstance();
+            //launcher.SendRawRoomModelInfo(targetID);
+            ////photonView.RPC("ReceiveRawRoomModelInfo", PhotonPlayer.Find(targetID), IPManager.CompileNetworkConfigString(rawRoomBundlePort));
+
+            string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
+            int rawRoomPort = Config.Ports.RoomResourceBundle_ClientToServer;
+            SocketClient.SendFile(ServerFinder.serverIP, rawRoomPort, filepath);
+            Debug.Log("Exporting raw room resources not currently implemented correctly! Doesn't consider target ID and just sends to master");
         }
 
         public static void ExportRoom(int targetID)
         {
-            Debug.Log("Export Room entered");
-            //string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
+            //Debug.Log("Export Room entered");
+            ////string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
 
-            //UWB_Texturing.BundleHandler.PackFinalRoomBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
-            string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
-            string bundlePath = Config.AssetBundle.PC.CompileAbsoluteBundlePath(Config.AssetBundle.PC.CompileFilename(bundleName)); // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
+            ////UWB_Texturing.BundleHandler.PackFinalRoomBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
+            //string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
+            //string bundlePath = Config.AssetBundle.PC.CompileAbsoluteBundlePath(Config.AssetBundle.PC.CompileFilename(bundleName)); // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
 
-            Debug.Log("bundlename = " + bundleName);
-            Debug.Log("bundle path = " + bundlePath);
+            //Debug.Log("bundlename = " + bundleName);
+            //Debug.Log("bundle path = " + bundlePath);
 
-            int finalRoomBundlePort = Config.Ports.RoomBundle;
-            //Launcher.SendAssetBundle(targetID, bundlePath, finalRoomBundlePort);
-            Launcher launcher = Launcher.GetLauncherInstance();
-            launcher.SendRoomModel(targetID);
+            //int finalRoomBundlePort = Config.Ports.RoomBundle;
+            //////Launcher.SendAssetBundle(targetID, bundlePath, finalRoomBundlePort);
+            ////Launcher launcher = Launcher.GetLauncherInstance();
+            ////launcher.SendRoomModel(targetID);
 
-            //Debug.Log("bundle sent");
+            //////Debug.Log("bundle sent");
 
-            //PhotonPlayer.Find(targetID);
+            //////PhotonPlayer.Find(targetID);
 
-            //Debug.Log("Photon Player found");
+            //////Debug.Log("Photon Player found");
 
-            //photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(targetID), IPManager.CompileNetworkConfigString(finalRoomBundlePort));
+            //////photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(targetID), IPManager.CompileNetworkConfigString(finalRoomBundlePort));
+
+
+            string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+            int roomBundlePort = Config.Ports.RoomBundle_ClientToServer;
+            SocketClient.SendFile(ServerFinder.serverIP, roomBundlePort, filepath);
+            Debug.Log("Exporting raw room resources not currently implemented correctly! Doesn't consider target ID and just sends to master");
         }
 
         public static void ProcessRoomResources()
