@@ -50,17 +50,32 @@ namespace UWBNetworkingPackage
 
         public static void AcceptSocketCallback(IAsyncResult ar)
         {
+            Debug.Log("Socket accepted! Attempting to process...");
+
             // Retrieve the listener
             TcpListener listener = (TcpListener)ar.AsyncState;
+            listener.BeginAcceptSocket(new AsyncCallback(AcceptSocketCallback), listener);
             
             // Accept the socket
             Socket clientSocket = listener.EndAcceptSocket(ar);
+            Debug.Log("Socket finalized and accepted!");
             int clientPort = ((IPEndPoint)clientSocket.RemoteEndPoint).Port;
+            Debug.Log("client port is " + clientPort);
 
             if(clientPort == Config.Ports.Bundle)
             {
-                string[] filepaths = Directory.GetFiles(Config.AssetBundle.Current.CompileAbsoluteAssetDirectory());
-                SendFiles(filepaths, clientSocket);
+                string[] allFilepaths = Directory.GetFiles(Config.AssetBundle.Current.CompileAbsoluteBundleDirectory());
+                List<string> fileList = new List<string>();
+                foreach(string filepath in allFilepaths)
+                {
+                    if (!filepath.Contains(".meta"))
+                    {
+                        fileList.Add(filepath);
+                    }
+                }
+
+
+                SendFiles(fileList.ToArray(), clientSocket);
             }
             else if(clientPort == Config.Ports.Bundle_ClientToServer)
             {
@@ -86,6 +101,10 @@ namespace UWBNetworkingPackage
             {
                 string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
                 ReceiveFiles(clientSocket, roomBundleDirectory);
+            }
+            else
+            {
+                Debug.Log("Port not found");
             }
         }
 

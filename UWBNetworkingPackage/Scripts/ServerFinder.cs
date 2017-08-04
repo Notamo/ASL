@@ -18,6 +18,7 @@ namespace UWBNetworkingPackage
             int listenerPort = Config.Ports.FindServer;
             listener = new UdpClient(listenerPort);
             serverIP = IPManager.GetLocalIpAddress().ToString();
+            AcceptClient();
         }
 
         public static void AcceptClient()
