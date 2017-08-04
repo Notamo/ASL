@@ -9,7 +9,7 @@ using System.IO;
 
 namespace UWBNetworkingPackage
 {
-    public partial class SocketClient : Socket_Base
+    public class SocketClient : Socket_Base
     {
 #if !WINDOWS_UWP
         //// Action passed in is reference to a method that will take the string (filepath)

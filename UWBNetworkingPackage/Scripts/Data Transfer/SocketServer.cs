@@ -12,14 +12,10 @@ using System.Threading;
 
 namespace UWBNetworkingPackage
 {
-    public partial class TCPManager : Socket_Base
+    public class SocketServer : Socket_Base
     {
 #if !WINDOWS_UWP
-        public static Queue<TcpListener> listenerQueue; // accepts socket requests from clients
-        public static int numListeners = 15; // 
-        public static ManualResetEvent clientFinished = new ManualResetEvent(false);
-
-        public static Dictionary<int, Queue<Socket>> socketMap;
+        public static int numListeners = 15;
 
         // Thread signal for client connection
         //public static ManualResetEvent clientConnected = new ManualResetEvent(false);

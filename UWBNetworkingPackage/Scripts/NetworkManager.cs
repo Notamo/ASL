@@ -54,15 +54,26 @@ namespace UWBNetworkingPackage
 #endif
 
 #if UNITY_WSA_10_0
-            gameObject.AddComponent<HoloLensLauncher>();
+            //gameObject.AddComponent<HoloLensLauncher>();
+            gameObject.AddComponent<ReceivingClientLauncher>();
             Config_Base.NodeType = NodeType.Hololens;
+
+            // ERROR TESTING REMOVE
+            string[] filelines = new string[4];
+            filelines[0] = "Absolute asset root folder = " + Config_Base.AbsoluteAssetRootFolder;
+            filelines[1] = "Private absolute asset root folder = " + Config_Base.absoluteAssetRootFolder;
+            filelines[2] = "Absolute asset directory = " + Config.AssetBundle.Current.CompileAbsoluteAssetDirectory();
+            filelines[3] = "Absolute bundle directory = " + Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+
+            string filepath = System.IO.Path.Combine(Application.persistentDataPath, "debugfile.txt");
+            System.IO.File.WriteAllLines(filepath, filelines);
 #endif
 #if UNITY_ANDROID
             gameObject.AddComponent<AndroidLauncher>();
             Config_Base.NodeType = NodeType.Android;
 #endif
 
-            TCPManager.Start();
+            SocketServer.Start();
         }
 
         /// <summary>

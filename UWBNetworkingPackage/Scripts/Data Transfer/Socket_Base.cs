@@ -71,18 +71,13 @@ namespace UWBNetworkingPackage
             int bufferLength = 1024;
             byte[] data = new byte[bufferLength];
             int numBytesReceived = 0;
-
-            //using (MemoryStream fileStream = new MemoryStream())
-            //{
+            
             MemoryStream fileStream = new MemoryStream();
 
             int headerIndex = 0;
             int dataLengthIndex = 0;
             string dataHeader = string.Empty;
-
-            // Get directory to save it to
-            //string receiveDirectory = "C:\\Users\\Thomas\\Documents\\tempwritefile";
-
+            
             do
             {
                 // Get the first receive from the socket
@@ -114,8 +109,6 @@ namespace UWBNetworkingPackage
                 // While there are file pieces we can get from the gathered data,
                 // determine where the bytes designating the lengths of files about to be
                 // transferred over are and then grab the file lengths and file bytes
-                    
-                //while (dataLengthIndex < bufferLength)
                 while(dataLengthIndex >= 0 && dataLengthIndex < numBytesReceived)
                 {
                     // Get the 4 bytes indicating the length
@@ -142,12 +135,6 @@ namespace UWBNetworkingPackage
 
                         dataLength = System.BitConverter.ToInt32(dataLengthBuffer, 0);
                         dataLengthIndex -= numBytesReceived;
-
-                        //numBytesReceived = socket.Receive(data, bufferLength, SocketFlags.None);
-                        //System.Buffer.BlockCopy(data, 0, dataLengthBuffer, numDataLengthBytesCopied, 4 - numDataLengthBytesCopied);
-
-                        //dataLength = System.BitConverter.ToInt32(dataLengthBuffer, 0);
-                        //dataLengthIndex -= bufferLength;
                     }
                     dataIndex = dataLengthIndex + 4;
                     dataLengthIndex = dataIndex + dataLength; // Update the data length index for the while loop check
@@ -185,11 +172,9 @@ namespace UWBNetworkingPackage
                 // continue;
 
             } while (numBytesReceived > 0);
-            //} while (numBytesReceived == bufferLength);
 
             fileStream.Close();
             fileStream.Dispose();
-            //}
 #if UNITY_EDITOR
             UnityEditor.AssetDatabase.Refresh();
 #endif
