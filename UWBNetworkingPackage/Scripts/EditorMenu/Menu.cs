@@ -9,7 +9,7 @@ using System.IO;
 
 namespace UWBNetworkingPackage {
     public static class Menu {
-#if UNITY_EDITOR
+#if UNITY_EDITOR && !UNITY_WSA_10_0
         [UnityEditor.MenuItem("ASL/Room Texture/Pack Raw Resources (Offline)", false, 0)]
         public static void PackRawResourcesBundle()
         {

@@ -32,13 +32,15 @@ namespace UWBNetworkingPackage
 #if !UNITY_EDITOR && UNITY_WSA_10_0
             string ip = null;
 
+            // IPInformation is null if not HostName is not a local IPv4 or
+            // IPv6 address retrieved from GetHostNames()
             foreach (HostName localHostName in NetworkInformation.GetHostNames())
             {
                 if (localHostName.IPInformation != null)
                 {
                     if (localHostName.Type == HostNameType.Ipv4)
                     {
-                        ip = new localHostName.ToString();
+                        localHostName.ToString(); // Get the IP address from the host name
                         break;
                     }
                 }
@@ -71,6 +73,14 @@ namespace UWBNetworkingPackage
         public static string ExtractPort(string networkConfigString)
         {
             return networkConfigString.Split(':')[1];
+        }
+
+        public static string BroadcastIP
+        {
+            get
+            {
+                return "255.255.255.255";
+            }
         }
     }
 }

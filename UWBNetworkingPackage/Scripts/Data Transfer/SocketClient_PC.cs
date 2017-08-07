@@ -9,9 +9,9 @@ using System.IO;
 
 namespace UWBNetworkingPackage
 {
-    public class SocketClient : Socket_Base
+    public class SocketClient_PC : Socket_Base_PC
     {
-#if !WINDOWS_UWP
+#if !UNITY_WSA_10_0
         //// Action passed in is reference to a method that will take the string (filepath)
         //// and the byte[] data (from the server's stream) to interpret the data
         //// appropriately
@@ -54,7 +54,7 @@ namespace UWBNetworkingPackage
         //        }
         //    }).Start();
         //}
-        
+
         public static void RequestFiles(int port, string receiveDirectory)
         {
             RequestFiles(ServerFinder.serverIP, port, receiveDirectory);

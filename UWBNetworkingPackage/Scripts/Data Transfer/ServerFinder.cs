@@ -8,10 +8,11 @@ using System.Threading;
 
 namespace UWBNetworkingPackage
 {
-    public partial class ServerFinder
+    public class ServerFinder
     {
-        public static UdpClient listener;
         public static string serverIP;
+#if !UNITY_WSA_10_0
+        public static UdpClient listener;
 
         public static void ServerStart()
         {
@@ -55,5 +56,6 @@ namespace UWBNetworkingPackage
             serverIP = IPString;
             return IPString;
         }
+#endif
     }
 }

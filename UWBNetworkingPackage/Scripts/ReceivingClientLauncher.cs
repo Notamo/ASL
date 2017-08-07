@@ -13,14 +13,13 @@ namespace UWBNetworkingPackage
     /// ReceivingClientLauncher is an abstract class (extended by all "Client" devices - Vive, Oculus, Kinect) that connects 
     /// to Photon and sets up a TCP connection with the Master Client to recieve Room Meshes when they are sent
     /// </summary>
-    public class ReceivingClientLauncher : Launcher
+    public abstract class ReceivingClientLauncher : Launcher
     {
         #region Private Properties
         private DateTime lastRoomUpdate = DateTime.MinValue;
         #endregion
 
         //// Ensure not HoloLens
-#if !UNITY_WSA_10_0
 
         //public void Update()
         //{
@@ -78,12 +77,6 @@ namespace UWBNetworkingPackage
         //    }
         //}
 
-        public override void Start()
-        {
-            base.Start();
-            ServerFinder.FindServer();
-        }
-
         /// <summary>
         /// After connect to master server, join the room that's specify by Laucher.RoomName
         /// </summary>
@@ -114,25 +107,26 @@ namespace UWBNetworkingPackage
             //////photonView.RPC("SendRoomModel", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
 
 
-            //string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
-            ////string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
-            ////RoomTextureManager.UpdateRoomBundle();
-            //int roomModelPort = Config.Ports.GetPort(Config.Ports.Types.RoomBundle);
-            ////SendAssetBundle(id, bundlePath, Config.Ports.RoomBundle);
-            ////SendAssetBundle(ASLBundlePath, roomModelPort);
-            ////photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(roomModelPort), bundleName);
-            //photonView.RPC("SendRoomModel", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
-            //ReceiveRoomModel(IPManager.CompileNetworkConfigString(Config.Ports.RoomBundle), bundleName);
+//string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
+////string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
+////RoomTextureManager.UpdateRoomBundle();
+//int roomModelPort = Config.Ports.GetPort(Config.Ports.Types.RoomBundle);
+////SendAssetBundle(id, bundlePath, Config.Ports.RoomBundle);
+////SendAssetBundle(ASLBundlePath, roomModelPort);
+////photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(roomModelPort), bundleName);
+//photonView.RPC("SendRoomModel", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
+//ReceiveRoomModel(IPManager.CompileNetworkConfigString(Config.Ports.RoomBundle), bundleName);
 
-            ///////////SocketClient.ConnectTest(Config.Ports.Base);
+///////////SocketClient.ConnectTest(Config.Ports.Base);
 
-
+#if !UNITY_WSA_10_0
             string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
             SocketClient.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomBundle, roomBundleDirectory);
             string rawRoomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
             SocketClient.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomResourceBundle, rawRoomBundleDirectory);
             string assetBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
             SocketClient.RequestFiles(ServerFinder.serverIP, Config.Ports.Bundle, assetBundleDirectory);
+#endif
 
         }
 
@@ -196,7 +190,9 @@ namespace UWBNetworkingPackage
             {
                 photonView.RPC("DeleteLocalRoomModelInfo", PhotonTargets.MasterClient);
                 int roomBundlePort = Config.Ports.RoomBundle_ClientToServer;
+#if !UNITY_WSA_10_0
                 SocketClient.SendFile(ServerFinder.serverIP, roomBundlePort, filepath);
+#endif
             }
         }
 
@@ -451,6 +447,5 @@ namespace UWBNetworkingPackage
         //}
 
         //    #endregion
-        #endif
     }
 }

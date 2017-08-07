@@ -71,8 +71,12 @@ namespace UWBNetworkingPackage
 
             string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
             int rawRoomPort = Config.Ports.RoomResourceBundle_ClientToServer;
+#if !UNITY_WSA_10_0
             SocketClient.SendFile(ServerFinder.serverIP, rawRoomPort, filepath);
             Debug.Log("Exporting raw room resources not currently implemented correctly! Doesn't consider target ID and just sends to master");
+#elif !UNITY_EDITOR && UNITY_WSA_10_0
+            SocketClient_Hololens.SendFile(ServerFinder_Hololens.serverIP, rawRoomPort, filepath);
+#endif
         }
 
         public static void ExportRoom(int targetID)
@@ -103,8 +107,12 @@ namespace UWBNetworkingPackage
 
             string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
             int roomBundlePort = Config.Ports.RoomBundle_ClientToServer;
+#if !UNITY_WSA_10_0
             SocketClient.SendFile(ServerFinder.serverIP, roomBundlePort, filepath);
             Debug.Log("Exporting raw room resources not currently implemented correctly! Doesn't consider target ID and just sends to master");
+#elif !UNITY_EDITOR && UNITY_WSA_10_0
+            SocketClient_Hololens.SendFile(ServerFinder.serverIP, roomBundlePort, filepath);
+#endif
         }
 
         public static void ProcessRoomResources()

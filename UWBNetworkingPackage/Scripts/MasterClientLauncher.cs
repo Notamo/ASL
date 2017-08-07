@@ -16,26 +16,13 @@ namespace UWBNetworkingPackage
     /// <summary>
     /// MasterClientLauncher implements launcher functionality specific to the MasterClient
     /// </summary>
-    public class MasterClientLauncher : Launcher
+    public abstract class MasterClientLauncher : Launcher
     {
 
-#if UNITY_STANDALONE
 #region Private Properties
         private DateTime lastRoomUpdate = DateTime.MinValue;
 #endregion
-
-        /// <summary>
-        /// Attempts to connect to the specified Room Name on start, and adds MeshDisplay component
-        /// for displaying the Room Mesh
-        /// </summary>
-        public override void Start()
-        {
-            // ERROR TESTING - REMOVE THIS METHOD - NOTHING SPECIAL HAPPENS IN IT UNIQUE TO THE MASTER CLIENT ANYMORE
-            base.Start();
-            UWB_Texturing.BundleMenu.InstantiateRoom();
-            ServerFinder.ServerStart();
-        }
-
+        
         /// <summary>
         /// Called once per frame
         /// When a new mesh is recieved, display it 
@@ -65,7 +52,8 @@ namespace UWBNetworkingPackage
 
         public void UpdateRoom()
         {
-            string path = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+            //string path = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+            string path = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
             if (File.Exists(path))
             {
                 FileInfo f = new FileInfo(path);
@@ -369,8 +357,6 @@ namespace UWBNetworkingPackage
         //}
 
 //#endregion
-
-#endif
     }
 }
 

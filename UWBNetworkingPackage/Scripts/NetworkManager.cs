@@ -38,25 +38,31 @@ namespace UWBNetworkingPackage
             //Haven't yet found a better solution for this
 
 #if !UNITY_WSA_10_0 && !UNITY_ANDROID
+            Config_Base.NodeType = NodeType.PC;
             if (MasterClient)
             {
-                gameObject.AddComponent<MasterClientLauncher>();
-                Config_Base.NodeType = NodeType.PC;
+                gameObject.AddComponent<MasterClientLauncher_PC>();
                 //new Config.AssetBundle.Current(); // Sets some items
             }
             else
             {
-                gameObject.AddComponent<ReceivingClientLauncher>();
+                gameObject.AddComponent<ReceivingClientLauncher_PC>();
                 // get logic for setting nodetype appropriately
 
                 // new Config.AssetBundle.Current(); // Sets some items
             }
-#endif
-
-#if UNITY_WSA_10_0
-            //gameObject.AddComponent<HoloLensLauncher>();
-            gameObject.AddComponent<ReceivingClientLauncher>();
+#elif !UNITY_EDITOR && UNITY_WSA_10_0
             Config_Base.NodeType = NodeType.Hololens;
+            if (MasterClient)
+            {
+                gameObject.AddComponent<MasterClientLauncher_Hololens>();
+                SocketServer_Hololens.StartAsync();
+            }
+            else
+            {
+                gameObject.AddComponent<ReceivingClientLauncher_Hololens>();
+            }
+            //gameObject.AddComponent<HoloLensLauncher>();
 
             // ERROR TESTING REMOVE
             string[] filelines = new string[4];
@@ -67,27 +73,30 @@ namespace UWBNetworkingPackage
 
             string filepath = System.IO.Path.Combine(Application.persistentDataPath, "debugfile.txt");
             System.IO.File.WriteAllLines(filepath, filelines);
-#endif
-#if UNITY_ANDROID
+#elif UNITY_ANDROID
             gameObject.AddComponent<AndroidLauncher>();
             Config_Base.NodeType = NodeType.Android;
 #endif
-
-            SocketServer.Start();
         }
 
-        /// <summary>
-        /// This is a HoloLens specific method
-        /// This method allows a HoloLens developer to send a Room Mesh when triggered by an event
-        /// This is here because HoloLensLauncher is applied at runtime
-        /// In the HoloLensDemo, this method is called when the phrase "Send Mesh" is spoken and heard by the HoloLens
-        /// </summary>
-#if UNITY_WSA_10_0
-        public void HoloSendMesh()
-        { 
-            gameObject.GetComponent<HoloLensLauncher>().SendMesh();
 
-        }
-#endif
+
+
+        //-----------------------------------------------------------------------------
+        // Legacy Code:
+
+        ///// <summary>
+        ///// This is a HoloLens specific method
+        ///// This method allows a HoloLens developer to send a Room Mesh when triggered by an event
+        ///// This is here because HoloLensLauncher is applied at runtime
+        ///// In the HoloLensDemo, this method is called when the phrase "Send Mesh" is spoken and heard by the HoloLens
+        ///// </summary>
+//#if UNITY_WSA_10_0
+//        public void HoloSendMesh()
+//        { 
+//            gameObject.GetComponent<MasterClientLauncher_Hololens>().SendMesh();
+
+//        }
+//#endif
     }
 }

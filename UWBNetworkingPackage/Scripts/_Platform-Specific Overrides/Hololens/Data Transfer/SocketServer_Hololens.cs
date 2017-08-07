@@ -12,17 +12,17 @@ using System.Threading;
 
 #if !UNITY_EDITOR && UNITY_WSA_10_0
 using Windows.System.Threading;
+using System.Threading.Tasks;
 using Windows.Networking;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams; // DataReader/DataWriter & Streams
-using Windows.Security.Cryptography; // Convert string to bytes
 #endif
 
 namespace UWBNetworkingPackage
 {
     public class SocketServer_Hololens : Socket_Base_Hololens
     {
-#if !UNITY_EDITOR && UNITY_WSA_10_0
+        #if !UNITY_EDITOR && UNITY_WSA_10_0
         public static int numListeners = 15;
 
         // Thread signal for client connection
@@ -43,13 +43,18 @@ namespace UWBNetworkingPackage
         {
             int port = Config.Ports.ClientServerConnection;
             StreamSocketListener listener = new StreamSocketListener();
-            listener.Control.QualityOfService = SocketQualityOfService.Normal;
+            SetSocketSettings(listener.Control);
             listener.ConnectionReceived += OnConnection;
 
             // Bind TCP to the server endpoint
             HostName serverHostName = new HostName(IPManager.GetLocalIpAddress());
             int serverPort = Config.Ports.ClientServerConnection;
-            await listener.BindEndpointAsync(serverHostName, serverPort);
+            await listener.BindEndpointAsync(serverHostName, serverPort.ToString());
+        }
+
+        public static void SetSocketSettings(StreamSocketListenerControl socketControl)
+        {
+            socketControl.QualityOfService = SocketQualityOfService.Normal;
         }
 
         // ERROR TESTING - Have to revisit after updating sendfiles, sendfile, and receivefiles for Hololens
@@ -73,33 +78,33 @@ namespace UWBNetworkingPackage
                             fileList.Add(filepath);
                         }
                     }
-                    
-                    SendFiles(fileList.ToArray(), clientSocket);
+
+                    SendFilesAsync(fileList.ToArray(), clientSocket);
                 }
                 else if (clientPort == Config.Ports.Bundle_ClientToServer)
                 {
                     string bundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
-                    ReceiveFiles(clientSocket, bundleDirectory);
+                    ReceiveFilesAsync(clientSocket, bundleDirectory);
                 }
                 else if (clientPort == Config.Ports.RoomResourceBundle)
                 {
                     string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
-                    SendFile(filepath, clientSocket);
+                    SendFileAsync(filepath, clientSocket);
                 }
                 else if (clientPort == Config.Ports.RoomResourceBundle_ClientToServer)
                 {
                     string roomResourceBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
-                    ReceiveFiles(clientSocket, roomResourceBundleDirectory);
+                    ReceiveFilesAsync(clientSocket, roomResourceBundleDirectory);
                 }
                 else if (clientPort == Config.Ports.RoomBundle)
                 {
                     string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
-                    SendFile(filepath, clientSocket);
+                    SendFileAsync(filepath, clientSocket);
                 }
                 else if (clientPort == Config.Ports.RoomBundle_ClientToServer)
                 {
                     string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
-                    ReceiveFiles(clientSocket, roomBundleDirectory);
+                    ReceiveFilesAsync(clientSocket, roomBundleDirectory);
                 }
                 else
                 {

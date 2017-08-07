@@ -10,6 +10,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
+#if !UNITY_EDITOR && UNITY_WSA_10_0
+using HoloToolkit.Unity.SpatialMapping;
+#endif
+
 namespace UWBNetworkingPackage
 {
     /// <summary>
@@ -18,27 +22,27 @@ namespace UWBNetworkingPackage
     /// </summary>
     public abstract class Launcher : Photon.PunBehaviour
     {
-#region Private Properties
+        #region Private Properties
 
         private static string _version = "1";   // Should be set to the current version of your application 
         private DateTime lastRoomUpdate = DateTime.MinValue;
         private NodeType lastNodeType = Config.AssetBundle.Current.NodeType;
-#endregion
+        #endregion
 
-#region Public Properties
+        #region Public Properties
 
         // Needed for Room Mesh sending
         [Tooltip("A port number for devices to communicate through. The port number should be the same for each set of projects that need to connect to each other and share the same Room Mesh.")]
-        public int Port; 
-       
+        public int Port;
+
         // Needed for Photon 
-        [Tooltip("The name of the room that this project will attempt to connect to. This room must be created by a \"Master Client\".")]    
+        [Tooltip("The name of the room that this project will attempt to connect to. This room must be created by a \"Master Client\".")]
         public string RoomName;
 
         // Used for SendMesh/ReceiveMesh compatibility
         // Locally stores version of assetbundle received
         public AssetBundle networkAssets;
-        
+
         #endregion
 
         /// <summary>
@@ -47,8 +51,8 @@ namespace UWBNetworkingPackage
         public virtual void Awake()
         {
             PhotonNetwork.logLevel = PhotonLogLevel.Full;
-            PhotonNetwork.autoJoinLobby = false;           
-            PhotonNetwork.automaticallySyncScene = true;    
+            PhotonNetwork.autoJoinLobby = false;
+            PhotonNetwork.automaticallySyncScene = true;
 
             Port = gameObject.GetComponent<NetworkManager>().Port;
             RoomName = gameObject.GetComponent<NetworkManager>().RoomName;
@@ -97,7 +101,11 @@ namespace UWBNetworkingPackage
         {
             string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
             int roomBundlePort = Config.Ports.RoomBundle;
+#if !UNITY_WSA_10_0
             SocketClient.RequestFiles(roomBundlePort, roomBundleDirectory);
+#elif !UNITY_EDITOR && UNITY_WSA_10_0
+            SocketClient_Hololens.RequestFiles(roomBundlePort, roomBundleDirectory);
+#endif
         }
 
 
@@ -290,7 +298,7 @@ namespace UWBNetworkingPackage
         //public virtual void SendRawRoomModelInfo(int id)
         //{
         //    //SendAssetBundle(id, UWB_Texturing.Config.AssetBundle.RawPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename()), Config.Ports.RawRoomBundle);
-            
+
         //    // Pinpoint the bundle's location and copy it if 
         //    string bundleName = UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename();
         //    string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
@@ -395,7 +403,7 @@ namespace UWBNetworkingPackage
         //}
 
 
-        #region Byte stream SendMesh/ReceiveMesh (i.e. uses Database class)
+#region Byte stream SendMesh/ReceiveMesh (i.e. uses Database class)
         /// <summary>
         /// Send mesh to a host specified by networkConfig.
         /// Currently, only the HoloLens implements this method
@@ -550,69 +558,67 @@ namespace UWBNetworkingPackage
         /// functionality needed to display a mesh created via a HoloLens
         /// </summary>
 #if !UNITY_EDITOR && UNITY_WSA_10_0
-    public class MeshDisplay : SpatialMappingSource
-    {
-        /// <summary>
-        /// Display the mesh currently saved in Database
-        /// </summary>
-        public void DisplayMesh()
-        {
-            var meshes = (List<Mesh>)Database.GetMeshAsList();
-            Debug.Log(meshes.Count);
-            foreach (var mesh in meshes)
-            {
-                GameObject surface = AddSurfaceObject(mesh, string.Format("Beamed-{0}", SurfaceObjects.Count), transform);
-                surface.transform.parent = SpatialMappingManager.Instance.transform;
-                surface.GetComponent<MeshRenderer>().enabled = true;
-                surface.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
-            }
-        }
+//    public class MeshDisplay : SpatialMappingSource
+//    {
+//        /// <summary>
+//        /// Display the mesh currently saved in Database
+//        /// </summary>
+//        public void DisplayMesh()
+//        {
+//            var meshes = (List<Mesh>)Database.GetMeshAsList();
+//            Debug.Log(meshes.Count);
+//            foreach (var mesh in meshes)
+//            {
+//                GameObject surface = AddSurfaceObject(mesh, string.Format("Beamed-{0}", SurfaceObjects.Count), transform);
+//                surface.transform.parent = SpatialMappingManager.Instance.transform;
+//                surface.GetComponent<MeshRenderer>().enabled = true;
+//                surface.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+//            }
+//        }
 
-        /// <summary>
-        /// Scan the room and return the scaned room as a RoomMesh (serialized as a byte array)
-        /// This method can ONLY be used by HoloLens
-        /// </summary>
-        /// <returns>Serialized Room Mesh</returns>
-        public byte[] LoadMesh()
-        {
-            SpatialMappingManager mappingManager = GetComponent<SpatialMappingManager>();
-            List<MeshFilter> meshFilters = mappingManager.GetMeshFilters();
-            List<Mesh> meshes = new List<Mesh>();
+//        /// <summary>
+//        /// Scan the room and return the scaned room as a RoomMesh (serialized as a byte array)
+//        /// This method can ONLY be used by HoloLens
+//        /// </summary>
+//        /// <returns>Serialized Room Mesh</returns>
+//        public byte[] LoadMesh()
+//        {
+//            SpatialMappingManager mappingManager = GetComponent<SpatialMappingManager>();
+//            List<MeshFilter> meshFilters = mappingManager.GetMeshFilters();
+//            List<Mesh> meshes = new List<Mesh>();
 
-            foreach (var meshFilter in meshFilters)
-            {
-                Mesh mesh = meshFilter.sharedMesh;
-                Mesh clone = new Mesh();
-                List<Vector3> verts = new List<Vector3>();
-                verts.AddRange(mesh.vertices);
+//            foreach (var meshFilter in meshFilters)
+//            {
+//                Mesh mesh = meshFilter.sharedMesh;
+//                Mesh clone = new Mesh();
+//                List<Vector3> verts = new List<Vector3>();
+//                verts.AddRange(mesh.vertices);
 
-                for (int i = 0; i < verts.Count; i++)
-                {
-                    verts[i] = meshFilter.transform.TransformPoint(verts[i]);
-                }
+//                for (int i = 0; i < verts.Count; i++)
+//                {
+//                    verts[i] = meshFilter.transform.TransformPoint(verts[i]);
+//                }
 
-                clone.SetVertices(verts);
-                clone.SetTriangles(mesh.triangles, 0);
-                meshes.Add(clone);
-            }
+//                clone.SetVertices(verts);
+//                clone.SetTriangles(mesh.triangles, 0);
+//                meshes.Add(clone);
+//            }
 
-            return SimpleMeshSerializer.Serialize(meshes);
-        }
-    }
-//   END OF NEEDED FOR HOLOLENS BUT NOTHING ELSE-------------------------------------------------------------------------------
-    /// <summary>
+//            return SimpleMeshSerializer.Serialize(meshes);
+//        }
+//    }
+////   END OF NEEDED FOR HOLOLENS BUT NOTHING ELSE-------------------------------------------------------------------------------
+//    /// <summary>
 #endif
-        #endregion
+#endregion
 
-    }
-
-    //NEEDED FOR HOLOLENS BUT NOTHING ELSE-------------------------------------------------------------------------------------
-    //WILL NOT COMPILE TO ANYTHING ELSE BUT HOLOLENS SO LEAVE THIS SECTION OF CODE COMMENTED OUT IF NOT HOLOLENS
-    //
-    /// <summary>
-    /// MeshDisplay extends SpatialMappingSource (provided by Holotoolkit) to implement the
-    /// functionality needed to display a mesh created via a HoloLens
-    /// </summary>
+        //NEEDED FOR HOLOLENS BUT NOTHING ELSE-------------------------------------------------------------------------------------
+        //WILL NOT COMPILE TO ANYTHING ELSE BUT HOLOLENS SO LEAVE THIS SECTION OF CODE COMMENTED OUT IF NOT HOLOLENS
+        //
+        /// <summary>
+        /// MeshDisplay extends SpatialMappingSource (provided by Holotoolkit) to implement the
+        /// functionality needed to display a mesh created via a HoloLens
+        /// </summary>
 #if !UNITY_EDITOR && UNITY_WSA_10_0
     public class MeshDisplay : SpatialMappingSource
     {
@@ -666,6 +672,7 @@ namespace UWBNetworkingPackage
 //   END OF NEEDED FOR HOLOLENS BUT NOTHING ELSE-------------------------------------------------------------------------------
     /// <summary>
 #endif
+    }
 }
 
 

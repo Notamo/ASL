@@ -12,9 +12,9 @@ using System.Threading;
 
 namespace UWBNetworkingPackage
 {
-    public class SocketServer : Socket_Base
+    public class SocketServer_PC : Socket_Base_PC
     {
-#if !WINDOWS_UWP
+#if !UNITY_WSA_10_0
         public static int numListeners = 15;
 
         // Thread signal for client connection
