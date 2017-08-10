@@ -117,15 +117,16 @@ namespace UWBNetworkingPackage
 
         public static void ProcessRoomResources()
         {
+            string roomName = UWB_Texturing.Config.RoomObject.GameObjectName;
             //string customOrientationFilepath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.CustomOrientation.CompileFilename());
-            string customOrientationFilepath = UWB_Texturing.Config.CustomOrientation.CompileAbsoluteAssetPath(UWB_Texturing.Config.CustomOrientation.CompileFilename());
+            string customOrientationFilepath = UWB_Texturing.Config.CustomOrientation.CompileAbsoluteAssetPath(UWB_Texturing.Config.CustomOrientation.CompileFilename(), roomName);
             string unityMeshesRelativeDirectory = Config.AssetBundle.Current.AssetSubFolder;
             string materialsRelativeDirectory = Config.AssetBundle.Current.AssetSubFolder;
             if (File.Exists(customOrientationFilepath))
             {
                 // Build room object
                 string[] customOrientationFileLines = File.ReadAllLines(customOrientationFilepath);
-                UWB_Texturing.RoomModel.BuildRoomObject(customOrientationFileLines, unityMeshesRelativeDirectory, materialsRelativeDirectory);
+                UWB_Texturing.RoomModel.BuildRoomObject(roomName, customOrientationFileLines, unityMeshesRelativeDirectory, materialsRelativeDirectory);
             }
             else
             {

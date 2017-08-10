@@ -172,7 +172,7 @@ namespace UWBNetworkingPackage
         /// This will send a call to delete all meshes held by the clients
         /// This is a RPC method that will be called by ReceivingClient
         /// </summary>
-        public void UpdateRoomInfoImmediately()
+        public void UpdateRoomInfoImmediately(string roomName)
         {
             //if (File.Exists(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename())))
             //{
@@ -188,7 +188,7 @@ namespace UWBNetworkingPackage
             if (!PhotonNetwork.isMasterClient
                 && File.Exists(filepath))
             {
-                photonView.RPC("DeleteLocalRoomModelInfo", PhotonTargets.MasterClient);
+                photonView.RPC("DeleteLocalRoomModelInfo", PhotonTargets.MasterClient, roomName);
                 int roomBundlePort = Config.Ports.RoomBundle_ClientToServer;
 #if !UNITY_WSA_10_0
                 SocketClient_PC.SendFile(ServerFinder.serverIP, roomBundlePort, filepath);

@@ -51,7 +51,40 @@ namespace UWBNetworkingPackage
 
         public static string AssetSubFolder = "ASL/Resources";
         public static string BundleSubFolder = AssetSubFolder + "/StreamingAssets";
+        public static string RoomResourceSubFolder = AssetSubFolder + "/Rooms";
 
+        public static string CompileUnityRoomDirectory()
+        {
+            return RoomResourceSubFolder;
+        }
+        public static string CompileUnityRoomDirectory(string roomName)
+        {
+            return RoomResourceSubFolder + '/' + roomName;
+        }
+        public static string CompileUnityRoomPath(string filename, string roomName)
+        {
+            return CompileUnityRoomDirectory(roomName) + '/' + filename;
+        }
+        public static string CompileAbsoluteRoomDirectory()
+        {
+#if UNITY_WSA_10_0
+            return AbsoluteAssetRootFolder;
+#else
+            return Path.Combine(AbsoluteAssetRootFolder, RoomResourceSubFolder);
+#endif
+        }
+        public static string CompileAbsoluteRoomDirectory(string roomName)
+        {
+#if UNITY_WSA_10_0
+            return AbsoluteAssetRootFolder;
+#else
+            return Path.Combine(AbsoluteAssetRootFolder, Path.Combine(RoomResourceSubFolder, roomName));
+#endif
+        }
+        public static string CompileAbsoluteRoomPath(string filename, string roomName)
+        {
+            return Path.Combine(CompileAbsoluteRoomDirectory(roomName), filename);
+        }
         public static string CompileUnityAssetDirectory()
         {
             //return "Assets/" + AssetSubFolder;
@@ -72,6 +105,10 @@ namespace UWBNetworkingPackage
         public static string CompileAbsoluteAssetPath(string filename)
         {
             return Path.Combine(CompileAbsoluteAssetDirectory(), filename);
+        }
+        public static string CompileRoomResourcesLoadPath(string assetNameWithoutExtension, string roomName)
+        {
+            return RoomResourceSubFolder.Substring(RoomResourceSubFolder.IndexOf("Resources") + "Resources".Length + 1) + '/' + assetNameWithoutExtension;
         }
         public static string CompileResourcesLoadPath(string assetNameWithoutExtension)
         {

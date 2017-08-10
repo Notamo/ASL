@@ -355,7 +355,7 @@ namespace UWBNetworkingPackage
         /// Deletes local copy of the mesh
         /// </summary>
         [PunRPC]
-        public void DeleteLocalRoomModelInfo()
+        public void DeleteLocalRoomModelInfo(string roomName)
         {
             // ERROR TESTING -> these might point to the wrong folders -> update to search through appropriate folders
             string materialDirectory = Config.AssetBundle.Current.CompileAbsoluteAssetDirectory();
@@ -363,8 +363,8 @@ namespace UWBNetworkingPackage
             string texturesDirectory = materialDirectory;
 
             //UWB_Texturing.PrefabHandler.DeletePrefabs();
-            UWB_Texturing.BundleHandler.RemoveRoomObject();
-            UWB_Texturing.BundleHandler.RemoveRawInfo();
+            UWB_Texturing.BundleHandler.RemoveRoomObject(roomName);
+            UWB_Texturing.BundleHandler.RemoveRawInfo(roomName);
             UWB_Texturing.BundleHandler.RemoveRoomResources(materialDirectory, meshesDirectory, texturesDirectory);
         }
 
