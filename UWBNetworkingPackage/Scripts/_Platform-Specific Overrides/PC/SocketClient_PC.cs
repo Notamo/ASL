@@ -87,7 +87,7 @@ namespace UWBNetworkingPackage
 
         public static void SendFile(string remoteIP, int port, string filepath)
         {
-            SocketClient.SendFiles(remoteIP, port, new string[1] { filepath });
+            SendFiles(remoteIP, port, new string[1] { filepath });
         }
 
         public static void SendFiles(string remoteIP, int port, string[] filepaths)

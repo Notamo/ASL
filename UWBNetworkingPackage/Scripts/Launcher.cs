@@ -102,7 +102,7 @@ namespace UWBNetworkingPackage
             string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
             int roomBundlePort = Config.Ports.RoomBundle;
 #if !UNITY_WSA_10_0
-            SocketClient.RequestFiles(roomBundlePort, roomBundleDirectory);
+            SocketClient_PC.RequestFiles(roomBundlePort, roomBundleDirectory);
 #elif !UNITY_EDITOR && UNITY_WSA_10_0
             SocketClient_Hololens.RequestFiles(roomBundlePort, roomBundleDirectory);
 #endif

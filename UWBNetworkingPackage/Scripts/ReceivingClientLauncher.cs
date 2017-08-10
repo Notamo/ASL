@@ -121,11 +121,11 @@ namespace UWBNetworkingPackage
 
 #if !UNITY_WSA_10_0
             string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
-            SocketClient.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomBundle, roomBundleDirectory);
+            SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomBundle, roomBundleDirectory);
             string rawRoomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
-            SocketClient.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomResourceBundle, rawRoomBundleDirectory);
+            SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomResourceBundle, rawRoomBundleDirectory);
             string assetBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
-            SocketClient.RequestFiles(ServerFinder.serverIP, Config.Ports.Bundle, assetBundleDirectory);
+            SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.Bundle, assetBundleDirectory);
 #endif
 
         }
@@ -191,7 +191,7 @@ namespace UWBNetworkingPackage
                 photonView.RPC("DeleteLocalRoomModelInfo", PhotonTargets.MasterClient);
                 int roomBundlePort = Config.Ports.RoomBundle_ClientToServer;
 #if !UNITY_WSA_10_0
-                SocketClient.SendFile(ServerFinder.serverIP, roomBundlePort, filepath);
+                SocketClient_PC.SendFile(ServerFinder.serverIP, roomBundlePort, filepath);
 #endif
             }
         }

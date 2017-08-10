@@ -12,7 +12,7 @@ namespace UWBNetworkingPackage
         {
             base.Start();
             ServerFinder.FindServer();
-            SocketServer.Start(); // For sending files to other non-master clients
+            SocketServer_PC.Start(); // For sending files to other non-master clients
         }
 #endif
     }

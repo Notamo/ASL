@@ -125,13 +125,15 @@ namespace UWBNetworkingPackage
                             break;
                         }
                     }
-                    else
+                    //else
+                    else if (dataLengthIndex < numBytesReceived && dataLengthIndex > numBytesReceived - 4)
                     {
                         // Else length bytes are split between reads...
                         byte[] dataLengthBuffer = new byte[4];
                         int numDataLengthBytesCopied = numBytesReceived - dataLengthIndex;
                         System.Buffer.BlockCopy(data, dataLengthIndex, dataLengthBuffer, 0, numDataLengthBytesCopied);
                         numBytesReceived = socket.Receive(data, bufferLength, SocketFlags.None);
+                        numBytesAvailable = numBytesReceived;
                         System.Buffer.BlockCopy(data, 0, dataLengthBuffer, numDataLengthBytesCopied, 4 - numDataLengthBytesCopied);
 
                         dataLength = System.BitConverter.ToInt32(dataLengthBuffer, 0);
@@ -142,7 +144,7 @@ namespace UWBNetworkingPackage
                     numBytesAvailable = numBytesReceived - dataIndex;
 
                     // Handle instances where whole file is contained in part of buffer
-                    if (dataIndex + dataLength < numBytesAvailable)
+                    if (numBytesAvailable > 0 && dataIndex + dataLength < numBytesAvailable)
                     {
                         byte[] fileData = new byte[dataLength];
                         System.Buffer.BlockCopy(data, dataIndex, fileData, 0, dataLength);
@@ -164,12 +166,13 @@ namespace UWBNetworkingPackage
                 // Write remainder of bytes in buffer to the file memory stream to store for the next buffer read
                 if (numBytesAvailable < 0)
                 {
+                    Debug.Log("TCP Error: Stream read logic error.");
                     break;
                 }
                 else
                 {
                     fileStream.Write(data, dataIndex, numBytesAvailable);
-                    dataLengthIndex -= bufferLength;
+                    dataLengthIndex -= numBytesReceived;
                 }
                 // continue;
 

@@ -17,7 +17,7 @@ namespace UWBNetworkingPackage
             base.Start();
             UWB_Texturing.BundleMenu.InstantiateRoom();
             ServerFinder.ServerStart();
-            SocketServer.Start();
+            SocketServer_PC.Start();
         }
 #endif
     }

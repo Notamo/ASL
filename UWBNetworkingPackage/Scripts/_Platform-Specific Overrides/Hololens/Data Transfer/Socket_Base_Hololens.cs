@@ -125,7 +125,8 @@ namespace UWBNetworkingPackage
                             break;
                         }
                     }
-                    else
+                    //else
+                    else if (dataLengthIndex < numBytesReceived && dataLengthIndex > numBytesReceived - 4)
                     {
                         // Else length bytes are split between reads...
                         MemoryStream dataLengthMS = new MemoryStream();
@@ -134,6 +135,7 @@ namespace UWBNetworkingPackage
 
 
                         numBytesReceived = (int)(await reader.LoadAsync(bufferLength));
+                        numBytesAvailable = numBytesReceived;
                         numDataLengthBytes = 4 - numDataLengthBytes;
                         dataLengthMS.Write(reader.ReadBuffer(numDataLengthBytes).ToArray(), 0, (int)numDataLengthBytes);
 
@@ -143,7 +145,7 @@ namespace UWBNetworkingPackage
                     }
 
                     // Handle instances where whole file is contained in part of buffer
-                    if (dataIndex + dataLength < numBytesAvailable)
+                    if (numBytesAvailable > 0 && dataIndex + dataLength < numBytesAvailable)
                     {
                         if (dataHeader.Equals(string.Empty))
                         {
@@ -175,7 +177,7 @@ namespace UWBNetworkingPackage
                 else
                 {
                     fileStream.Write(reader.ReadBuffer((uint)numBytesAvailable).ToArray(), 0, numBytesAvailable);
-                    dataLengthIndex -= (int)bufferLength;
+                    dataLengthIndex -= (int)numBytesReceived;
                 }
             } while (numBytesReceived > 0);
 
