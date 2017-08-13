@@ -24,6 +24,7 @@ namespace UWBNetworkingPackage
     {
         #if !UNITY_EDITOR && UNITY_WSA_10_0
         public static int numListeners = 15;
+        protected static StreamSocketListener listener;
 
         // Thread signal for client connection
         //public static ManualResetEvent clientConnected = new ManualResetEvent(false);
@@ -42,7 +43,7 @@ namespace UWBNetworkingPackage
         public static async void StartAsync()
         {
             int port = Config.Ports.ClientServerConnection;
-            StreamSocketListener listener = new StreamSocketListener();
+            listener = new StreamSocketListener();
             SetSocketSettings(listener.Control);
             listener.ConnectionReceived += OnConnection;
 
@@ -111,6 +112,11 @@ namespace UWBNetworkingPackage
                     Debug.Log("Port not found");
                 }
             }).Start();
+        }
+
+        ~SocketServer_Hololens()
+        {
+            listener.Dispose();
         }
 #endif
     }

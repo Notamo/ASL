@@ -16,6 +16,7 @@ namespace UWBNetworkingPackage
     {
 #if !UNITY_WSA_10_0
         public static int numListeners = 15;
+        protected static TcpListener listener;
 
         // Thread signal for client connection
         //public static ManualResetEvent clientConnected = new ManualResetEvent(false);
@@ -34,7 +35,7 @@ namespace UWBNetworkingPackage
         public static void Start()
         {
             int port = Config.Ports.ClientServerConnection;
-            TcpListener listener = new TcpListener(IPAddress.Any, port);
+            listener = new TcpListener(IPAddress.Any, port);
             // Bind listener
             EndPoint localEndpoint = new IPEndPoint(IPAddress.Any, port);
             listener.Server.Bind(localEndpoint);
@@ -168,7 +169,7 @@ namespace UWBNetworkingPackage
         //        clientSocket.Shutdown(SocketShutdown.Both);
         //    }
 
-            
+
         //    // Save the socket to the map after determining the port
         //    int clientPort = ((IPEndPoint)clientSocket.RemoteEndPoint).Port;
         //    //if (!socketMap.ContainsKey(clientPort))
@@ -251,7 +252,7 @@ namespace UWBNetworkingPackage
         //        return false;
         //    }
         //}
-        
+
         //public static bool SendData(TcpListener listener, byte[] data)
         //{
         //    if (listener != null)
@@ -286,7 +287,7 @@ namespace UWBNetworkingPackage
 
         //    return false;
         //}
-        
+
         //public static bool SendData(Config.Ports.Types portType, byte[] data)
         //{
         //    int port = Config.Ports.GetPort(portType);
@@ -542,6 +543,13 @@ namespace UWBNetworkingPackage
         //        return ports;
         //    }
         //}
+
+        ~SocketServer_PC()
+        {
+            listener.Server.Disconnect(false);
+            listener.Server.Close();
+            listener.Stop();
+        }
 #endif
     }
 }

@@ -143,7 +143,7 @@ Prefab:
     - target: {fileID: 114000011044434276, guid: d8b9ab36ea167c74192f6e88e8bd1a39,
         type: 2}
       propertyPath: MasterClient
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d8b9ab36ea167c74192f6e88e8bd1a39, type: 2}
@@ -336,6 +336,11 @@ Prefab:
     - target: {fileID: 4651948125983584, guid: 52b603dd8a4e0e444ad6f8e9de031a74, type: 2}
       propertyPath: m_RootOrder
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114848372695810164, guid: 52b603dd8a4e0e444ad6f8e9de031a74,
+        type: 2}
+      propertyPath: RoomName
+      value: Room
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 52b603dd8a4e0e444ad6f8e9de031a74, type: 2}

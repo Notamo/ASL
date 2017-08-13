@@ -43,6 +43,33 @@ namespace UWBNetworkingPackage {
         public static void ExportFinalRoom() {
             MenuHandler.ExportRoom(PhotonNetwork.masterClient.ID);
         }
+
+        [UnityEditor.MenuItem("ASL/Room Texture/Process All Rooms")]
+        public static void ProcessAllRooms()
+        {
+            string[] roomNames = new string[2];
+            roomNames[0] = "Room";
+            roomNames[1] = "Room2";
+            for(int i = 0; i < 2; i++)
+            {
+                string roomName = roomNames[i];
+                UWB_Texturing.Config.RoomObject.GameObjectName = roomName;
+
+                string matrixArrayFilepath = Config.AssetBundle.Current.CompileAbsoluteRoomPath(UWB_Texturing.Config.MatrixArray.CompileFilename(), roomName);
+                string materialsDirectory = Config.AssetBundle.Current.CompileAbsoluteRoomDirectory(roomName);
+                string meshesDirectory = Config.AssetBundle.Current.CompileAbsoluteRoomDirectory(roomName);
+                string texturesDirectory = Config.AssetBundle.Current.CompileAbsoluteRoomDirectory(roomName);
+                string imagesDirectory = Config.AssetBundle.Current.CompileAbsoluteRoomDirectory(roomName);
+                UWB_Texturing.BundleHandler.CreateRoomResources(roomName, matrixArrayFilepath, materialsDirectory, meshesDirectory, texturesDirectory, imagesDirectory);
+
+                string rawRoomBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
+                string customMatricesDestinationDirectory = Config.AssetBundle.Current.CompileAbsoluteRoomDirectory(roomName);
+                string customOrientationDestinationDirectory = Config.AssetBundle.Current.CompileAbsoluteRoomDirectory(roomName);
+                string customMeshesDestinationDirectory = Config.AssetBundle.Current.CompileAbsoluteRoomDirectory(roomName);
+                string textureImagesDestinationDirectory = Config.AssetBundle.Current.CompileAbsoluteRoomDirectory(roomName);
+                UWB_Texturing.BundleHandler.InstantiateRoomFromResources(roomName, rawRoomBundlePath, customMatricesDestinationDirectory, customOrientationDestinationDirectory, customMeshesDestinationDirectory, textureImagesDestinationDirectory, matrixArrayFilepath);
+            }
+        }
 #endif
     }
 }

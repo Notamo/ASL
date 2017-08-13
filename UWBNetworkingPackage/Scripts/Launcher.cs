@@ -628,7 +628,7 @@ namespace UWBNetworkingPackage
         public void DisplayMesh()
         {
             var meshes = (List<Mesh>)Database.GetMeshAsList();
-            Debug.Log(meshes.Count);
+            Debug.Log(meshes.Count.ToString());
             foreach (var mesh in meshes)
             {
                 GameObject surface = AddSurfaceObject(mesh, string.Format("Beamed-{0}", SurfaceObjects.Count), transform);
