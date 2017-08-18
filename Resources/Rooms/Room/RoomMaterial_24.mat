@@ -18,7 +18,7 @@ Material:
     - first:
         name: _MyArr
       second:
-        m_Texture: {fileID: 18700000, guid: a2235668e78f60a46afcf16cb860b488, type: 2}
+        m_Texture: {fileID: 18700000, guid: 13903eb582de62649a2969a5704661bb, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats: []

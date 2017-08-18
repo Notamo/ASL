@@ -12,6 +12,11 @@ namespace UWBNetworkingPackage
             Config_Base.SetFolders();
         }
 
+        public static void Start()
+        {
+            // Triggers static constructor
+        }
+
         public class AssetBundle
         {
             public class Current : Config_Base_AssetBundle

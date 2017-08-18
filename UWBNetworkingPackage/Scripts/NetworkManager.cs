@@ -37,6 +37,8 @@ namespace UWBNetworkingPackage
             //Preprocessor directives to choose which component is added.  Note, master client still has to be hard coded
             //Haven't yet found a better solution for this
 
+            Config.Start();
+
 #if !UNITY_WSA_10_0 && !UNITY_ANDROID
             Config_Base.NodeType = NodeType.PC;
             if (MasterClient)

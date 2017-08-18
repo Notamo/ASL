@@ -20,7 +20,7 @@ namespace UWBNetworkingPackage
         static Config_Base()
         {
             UWB_Texturing.Config_Base.AbsoluteAssetRootFolder = AbsoluteAssetRootFolder;
-            UWB_Texturing.Config_Base.AssetSubFolder = AssetSubFolder;
+            UWB_Texturing.Config_Base.AssetSubFolder = RoomResourceSubFolder;
         }
 
         public static void SetFolders()
