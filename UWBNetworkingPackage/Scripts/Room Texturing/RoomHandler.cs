@@ -11,7 +11,7 @@ namespace UWBNetworkingPackage
 {
     public class RoomHandler : MonoBehaviour
     {
-        static RoomHandler()
+        public static void Start()
         {
             UWB_Texturing.Config.RoomObject.Changed += GenerateRoomFolder;
         }

@@ -11,16 +11,30 @@ namespace UWBNetworkingPackage {
     public static class Menu {
 #if UNITY_EDITOR && !UNITY_WSA_10_0
         #region Instantiate
-        [UnityEditor.MenuItem("ASL/Room Texture/Instantiate/Current Room", false, 0)]
+        [UnityEditor.MenuItem("ASL/Room Texture/Instantiate/Current Room/GameObject", false, 0)]
         public static void InstantiateRoom()
         {
             UWB_Texturing.Menu.InstantiateRoom();
         }
 
-        [UnityEditor.MenuItem("ASL/Room Texture/Instantiate/All Rooms", false, 0)]
+        [UnityEditor.MenuItem("ASL/Room Texture/Instantiate/All Rooms/GameObjects", false, 0)]
         public static void InstantiateAllRooms()
         {
             UWB_Texturing.Menu.InstantiateAllRooms();
+        }
+        #endregion
+
+        #region Prefabs
+        [UnityEditor.MenuItem("ASL/Room Texture/Instantiate/Current Room/Prefab", false, 0)]
+        public static void InstantiateRoomPrefab()
+        {
+            UWB_Texturing.Menu.InstantiateRoomPrefab();
+        }
+        
+        [UnityEditor.MenuItem("ASL/Room Texture/Instantiate/All Rooms/Prefabs", false, 0)]
+        public static void InstantiateAllRoomPrefabs()
+        {
+            UWB_Texturing.Menu.InstantiateAllRoomPrefabs();
         }
         #endregion
 

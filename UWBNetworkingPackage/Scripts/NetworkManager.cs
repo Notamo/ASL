@@ -38,49 +38,50 @@ namespace UWBNetworkingPackage
             //Haven't yet found a better solution for this
 
             Config.Start();
+            RoomHandler.Start();
 
-#if !UNITY_WSA_10_0 && !UNITY_ANDROID
-            Config_Base.NodeType = NodeType.PC;
-            if (MasterClient)
-            {
-                gameObject.AddComponent<MasterClientLauncher_PC>();
-                //new Config.AssetBundle.Current(); // Sets some items
-            }
-            else
-            {
-                gameObject.AddComponent<ReceivingClientLauncher_PC>();
-                // get logic for setting nodetype appropriately
+//#if !UNITY_WSA_10_0 && !UNITY_ANDROID
+//            Config_Base.NodeType = NodeType.PC;
+//            if (MasterClient)
+//            {
+//                gameObject.AddComponent<MasterClientLauncher_PC>();
+//                //new Config.AssetBundle.Current(); // Sets some items
+//            }
+//            else
+//            {
+//                gameObject.AddComponent<ReceivingClientLauncher_PC>();
+//                // get logic for setting nodetype appropriately
 
-                // new Config.AssetBundle.Current(); // Sets some items
-            }
-#elif !UNITY_EDITOR && UNITY_WSA_10_0
-            Config_Base.NodeType = NodeType.Hololens;
-            if (MasterClient)
-            {
-                gameObject.AddComponent<MasterClientLauncher_Hololens>();
-                SocketServer_Hololens.StartAsync();
-            }
-            else
-            {
-                gameObject.AddComponent<ReceivingClientLauncher_Hololens>();
-            }
-            //gameObject.AddComponent<HoloLensLauncher>();
+//                // new Config.AssetBundle.Current(); // Sets some items
+//            }
+//#elif !UNITY_EDITOR && UNITY_WSA_10_0
+//            Config_Base.NodeType = NodeType.Hololens;
+//            if (MasterClient)
+//            {
+//                gameObject.AddComponent<MasterClientLauncher_Hololens>();
+//                SocketServer_Hololens.StartAsync();
+//            }
+//            else
+//            {
+//                gameObject.AddComponent<ReceivingClientLauncher_Hololens>();
+//            }
+//            //gameObject.AddComponent<HoloLensLauncher>();
 
-            //UWB_Texturing.TextManager.Start();
+//            //UWB_Texturing.TextManager.Start();
 
-            //// ERROR TESTING REMOVE
-            //string[] filelines = new string[4];
-            //filelines[0] = "Absolute asset root folder = " + Config_Base.AbsoluteAssetRootFolder;
-            //filelines[1] = "Private absolute asset root folder = " + Config_Base.absoluteAssetRootFolder;
-            //filelines[2] = "Absolute asset directory = " + Config.AssetBundle.Current.CompileAbsoluteAssetDirectory();
-            //filelines[3] = "Absolute bundle directory = " + Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+//            //// ERROR TESTING REMOVE
+//            //string[] filelines = new string[4];
+//            //filelines[0] = "Absolute asset root folder = " + Config_Base.AbsoluteAssetRootFolder;
+//            //filelines[1] = "Private absolute asset root folder = " + Config_Base.absoluteAssetRootFolder;
+//            //filelines[2] = "Absolute asset directory = " + Config.AssetBundle.Current.CompileAbsoluteAssetDirectory();
+//            //filelines[3] = "Absolute bundle directory = " + Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
 
-            //string filepath = System.IO.Path.Combine(Application.persistentDataPath, "debugfile.txt");
-            //System.IO.File.WriteAllLines(filepath, filelines);
-#elif UNITY_ANDROID
-            gameObject.AddComponent<AndroidLauncher>();
-            Config_Base.NodeType = NodeType.Android;
-#endif
+//            //string filepath = System.IO.Path.Combine(Application.persistentDataPath, "debugfile.txt");
+//            //System.IO.File.WriteAllLines(filepath, filelines);
+//#elif UNITY_ANDROID
+//            gameObject.AddComponent<AndroidLauncher>();
+//            Config_Base.NodeType = NodeType.Android;
+//#endif
         }
 
 
