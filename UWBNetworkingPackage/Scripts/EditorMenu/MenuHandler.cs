@@ -25,50 +25,21 @@ namespace UWBNetworkingPackage
 #if UNITY_EDITOR
         public static void PackRawResourcesBundle()
         {
-            string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
-            UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
+            //string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
+            //UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
+            UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(BuildTarget.StandaloneWindows);
         }
 
         public static void PackRoomBundle()
         {
-            string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
-            UWB_Texturing.BundleHandler.PackFinalRoomBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
+            //string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
+            //UWB_Texturing.BundleHandler.PackFinalRoomBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
+            UWB_Texturing.BundleHandler.PackFinalRoomBundle(BuildTarget.StandaloneWindows);
         }
 #endif
 
         public static void ExportRawResources(int targetID)
         {
-            ////string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
-
-            ////BuildTarget[] targetPlatforms = new BuildTarget[4];
-            ////targetPlatforms[0] = BuildTarget.StandaloneWindows;
-            ////targetPlatforms[1] = BuildTarget.Android;
-
-            ////foreach (BuildTarget target in targetPlatforms)
-            ////{
-            ////    // Set destination directory
-            ////    switch (target)
-            ////    {
-            ////        case BuildTarget.StandaloneWindows:
-            ////            destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
-            ////            break;
-            ////        case BuildTarget.Android:
-            ////            destinationDirectory = Config.AssetBundle.Android.CompileAbsoluteBundleDirectory();
-            ////            break;
-            ////    }
-
-            ////    UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(destinationDirectory, target);
-            ////}
-
-            //// UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
-            //string bundleName = UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename();
-            //string bundlePath = Config.AssetBundle.PC.CompileAbsoluteBundlePath(Config.AssetBundle.PC.CompileFilename(bundleName)); // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
-            //int rawRoomBundlePort = Config.Ports.RawRoomBundle;
-            ////Launcher.SendAssetBundle(targetID, bundlePath, rawRoomBundlePort);
-            //Launcher launcher = Launcher.GetLauncherInstance();
-            //launcher.SendRawRoomModelInfo(targetID);
-            ////photonView.RPC("ReceiveRawRoomModelInfo", PhotonPlayer.Find(targetID), IPManager.CompileNetworkConfigString(rawRoomBundlePort));
-
             string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
             int rawRoomPort = Config.Ports.RoomResourceBundle_ClientToServer;
 #if !UNITY_WSA_10_0
@@ -115,24 +86,32 @@ namespace UWBNetworkingPackage
 #endif
         }
 
-        public static void ProcessRoomResources()
+        //public static void ProcessRoomResources()
+        //{
+        //    string roomName = UWB_Texturing.Config.RoomObject.GameObjectName;
+        //    //string customOrientationFilepath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.CustomOrientation.CompileFilename());
+        //    string customOrientationFilepath = UWB_Texturing.Config.CustomOrientation.CompileAbsoluteAssetPath(UWB_Texturing.Config.CustomOrientation.CompileFilename(), roomName);
+        //    string unityMeshesRelativeDirectory = Config.AssetBundle.Current.AssetSubFolder;
+        //    string materialsRelativeDirectory = Config.AssetBundle.Current.AssetSubFolder;
+        //    if (File.Exists(customOrientationFilepath))
+        //    {
+        //        // Build room object
+        //        string[] customOrientationFileLines = File.ReadAllLines(customOrientationFilepath);
+        //        UWB_Texturing.RoomModel.BuildRoomObject(roomName, customOrientationFileLines, unityMeshesRelativeDirectory, materialsRelativeDirectory);
+        //    }
+        //    else
+        //    {
+        //        Debug.Log("Unable to build room!");
+        //    }
+        //    //UWB_Texturing.RoomModel.BuildRoomObject(File.ReadAllLines(Config.CustomOrientation.CompileAbsoluteAssetPath(Config.CustomOrientation.CompileFilename())));
+        //}
+
+
+        #region Verified
+        public static void ProcessAllRooms()
         {
-            string roomName = UWB_Texturing.Config.RoomObject.GameObjectName;
-            //string customOrientationFilepath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.CustomOrientation.CompileFilename());
-            string customOrientationFilepath = UWB_Texturing.Config.CustomOrientation.CompileAbsoluteAssetPath(UWB_Texturing.Config.CustomOrientation.CompileFilename(), roomName);
-            string unityMeshesRelativeDirectory = Config.AssetBundle.Current.AssetSubFolder;
-            string materialsRelativeDirectory = Config.AssetBundle.Current.AssetSubFolder;
-            if (File.Exists(customOrientationFilepath))
-            {
-                // Build room object
-                string[] customOrientationFileLines = File.ReadAllLines(customOrientationFilepath);
-                UWB_Texturing.RoomModel.BuildRoomObject(roomName, customOrientationFileLines, unityMeshesRelativeDirectory, materialsRelativeDirectory);
-            }
-            else
-            {
-                Debug.Log("Unable to build room!");
-            }
-            //UWB_Texturing.RoomModel.BuildRoomObject(File.ReadAllLines(Config.CustomOrientation.CompileAbsoluteAssetPath(Config.CustomOrientation.CompileFilename())));
+            RoomHandler.ProcessAllRooms();
         }
+#endregion
     }
 }

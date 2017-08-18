@@ -6,7 +6,7 @@ using System;
 
 namespace UWBNetworkingPackage
 {
-    public class RoomTextureManager : MonoBehaviour
+    public class RoomManager : MonoBehaviour
     {
         public string RoomName;
 

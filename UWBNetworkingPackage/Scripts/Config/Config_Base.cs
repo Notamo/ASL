@@ -17,6 +17,19 @@ namespace UWBNetworkingPackage
 
     public class Config_Base
     {
+        static Config_Base()
+        {
+            UWB_Texturing.Config_Base.AbsoluteAssetRootFolder = AbsoluteAssetRootFolder;
+            UWB_Texturing.Config_Base.AssetSubFolder = AssetSubFolder;
+        }
+
+        public static void SetFolders()
+        {
+            // Triggers static constructor
+        }
+
+        #region Fields/Properties
+
         private static NodeType nodeType = NodeType.PC;
         public static NodeType NodeType
         {
@@ -31,7 +44,7 @@ namespace UWBNetworkingPackage
         }
 
         //public static string absoluteAssetRootFolder = Directory.GetCurrentDirectory();//Application.persistentDataPath;
-        public static string absoluteAssetRootFolder = Path.Combine(Directory.GetCurrentDirectory(), "Assets");
+        private static string absoluteAssetRootFolder = Path.Combine(Directory.GetCurrentDirectory(), "Assets");
         public static string AbsoluteAssetRootFolder
         {
             get
@@ -43,15 +56,66 @@ namespace UWBNetworkingPackage
 #if UNITY_WSA_10_0
                 absoluteAssetRootFolder = Application.persistentDataPath;
 #else
-                absoluteAssetRootFolder = Application.dataPath;
+                //absoluteAssetRootFolder = Application.dataPath;
+                absoluteAssetRootFolder = value;
                 // Put in logic for all node types
+#endif
+                UWB_Texturing.Config_Base.AbsoluteAssetRootFolder = absoluteAssetRootFolder;
+            }
+        }
+
+        private static string assetSubFolder = "ASL/Resources";
+        public static string AssetSubFolder
+        {
+            get
+            {
+                return assetSubFolder;
+            }
+            set
+            {
+#if UNITY_WSA_10_0
+#else
+                assetSubFolder = value;
 #endif
             }
         }
 
-        public static string AssetSubFolder = "ASL/Resources";
-        public static string BundleSubFolder = AssetSubFolder + "/StreamingAssets";
-        public static string RoomResourceSubFolder = AssetSubFolder + "/Rooms";
+        private static string bundleSubFolder = AssetSubFolder + "/StreamingAssets";
+        public static string BundleSubFolder
+        {
+            get
+            {
+                return bundleSubFolder;
+            }
+            set
+            {
+#if UNITY_WSA_10_0
+#else
+                bundleSubFolder = value;
+#endif
+            }
+        }
+
+        private static string roomResourceSubFolder = AssetSubFolder + "/Rooms";
+        public static string RoomResourceSubFolder
+        {
+            get
+            {
+                return roomResourceSubFolder;
+            }
+            set
+            {
+#if UNITY_WSA_10_0
+#else
+                roomResourceSubFolder = value;
+                UWB_Texturing.Config_Base.AssetSubFolder = roomResourceSubFolder;
+#endif
+            }
+        }
+
+        #endregion
+
+        #region Methods
 
         public static string CompileUnityRoomDirectory()
         {
@@ -143,5 +207,6 @@ namespace UWBNetworkingPackage
             return Path.Combine(CompileAbsoluteBundleDirectory(), filename);
         }
 
+#endregion
     }
 }

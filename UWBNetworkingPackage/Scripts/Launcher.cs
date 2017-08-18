@@ -365,7 +365,7 @@ namespace UWBNetworkingPackage
             //UWB_Texturing.PrefabHandler.DeletePrefabs();
             UWB_Texturing.BundleHandler.RemoveRoomObject(roomName);
             UWB_Texturing.BundleHandler.RemoveRawInfo(roomName);
-            UWB_Texturing.BundleHandler.RemoveRoomResources(materialDirectory, meshesDirectory, texturesDirectory);
+            UWB_Texturing.BundleHandler.RemoveRoomResources(roomName);
         }
 
         //// ERROR TESTING - REMOVE if not needed

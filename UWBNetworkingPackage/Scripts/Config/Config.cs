@@ -7,6 +7,11 @@ namespace UWBNetworkingPackage
 {
     public class Config
     {
+        static Config()
+        {
+            Config_Base.SetFolders();
+        }
+
         public class AssetBundle
         {
             public class Current : Config_Base_AssetBundle
@@ -222,6 +227,11 @@ namespace UWBNetworkingPackage
                     return Path.Combine(CompileAbsoluteBundleDirectory(), filename);
                 }
             }
+
+        }
+
+        public class Room : Config_Base
+        {
 
         }
 

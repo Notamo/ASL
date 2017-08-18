@@ -17,14 +17,14 @@ namespace UWBNetworkingPackage
 
         public override void OnJoinedRoom()
         {
-            Debug.debugging = true;
-            string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
-            int roomBundlePort = Config.Ports.RoomBundle;
+            //Debug.debugging = true;
+            //string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+            //int roomBundlePort = Config.Ports.RoomBundle;
 
-            Debug.Log("directory = " + roomBundleDirectory + "; port = " + roomBundlePort.ToString());
+            //Debug.Log("directory = " + roomBundleDirectory + "; port = " + roomBundlePort.ToString());
 
-            SocketClient_Hololens.RequestFiles(roomBundlePort, roomBundleDirectory);
-            Debug.debugging = false;
+            //SocketClient_Hololens.RequestFiles(roomBundlePort, roomBundleDirectory);
+            //Debug.debugging = false;
         }
 #endif
     }
