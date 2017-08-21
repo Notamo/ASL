@@ -41,19 +41,28 @@ namespace UWBNetworkingPackage
             if (MasterClient)
             {
                 gameObject.AddComponent<MasterClientLauncher>();
+                Config_Base.NodeType = NodeType.PC;
+                //new Config.AssetBundle.Current(); // Sets some items
             }
             else
             {
                 gameObject.AddComponent<ReceivingClientLauncher>();
+                // get logic for setting nodetype appropriately
+
+                // new Config.AssetBundle.Current(); // Sets some items
             }
 #endif
 
 #if UNITY_WSA_10_0
             gameObject.AddComponent<HoloLensLauncher>();
+            Config_Base.NodeType = NodeType.Hololens;
 #endif
 #if UNITY_ANDROID
             gameObject.AddComponent<AndroidLauncher>();
+            Config_Base.NodeType = NodeType.Android;
 #endif
+
+            TCPManager.Start();
         }
 
         /// <summary>
