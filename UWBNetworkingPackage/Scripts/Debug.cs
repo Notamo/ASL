@@ -24,5 +24,10 @@ namespace UWBNetworkingPackage
                 UnityEngine.Debug.Log(message);
 #endif
         }
+
+        public static void Error(string message)
+        {
+            UnityEngine.Debug.Log("ERROR: " + message);
+        }
     }
 }

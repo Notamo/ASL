@@ -107,24 +107,27 @@ namespace UWBNetworkingPackage
             //////photonView.RPC("SendRoomModel", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
 
 
-//string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
-////string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
-////RoomTextureManager.UpdateRoomBundle();
-//int roomModelPort = Config.Ports.GetPort(Config.Ports.Types.RoomBundle);
-////SendAssetBundle(id, bundlePath, Config.Ports.RoomBundle);
-////SendAssetBundle(ASLBundlePath, roomModelPort);
-////photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(roomModelPort), bundleName);
-//photonView.RPC("SendRoomModel", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
-//ReceiveRoomModel(IPManager.CompileNetworkConfigString(Config.Ports.RoomBundle), bundleName);
+            //string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
+            ////string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
+            ////RoomTextureManager.UpdateRoomBundle();
+            //int roomModelPort = Config.Ports.GetPort(Config.Ports.Types.RoomBundle);
+            ////SendAssetBundle(id, bundlePath, Config.Ports.RoomBundle);
+            ////SendAssetBundle(ASLBundlePath, roomModelPort);
+            ////photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(roomModelPort), bundleName);
+            //photonView.RPC("SendRoomModel", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
+            //ReceiveRoomModel(IPManager.CompileNetworkConfigString(Config.Ports.RoomBundle), bundleName);
 
-///////////SocketClient.ConnectTest(Config.Ports.Base);
+            ///////////SocketClient.ConnectTest(Config.Ports.Base);
 
 #if !UNITY_WSA_10_0
-            string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+            //string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+            string roomBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
             SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomBundle, roomBundleDirectory);
-            string rawRoomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+            //string rawRoomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+            string rawRoomBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
             SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomResourceBundle, rawRoomBundleDirectory);
-            string assetBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+            //string assetBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+            string assetBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
             SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.Bundle, assetBundleDirectory);
 #endif
 
@@ -184,7 +187,8 @@ namespace UWBNetworkingPackage
             ////    photonView.RPC("DeleteMesh", PhotonTargets.MasterClient);
             ////}
 
-            string filepath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+            //string filepath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+            string filepath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
             if (!PhotonNetwork.isMasterClient
                 && File.Exists(filepath))
             {

@@ -10,7 +10,8 @@ public class TexturePostProcessor : AssetPostprocessor {
 #if UNITY_EDITOR
     void OnPreprocessTexture()
     {
-        if (assetPath.Contains(UWBNetworkingPackage.Config.AssetBundle.Current.CompileUnityAssetDirectory()))
+        //if (assetPath.Contains(UWBNetworkingPackage.Config.AssetBundle.Current.CompileUnityAssetDirectory()))
+        if(assetPath.Contains(UWBNetworkingPackage.Config.Current.AssetBundle.CompileUnityAssetDirectory()))
         {
             TextureImporter importer = assetImporter as TextureImporter;
             importer.textureType = TextureImporterType.Default;

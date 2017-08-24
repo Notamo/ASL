@@ -35,7 +35,8 @@ namespace UWBNetworkingPackage
             {
                 UWB_Texturing.Config.RoomObject.GameObjectName = RoomName;
                 // Make the directory for this room
-                string directoryPath = Config_Base.CompileAbsoluteRoomDirectory(RoomName);
+                //string directoryPath = Config_Base.CompileAbsoluteRoomDirectory(RoomName);
+                string directoryPath = Config.Current.Room.CompileAbsoluteAssetDirectory(RoomName);
                 //string directoryPath = UWB_Texturing.Config.RoomObject.CompileAbsoluteAssetDirectory(RoomName);
                 AbnormalDirectoryHandler.CreateDirectory(directoryPath);
             }
@@ -51,7 +52,8 @@ namespace UWBNetworkingPackage
         {
             List<string> roomNames = new List<string>();
 
-            foreach(string folderPath in Directory.GetDirectories(Config_Base.CompileAbsoluteAssetDirectory()))
+            //foreach(string folderPath in Directory.GetDirectories(Config_Base.CompileAbsoluteAssetDirectory()))
+            foreach(string folderPath in Directory.GetDirectories(Path.Combine(Config.Current.Room.AbsoluteAssetRootFolder, Config.Current.Room.AssetSubFolder)))
             //foreach (string folderPath in Directory.GetDirectories(Path.Combine(UWB_Texturing.Config_Base.AbsoluteAssetRootFolder, Config_Base.AssetSubFolder)))
             {
                 string[] pass1 = folderPath.Split('/');
@@ -71,7 +73,8 @@ namespace UWBNetworkingPackage
         public static void UpdateRawRoomBundle(string roomName)
         {
             string bundleName = UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename();
-            string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
+            //string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
+            string ASLBundlePath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(bundleName);
             string GeneratedBundlePath = UWB_Texturing.Config.AssetBundle.RawPackage.CompileAbsoluteAssetPath(bundleName, roomName);
             if (!File.Exists(ASLBundlePath))
             {
@@ -100,7 +103,8 @@ namespace UWBNetworkingPackage
         public static void UpdateRoomBundle(string roomName)
         {
             string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
-            string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(Config.AssetBundle.Current.CompileFilename(bundleName));
+            //string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(Config.AssetBundle.Current.CompileFilename(bundleName));
+            string ASLBundlePath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(Config.Current.AssetBundle.CompileFilename(bundleName));
             string GeneratedBundlePath = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(bundleName, roomName);
             //string GeneratedBundlePath = Config.AssetBundle.PC.CompileAbsoluteAssetPath(Config.AssetBundle.PC.CompileFilename(bundleName));
             Debug.Log("ASL Bundle Path = " + ASLBundlePath);

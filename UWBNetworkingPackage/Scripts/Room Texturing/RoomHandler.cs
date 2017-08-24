@@ -32,7 +32,8 @@ namespace UWBNetworkingPackage
 
         public static string[] GetRoomNames()
         {
-            string[] roomNames = Directory.GetDirectories(Config_Base.CompileAbsoluteRoomDirectory());
+            //string[] roomNames = Directory.GetDirectories(Config_Base.CompileAbsoluteRoomDirectory());
+            string[] roomNames = Directory.GetDirectories(Config.Current.Room.CompileAbsoluteAssetDirectory());
             for (int i = 0; i < roomNames.Length; i++)
             {
                 string pass1 = roomNames[i].Split('/')[roomNames[i].Split('/').Length];
@@ -54,7 +55,8 @@ namespace UWBNetworkingPackage
 
         public static void InstantiateRoom(string roomName)
         {
-            string rawResourceBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
+            //string rawResourceBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
+            string rawResourceBundlePath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
             UWB_Texturing.BundleHandler.InstantiateRoom(rawResourceBundlePath);
         }
 
@@ -72,7 +74,8 @@ namespace UWBNetworkingPackage
         public static void GenerateRoomFolder(UWB_Texturing.RoomNameChangedEventArgs e)
         {
             string roomName = e.NewName;
-            string roomDirectory = Config.Room.CompileAbsoluteRoomDirectory(roomName);
+            //string roomDirectory = Config.Room.CompileAbsoluteRoomDirectory(roomName);
+            string roomDirectory = Config.Current.Room.CompileAbsoluteAssetDirectory(roomName);
             if (!Directory.Exists(roomDirectory))
             {
                 AbnormalDirectoryHandler.CreateDirectory(roomDirectory);
@@ -81,7 +84,8 @@ namespace UWBNetworkingPackage
 
         public static void PackRoomBundle(BuildTarget targetPlatform)
         {
-            string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
+            //string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
+            string destinationDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
             //UWB_Texturing.BundleHandler.PackFinalRoomBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
             UWB_Texturing.BundleHandler.PackFinalRoomBundle(targetPlatform);
         }

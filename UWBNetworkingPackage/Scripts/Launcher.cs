@@ -26,7 +26,8 @@ namespace UWBNetworkingPackage
 
         private static string _version = "1";   // Should be set to the current version of your application 
         private DateTime lastRoomUpdate = DateTime.MinValue;
-        private NodeType lastNodeType = Config.AssetBundle.Current.NodeType;
+        //private NodeType lastNodeType = Config.AssetBundle.Current.NodeType;
+        private NodeType lastNodeType = Config.Current.NodeType;
         #endregion
 
         #region Public Properties
@@ -99,7 +100,8 @@ namespace UWBNetworkingPackage
         [PunRPC]
         public virtual void RequestRoomModel()
         {
-            string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+            //string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+            string roomBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
             int roomBundlePort = Config.Ports.RoomBundle;
 #if !UNITY_WSA_10_0
             SocketClient_PC.RequestFiles(roomBundlePort, roomBundleDirectory);
@@ -358,7 +360,8 @@ namespace UWBNetworkingPackage
         public void DeleteLocalRoomModelInfo(string roomName)
         {
             // ERROR TESTING -> these might point to the wrong folders -> update to search through appropriate folders
-            string materialDirectory = Config.AssetBundle.Current.CompileAbsoluteAssetDirectory();
+            //string materialDirectory = Config.AssetBundle.Current.CompileAbsoluteAssetDirectory();
+            string materialDirectory = Config.Current.Room.CompileAbsoluteAssetDirectory();
             string meshesDirectory = materialDirectory;
             string texturesDirectory = materialDirectory;
 

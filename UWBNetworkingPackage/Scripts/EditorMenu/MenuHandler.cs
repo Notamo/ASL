@@ -40,7 +40,8 @@ namespace UWBNetworkingPackage
 
         public static void ExportRawResources(int targetID)
         {
-            string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
+            //string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
+            string filepath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
             int rawRoomPort = Config.Ports.RoomResourceBundle_ClientToServer;
 #if !UNITY_WSA_10_0
             SocketClient_PC.SendFile(ServerFinder.serverIP, rawRoomPort, filepath);
@@ -50,6 +51,29 @@ namespace UWBNetworkingPackage
 #endif
         }
 
+
+        //public static void ProcessRoomResources()
+        //{
+        //    string roomName = UWB_Texturing.Config.RoomObject.GameObjectName;
+        //    //string customOrientationFilepath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.CustomOrientation.CompileFilename());
+        //    string customOrientationFilepath = UWB_Texturing.Config.CustomOrientation.CompileAbsoluteAssetPath(UWB_Texturing.Config.CustomOrientation.CompileFilename(), roomName);
+        //    string unityMeshesRelativeDirectory = Config.AssetBundle.Current.AssetSubFolder;
+        //    string materialsRelativeDirectory = Config.AssetBundle.Current.AssetSubFolder;
+        //    if (File.Exists(customOrientationFilepath))
+        //    {
+        //        // Build room object
+        //        string[] customOrientationFileLines = File.ReadAllLines(customOrientationFilepath);
+        //        UWB_Texturing.RoomModel.BuildRoomObject(roomName, customOrientationFileLines, unityMeshesRelativeDirectory, materialsRelativeDirectory);
+        //    }
+        //    else
+        //    {
+        //        Debug.Log("Unable to build room!");
+        //    }
+        //    //UWB_Texturing.RoomModel.BuildRoomObject(File.ReadAllLines(Config.CustomOrientation.CompileAbsoluteAssetPath(Config.CustomOrientation.CompileFilename())));
+        //}
+
+
+        #region Bundle
         public static void ExportRoom(int targetID)
         {
             //Debug.Log("Export Room entered");
@@ -76,7 +100,8 @@ namespace UWBNetworkingPackage
             //////photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(targetID), IPManager.CompileNetworkConfigString(finalRoomBundlePort));
 
 
-            string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+            //string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+            string filepath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
             int roomBundlePort = Config.Ports.RoomBundle_ClientToServer;
 #if !UNITY_WSA_10_0
             SocketClient_PC.SendFile(ServerFinder.serverIP, roomBundlePort, filepath);
@@ -85,27 +110,7 @@ namespace UWBNetworkingPackage
             SocketClient_Hololens.SendFile(ServerFinder.serverIP, roomBundlePort, filepath);
 #endif
         }
-
-        //public static void ProcessRoomResources()
-        //{
-        //    string roomName = UWB_Texturing.Config.RoomObject.GameObjectName;
-        //    //string customOrientationFilepath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.CustomOrientation.CompileFilename());
-        //    string customOrientationFilepath = UWB_Texturing.Config.CustomOrientation.CompileAbsoluteAssetPath(UWB_Texturing.Config.CustomOrientation.CompileFilename(), roomName);
-        //    string unityMeshesRelativeDirectory = Config.AssetBundle.Current.AssetSubFolder;
-        //    string materialsRelativeDirectory = Config.AssetBundle.Current.AssetSubFolder;
-        //    if (File.Exists(customOrientationFilepath))
-        //    {
-        //        // Build room object
-        //        string[] customOrientationFileLines = File.ReadAllLines(customOrientationFilepath);
-        //        UWB_Texturing.RoomModel.BuildRoomObject(roomName, customOrientationFileLines, unityMeshesRelativeDirectory, materialsRelativeDirectory);
-        //    }
-        //    else
-        //    {
-        //        Debug.Log("Unable to build room!");
-        //    }
-        //    //UWB_Texturing.RoomModel.BuildRoomObject(File.ReadAllLines(Config.CustomOrientation.CompileAbsoluteAssetPath(Config.CustomOrientation.CompileFilename())));
-        //}
-
+        #endregion
 
         #region Verified
         public static void ProcessAllRooms()

@@ -61,7 +61,8 @@ namespace UWBNetworkingPackage
 
             if(clientPort == Config.Ports.Bundle)
             {
-                string[] allFilepaths = Directory.GetFiles(Config.AssetBundle.Current.CompileAbsoluteBundleDirectory());
+                //string[] allFilepaths = Directory.GetFiles(Config.AssetBundle.Current.CompileAbsoluteBundleDirectory());
+                string[] allFilepaths = Directory.GetFiles(Config.Current.AssetBundle.CompileAbsoluteAssetDirectory());
                 List<string> fileList = new List<string>();
                 foreach(string filepath in allFilepaths)
                 {
@@ -76,27 +77,32 @@ namespace UWBNetworkingPackage
             }
             else if(clientPort == Config.Ports.Bundle_ClientToServer)
             {
-                string bundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+                //string bundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+                string bundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
                 ReceiveFiles(clientSocket, bundleDirectory);
             }
             else if(clientPort == Config.Ports.RoomResourceBundle)
             {
-                string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
+                //string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
+                string filepath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
                 SendFile(filepath, clientSocket);
             }
             else if(clientPort == Config.Ports.RoomResourceBundle_ClientToServer)
             {
-                string roomResourceBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+                //string roomResourceBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+                string roomResourceBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
                 ReceiveFiles(clientSocket, roomResourceBundleDirectory);
             }
             else if(clientPort == Config.Ports.RoomBundle)
             {
-                string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+                //string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+                string filepath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
                 SendFile(filepath, clientSocket);
             }
             else if(clientPort == Config.Ports.RoomBundle_ClientToServer)
             {
-                string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+                //string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+                string roomBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
                 ReceiveFiles(clientSocket, roomBundleDirectory);
             }
             else

@@ -148,7 +148,13 @@ namespace UWBNetworkingPackage {
         {
             UWB_Texturing.Menu.UnpackAllRoomBundles();
         }
-#endregion
+
+        [UnityEditor.MenuItem("ASL/Room Texture/Bundle/Room Bundle/Unpack/All Rooms", false, 0)]
+        public static void ExportRoomBundleToMasterClient()
+        {
+            
+        }
+        #endregion
 
 
 
