@@ -36,6 +36,12 @@ public class TexturePostProcessor : AssetPostprocessor {
     {
         TextureImporter textureImporter = assetImporter as TextureImporter;
         textureImporter.isReadable = true;
+        //textureImporter.textureFormat = TextureImporterFormat.ARGB32;
+        TextureImporterPlatformSettings platformSettings = new TextureImporterPlatformSettings();
+        textureImporter.GetPlatformTextureSettings("Standalone").CopyTo(platformSettings);
+        platformSettings.overridden = true;
+        platformSettings.format = TextureImporterFormat.RGBA32;
+        textureImporter.SetPlatformTextureSettings(platformSettings);
     }
 #endif
 }
