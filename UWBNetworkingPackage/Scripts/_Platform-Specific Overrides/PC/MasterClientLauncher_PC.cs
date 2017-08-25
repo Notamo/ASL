@@ -15,7 +15,9 @@ namespace UWBNetworkingPackage
         {
             // ERROR TESTING - REMOVE THIS METHOD - NOTHING SPECIAL HAPPENS IN IT UNIQUE TO THE MASTER CLIENT ANYMORE
             base.Start();
+#if UNITY_EDITOR
             UWB_Texturing.Menu.InstantiateRoom();
+#endif
             ServerFinder.ServerStart();
             SocketServer_PC.Start();
         }

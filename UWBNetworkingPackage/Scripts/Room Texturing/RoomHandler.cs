@@ -82,6 +82,7 @@ namespace UWBNetworkingPackage
             }
         }
 
+#if UNITY_EDITOR
         public static void PackRoomBundle(BuildTarget targetPlatform)
         {
             //string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
@@ -89,5 +90,6 @@ namespace UWBNetworkingPackage
             //UWB_Texturing.BundleHandler.PackFinalRoomBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
             UWB_Texturing.BundleHandler.PackFinalRoomBundle(targetPlatform);
         }
+#endif
     }
 }

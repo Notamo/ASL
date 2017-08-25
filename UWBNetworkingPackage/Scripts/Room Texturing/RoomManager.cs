@@ -42,9 +42,16 @@ namespace UWBNetworkingPackage
             }
         }
 
-        public void SyncRoomName()
+        public void SyncDisplayedRoomName()
         {
             RoomName = UWB_Texturing.Config.RoomObject.GameObjectName;
+        }
+
+        public static string SyncRoomName()
+        {
+            string roomName = GameObject.Find("RoomManager").GetComponent<RoomManager>().RoomName;
+            UWB_Texturing.Config.RoomObject.GameObjectName = roomName;
+            return roomName;
         }
 
         // ERROR TESTING - Revisit when we establish a good way to identify 
