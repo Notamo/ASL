@@ -14,13 +14,15 @@ namespace UWBNetworkingPackage {
         [UnityEditor.MenuItem("ASL/Room Texture/Instantiate/Current Room/GameObject", false, 0)]
         public static void InstantiateRoom()
         {
-            UWB_Texturing.Menu.InstantiateRoom();
+            //UWB_Texturing.Menu.InstantiateRoom();
+            MenuHandler.InstantiateRoom();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Instantiate/All Rooms/GameObjects", false, 0)]
         public static void InstantiateAllRooms()
         {
-            UWB_Texturing.Menu.InstantiateAllRooms();
+            //UWB_Texturing.Menu.InstantiateAllRooms();
+            MenuHandler.InstantiateAllRooms();
         }
         #endregion
 
@@ -28,13 +30,15 @@ namespace UWBNetworkingPackage {
         [UnityEditor.MenuItem("ASL/Room Texture/Instantiate/Current Room/Prefab", false, 0)]
         public static void InstantiateRoomPrefab()
         {
-            UWB_Texturing.Menu.InstantiateRoomPrefab();
+            //UWB_Texturing.Menu.InstantiateRoomPrefab();
+            MenuHandler.InstantiateRoomPrefab();
         }
         
         [UnityEditor.MenuItem("ASL/Room Texture/Instantiate/All Rooms/Prefabs", false, 0)]
         public static void InstantiateAllRoomPrefabs()
         {
-            UWB_Texturing.Menu.InstantiateAllRoomPrefabs();
+            //UWB_Texturing.Menu.InstantiateAllRoomPrefabs();
+            MenuHandler.InstantiateAllRoomPrefabs();
         }
         #endregion
 
@@ -42,61 +46,71 @@ namespace UWBNetworkingPackage {
         [UnityEditor.MenuItem("ASL/Room Texture/Delete/Current Room/GameObject", false, 0)]
         public static void RemoveRoomObject()
         {
-            UWB_Texturing.Menu.RemoveRoomObject();
+            //UWB_Texturing.Menu.RemoveRoomObject();
+            MenuHandler.RemoveRoomObject();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Delete/All Rooms/GameObject", false, 0)]
         public static void RemoveAllRoomObjects()
         {
-            UWB_Texturing.Menu.RemoveAllRoomObjects();
+            //UWB_Texturing.Menu.RemoveAllRoomObjects();
+            MenuHandler.RemoveAllRoomObjects();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Delete/Current Room/Prefab", false, 0)]
         public static void RemoveRoomPrefab()
         {
-            UWB_Texturing.Menu.RemoveRoomPrefab();
+            //UWB_Texturing.Menu.RemoveRoomPrefab();
+            MenuHandler.RemoveRoomPrefab();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Delete/All Rooms/Prefab", false, 0)]
         public static void RemoveAllRoomPrefabs()
         {
-            UWB_Texturing.Menu.RemoveAllRoomPrefabs();
+            //UWB_Texturing.Menu.RemoveAllRoomPrefabs();
+            MenuHandler.RemoveAllRoomPrefabs();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Delete/Current Room/Resources", false, 0)]
         public static void RemoveRoomResources()
         {
-            UWB_Texturing.Menu.RemoveRoomResources();
+            //UWB_Texturing.Menu.RemoveRoomResources();
+            MenuHandler.RemoveRoomResources();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Delete/All Rooms/Resources", false, 0)]
         public static void RemoveAllRoomResources()
         {
-            UWB_Texturing.Menu.RemoveAllRoomResources();
+            //UWB_Texturing.Menu.RemoveAllRoomResources();
+            MenuHandler.RemoveAllRoomResources();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Delete/Current Room/Raw Info", false, 0)]
         public static void RemoveRoomRawInfo()
         {
-            UWB_Texturing.Menu.RemoveRoomRawInfo();
+            //UWB_Texturing.Menu.RemoveRoomRawInfo();
+            MenuHandler.RemoveRoomRawInfo();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Delete/All Rooms/Raw Info", false, 0)]
         public static void RemoveAllRoomRawInfo()
         {
-            UWB_Texturing.Menu.RemoveAllRoomRawInfo();
+            //UWB_Texturing.Menu.RemoveAllRoomRawInfo();
+            MenuHandler.RemoveAllRoomRawInfo();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Delete/Current Room/Everything", false, 0)]
         public static void RemoveEverything()
         {
-            UWB_Texturing.Menu.RemoveEverything();
+            //UWB_Texturing.Menu.RemoveEverything();
+            MenuHandler.RemoveEverything();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Delete/All Rooms/Everything", false, 0)]
         public static void RemoveAllEverything()
         {
-            UWB_Texturing.Menu.RemoveAllEverything();
+            //UWB_Texturing.Menu.RemoveAllEverything();
+            MenuHandler.RemoveAllEverything();
         }
 #endregion
 
@@ -104,56 +118,64 @@ namespace UWBNetworkingPackage {
         [UnityEditor.MenuItem("ASL/Room Texture/Bundle/Room Resource Bundle/Pack/Current Room", false, 0)]
         public static void PackRoomResourceBundle()
         {
-            UWB_Texturing.Menu.PackRoomResourceBundle();
+            //UWB_Texturing.Menu.PackRoomResourceBundle();
+            MenuHandler.PackRoomResourceBundle();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Bundle/Room Resource Bundle/Pack/All Rooms", false, 0)]
         public static void PackAllRoomResourceBundles()
         {
-            UWB_Texturing.Menu.PackAllRoomResourceBundles();
+            //UWB_Texturing.Menu.PackAllRoomResourceBundles();
+            MenuHandler.PackAllRoomResourceBundles();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Bundle/Room Bundle/Pack/Current Room", false, 0)]
         public static void PackRoomBundle()
         {
-            UWB_Texturing.Menu.PackRoomBundle();
+            //UWB_Texturing.Menu.PackRoomBundle();
+            MenuHandler.PackRoomBundle();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Bundle/Room Bundle/Pack/All Rooms", false, 0)]
         public static void PackAllRoomBundles()
         {
-            UWB_Texturing.Menu.PackAllRoomBundles();
+            //UWB_Texturing.Menu.PackAllRoomBundles();
+            MenuHandler.PackAllRoomBundles();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Bundle/Room Resource Bundle/Unpack/Current Room", false, 0)]
         public static void UnpackRoomResourceBundle()
         {
-            UWB_Texturing.Menu.UnpackRoomResourceBundle();
+            //UWB_Texturing.Menu.UnpackRoomResourceBundle();
+            MenuHandler.UnpackRoomResourceBundle();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Bundle/Room Resource Bundle/Unpack/All Rooms", false, 0)]
         public static void UnpackAllRoomResourceBundles()
         {
-            UWB_Texturing.Menu.UnpackAllRoomResourceBundles();
+            //UWB_Texturing.Menu.UnpackAllRoomResourceBundles();
+            MenuHandler.UnpackAllRoomResourceBundles();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Bundle/Room Bundle/Unpack/Current Room", false, 0)]
         public static void UnpackRoomBundle()
         {
-            UWB_Texturing.Menu.UnpackRoomBundle();
+            //UWB_Texturing.Menu.UnpackRoomBundle();
+            MenuHandler.UnpackRoomBundle();
         }
 
         [UnityEditor.MenuItem("ASL/Room Texture/Bundle/Room Bundle/Unpack/All Rooms", false, 0)]
         public static void UnpackAllRoomBundles()
         {
-            UWB_Texturing.Menu.UnpackAllRoomBundles();
+            //UWB_Texturing.Menu.UnpackAllRoomBundles();
+            MenuHandler.UnpackAllRoomBundles();
         }
 
-        [UnityEditor.MenuItem("ASL/Room Texture/Bundle/Room Bundle/Unpack/All Rooms", false, 0)]
-        public static void ExportRoomBundleToMasterClient()
-        {
+        //[UnityEditor.MenuItem("ASL/Room Texture/Bundle/Room Bundle/Unpack/All Rooms", false, 0)]
+        //public static void ExportRoomBundleToMasterClient()
+        //{
             
-        }
+        //}
         #endregion
 
 
