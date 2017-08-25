@@ -40,6 +40,9 @@ namespace UWBNetworkingPackage
                 //string directoryPath = UWB_Texturing.Config.RoomObject.CompileAbsoluteAssetDirectory(RoomName);
                 AbnormalDirectoryHandler.CreateDirectory(directoryPath);
             }
+
+            UpdateRoomBundle(RoomName);
+            UpdateRawRoomBundle(RoomName);
         }
 
         public void SyncDisplayedRoomName()
@@ -79,6 +82,9 @@ namespace UWBNetworkingPackage
 
         public static void UpdateRawRoomBundle(string roomName)
         {
+            string originalRoomName = UWB_Texturing.Config.RoomObject.GameObjectName;
+            UWB_Texturing.Config.RoomObject.GameObjectName = roomName;
+            
             string bundleName = UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename();
             //string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
             string ASLBundlePath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(bundleName);
@@ -105,10 +111,15 @@ namespace UWBNetworkingPackage
                     File.Copy(GeneratedBundlePath, ASLBundlePath);
                 }
             }
+
+            UWB_Texturing.Config.RoomObject.GameObjectName = originalRoomName;
         }
 
         public static void UpdateRoomBundle(string roomName)
         {
+            string originalRoomName = UWB_Texturing.Config.RoomObject.GameObjectName;
+            UWB_Texturing.Config.RoomObject.GameObjectName = roomName;
+
             string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
             //string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(Config.AssetBundle.Current.CompileFilename(bundleName));
             string ASLBundlePath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(Config.Current.AssetBundle.CompileFilename(bundleName));
@@ -137,6 +148,8 @@ namespace UWBNetworkingPackage
                     File.Copy(GeneratedBundlePath, ASLBundlePath);
                 }
             }
+
+            UWB_Texturing.Config.RoomObject.GameObjectName = originalRoomName;
         }
     }
 }
