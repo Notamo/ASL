@@ -573,7 +573,7 @@ namespace UWBNetworkingPackage
 
                 public static new string CompileAbsoluteAssetDirectory()
                 {
-                    return Path.Combine(Directory.GetCurrentDirectory(), AssetSubFolder);
+                    return Path.Combine(AbsoluteAssetRootFolder, AssetSubFolder);
                 }
                 
                 public static new string CompileAbsoluteAssetPath(string filename)
@@ -831,7 +831,7 @@ namespace UWBNetworkingPackage
 
                 public static new string CompileAbsoluteAssetDirectory()
                 {
-                    return Path.Combine(Directory.GetCurrentDirectory(), AssetSubFolder);
+                    return Path.Combine(AbsoluteAssetRootFolder, AssetSubFolder);
                 }
 
                 public static new string CompileAbsoluteAssetPath(string filename)

@@ -44,7 +44,7 @@ namespace UWBNetworkingPackage
 
         public static string CompileAbsoluteAssetDirectory(string roomName)
         {
-            return Path.Combine(Directory.GetCurrentDirectory(), AssetSubFolder) + '/' + roomName;
+            return Path.Combine(AbsoluteAssetRootFolder, AssetSubFolder) + '/' + roomName;
         }
         
         public static new string CompileAbsoluteAssetPath(string filename)

@@ -100,6 +100,7 @@ namespace UWBNetworkingPackage
         [PunRPC]
         public virtual void RequestRoomModel()
         {
+            string roomName = UWB_Texturing.Config.RoomObject.GameObjectName;
             //string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
             string roomBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
             int roomBundlePort = Config.Ports.RoomBundle;
@@ -108,6 +109,7 @@ namespace UWBNetworkingPackage
 #elif !UNITY_EDITOR && UNITY_WSA_10_0
             SocketClient_Hololens.RequestFiles(roomBundlePort, roomBundleDirectory);
 #endif
+            RoomManager.UpdateRoomBundle(roomName);
         }
 
 

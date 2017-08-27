@@ -25,8 +25,8 @@ namespace UWBNetworkingPackage
             {
                 RoomName = UWB_Texturing.Config.RoomObject.GameObjectName;
             }
-            UpdateRoomBundle(RoomName);
-            UpdateRawRoomBundle(RoomName);
+
+            InvokeRepeating("UpdateRoomBundles", 0, 3);
         }
 
         void FixedUpdate()
@@ -40,9 +40,6 @@ namespace UWBNetworkingPackage
                 //string directoryPath = UWB_Texturing.Config.RoomObject.CompileAbsoluteAssetDirectory(RoomName);
                 AbnormalDirectoryHandler.CreateDirectory(directoryPath);
             }
-
-            UpdateRoomBundle(RoomName);
-            UpdateRawRoomBundle(RoomName);
         }
 
         public void SyncDisplayedRoomName()
@@ -80,6 +77,18 @@ namespace UWBNetworkingPackage
             return roomNames.ToArray();
         }
 
+        public void UpdateRoomBundles()
+        {
+            string[] roomNames = GetAllRoomNames();
+            foreach(string roomName in roomNames)
+            {
+                Debug.Log("Debugging " + roomName + " UpdateRawRoomBundle");
+                UpdateRawRoomBundle(roomName);
+                Debug.Log("Debugging " + roomName + " UpdateRoomBundle");
+                UpdateRoomBundle(roomName);
+            }
+        }
+
         public static void UpdateRawRoomBundle(string roomName)
         {
             string originalRoomName = UWB_Texturing.Config.RoomObject.GameObjectName;
@@ -89,28 +98,50 @@ namespace UWBNetworkingPackage
             //string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
             string ASLBundlePath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(bundleName);
             string GeneratedBundlePath = UWB_Texturing.Config.AssetBundle.RawPackage.CompileAbsoluteAssetPath(bundleName, roomName);
-            if (!File.Exists(ASLBundlePath))
-            {
-                if (File.Exists(GeneratedBundlePath))
-                {
-                    File.Copy(GeneratedBundlePath, ASLBundlePath);
-                }
-                else
-                {
-                    Debug.Log(Messages.Errors.RawRoomBundleNotAvailable);
-                    return;
-                }
-            }
-            else if (File.Exists(GeneratedBundlePath))
+            
+            string ASLBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
+            string GeneratedBundleDirectory = UWB_Texturing.Config.AssetBundle.RawPackage.CompileAbsoluteAssetDirectory(roomName);
+            if (Directory.Exists(ASLBundleDirectory))
+                Directory.CreateDirectory(ASLBundleDirectory);
+            if (Directory.Exists(GeneratedBundleDirectory))
+                Directory.CreateDirectory(GeneratedBundleDirectory);
+
+            if (File.Exists(ASLBundlePath)
+                && File.Exists(GeneratedBundlePath))
             {
                 DateTime ASLDateTime = File.GetLastWriteTime(ASLBundlePath);
                 DateTime RoomTextureDateTime = File.GetLastWriteTime(GeneratedBundlePath);
 
                 if (DateTime.Compare(ASLDateTime, RoomTextureDateTime) < 0)
                 {
+                    if (File.Exists(ASLBundlePath))
+                    {
+                        File.Delete(ASLBundlePath);
+                    }
                     File.Copy(GeneratedBundlePath, ASLBundlePath);
                 }
+                else if (DateTime.Compare(RoomTextureDateTime, ASLDateTime) < 0)
+                {
+                    if (File.Exists(GeneratedBundlePath))
+                    {
+                        File.Delete(GeneratedBundlePath);
+                    }
+                    File.Copy(ASLBundlePath, GeneratedBundlePath);
+                }
             }
+            else if (File.Exists(GeneratedBundlePath)
+                && !File.Exists(ASLBundlePath))
+            {
+                File.Copy(GeneratedBundlePath, ASLBundlePath);
+            }
+            else if (File.Exists(ASLBundlePath)
+                && !File.Exists(GeneratedBundlePath))
+            {
+                File.Copy(ASLBundlePath, GeneratedBundlePath);
+            }
+#if UNITY_EDITOR
+            UnityEditor.AssetDatabase.Refresh();
+#endif
 
             UWB_Texturing.Config.RoomObject.GameObjectName = originalRoomName;
         }
@@ -125,29 +156,56 @@ namespace UWBNetworkingPackage
             string ASLBundlePath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(Config.Current.AssetBundle.CompileFilename(bundleName));
             string GeneratedBundlePath = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(bundleName, roomName);
             //string GeneratedBundlePath = Config.AssetBundle.PC.CompileAbsoluteAssetPath(Config.AssetBundle.PC.CompileFilename(bundleName));
-            Debug.Log("ASL Bundle Path = " + ASLBundlePath);
-            if (!File.Exists(ASLBundlePath))
-            {
-                if (File.Exists(GeneratedBundlePath))
-                {
-                    File.Copy(GeneratedBundlePath, ASLBundlePath);
-                }
-                else
-                {
-                    Debug.Log(Messages.Errors.RoomBundleNotAvailable);
-                    return;
-                }
-            }
-            else if (File.Exists(GeneratedBundlePath))
+            
+            Debug.Log("Bundle name = " + bundleName);
+            Debug.Log("Current directory = " + Directory.GetCurrentDirectory());
+            Debug.Log("ASL Bundle path = " + ASLBundlePath);
+            Debug.Log("Generated Bundle Path = " + GeneratedBundlePath);
+
+            string ASLBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
+            string GeneratedBundleDirectory = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetDirectory(roomName);
+            if (Directory.Exists(ASLBundleDirectory))
+                Directory.CreateDirectory(ASLBundleDirectory);
+            if (Directory.Exists(GeneratedBundleDirectory))
+                Directory.CreateDirectory(GeneratedBundleDirectory);
+            
+            if (File.Exists(ASLBundlePath)
+                && File.Exists(GeneratedBundlePath))
             {
                 DateTime ASLDateTime = File.GetLastWriteTime(ASLBundlePath);
                 DateTime RoomTextureDateTime = File.GetLastWriteTime(GeneratedBundlePath);
 
                 if (DateTime.Compare(ASLDateTime, RoomTextureDateTime) < 0)
                 {
+                    if (File.Exists(ASLBundlePath))
+                    {
+                        File.Delete(ASLBundlePath);
+                    }
                     File.Copy(GeneratedBundlePath, ASLBundlePath);
                 }
+                else if (DateTime.Compare(RoomTextureDateTime, ASLDateTime) < 0)
+                {
+                    if (File.Exists(GeneratedBundlePath))
+                    {
+                        File.Delete(GeneratedBundlePath);
+                    }
+                    File.Copy(ASLBundlePath, GeneratedBundlePath);
+                }
             }
+            else if (File.Exists(GeneratedBundlePath)
+                && !File.Exists(ASLBundlePath))
+            {
+                File.Copy(GeneratedBundlePath, ASLBundlePath);
+            }
+            else if (File.Exists(ASLBundlePath)
+                && !File.Exists(GeneratedBundlePath))
+            {
+                File.Copy(ASLBundlePath, GeneratedBundlePath);
+            }
+
+#if UNITY_EDITOR
+            UnityEditor.AssetDatabase.Refresh();
+#endif
 
             UWB_Texturing.Config.RoomObject.GameObjectName = originalRoomName;
         }

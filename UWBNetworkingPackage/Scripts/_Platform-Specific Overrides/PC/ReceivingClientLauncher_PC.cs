@@ -14,6 +14,31 @@ namespace UWBNetworkingPackage
             ServerFinder.FindServer();
             SocketServer_PC.Start(); // For sending files to other non-master clients
         }
+
+        public override void OnJoinedRoom()
+        {
+            base.OnJoinedRoom();
+            
+            //string roomBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
+            //SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomBundle, roomBundleDirectory);
+            //string rawRoomBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
+            //SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomResourceBundle, rawRoomBundleDirectory);
+            string assetBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
+            SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.Bundle, assetBundleDirectory);
+
+            string[] roomNames = RoomManager.GetAllRoomNames();
+            foreach(string roomName in roomNames)
+            {
+                RoomManager.UpdateRawRoomBundle(roomName);
+                RoomManager.UpdateRoomBundle(roomName);
+            }
+
+            // Generate the room
+            foreach(string roomName in roomNames)
+            {
+                UWB_Texturing.BundleHandler.InstantiateAllRooms();
+            }
+        }
 #endif
     }
 }

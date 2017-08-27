@@ -69,6 +69,10 @@ namespace UWBNetworkingPackage
                     }
                 }
             }
+            else
+            {
+                PhotonNetwork.RPC(photonView, "RequestRoomModel", PhotonTargets.Others, false);
+            }
         }
 
         /// <summary>

@@ -93,6 +93,10 @@ namespace UWBNetworkingPackage
         /// </summary>
         public override void OnJoinedRoom()
         {
+            Debug.Log("Client joined room.");
+            
+
+
             //Debug.Log("Client joined room.");
             ////photonView.RPC("SendMesh", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
             ////photonView.RPC("SendRoomPrefabBundle", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
@@ -119,17 +123,17 @@ namespace UWBNetworkingPackage
 
             ///////////SocketClient.ConnectTest(Config.Ports.Base);
 
-#if !UNITY_WSA_10_0
-            //string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
-            string roomBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
-            SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomBundle, roomBundleDirectory);
-            //string rawRoomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
-            string rawRoomBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
-            SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomResourceBundle, rawRoomBundleDirectory);
-            //string assetBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
-            string assetBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
-            SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.Bundle, assetBundleDirectory);
-#endif
+//#if !UNITY_WSA_10_0
+//            //string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+//            string roomBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
+//            SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomBundle, roomBundleDirectory);
+//            //string rawRoomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+//            string rawRoomBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
+//            SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomResourceBundle, rawRoomBundleDirectory);
+//            //string assetBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+//            string assetBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
+//            SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.Bundle, assetBundleDirectory);
+//#endif
 
         }
 
