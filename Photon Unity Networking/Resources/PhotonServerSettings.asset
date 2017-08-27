@@ -35,20 +35,11 @@ MonoBehaviour:
   - PunPickupSimple
   - PunRespawn
   - ReceiveAddMesh
-  - ReceiveAssetBundle
   - ReceiveMesh
-  - ReceiveNetworkConfig
-  - ReceiveRawRoomModelInfo
-  - ReceiveRoomModel
   - RequestForPickupItems
   - RequestForPickupTimes
-  - SendAddMesh
-  - SendAssetBundles
-  - SendMesh
-  - SendNetworkConfig
-  - SendRawRoomModelInfo
-  - SendRoomModel
-  - SpawnNetworkObject
-  - SendAssetBundle
   - RequestRoomModel
+  - SendAddMesh
+  - SendMesh
+  - SpawnNetworkObject
   DisableAutoOpenWizard: 1

@@ -55,6 +55,7 @@ namespace UWBNetworkingPackage
             //string path = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
             //string path = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
             string path = Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+            Debug.Log("Asset path when updating room = " + path);
             if (File.Exists(path))
             {
                 FileInfo f = new FileInfo(path);
@@ -71,6 +72,7 @@ namespace UWBNetworkingPackage
             }
             else
             {
+                Debug.Log("Room model not found at path " + path);
                 PhotonNetwork.RPC(photonView, "RequestRoomModel", PhotonTargets.Others, false);
             }
         }

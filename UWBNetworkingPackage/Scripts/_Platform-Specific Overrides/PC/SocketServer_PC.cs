@@ -84,8 +84,25 @@ namespace UWBNetworkingPackage
             else if(clientPort == Config.Ports.RoomResourceBundle)
             {
                 //string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
-                string filepath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
-                SendFile(filepath, clientSocket);
+                string originalRoomName = UWB_Texturing.Config.RoomObject.GameObjectName;
+
+                string[] roomNames = RoomManager.GetAllRoomNames();
+                List<string> filepaths = new List<string>();
+
+                foreach(string roomName in roomNames)
+                {
+                    UWB_Texturing.Config.RoomObject.GameObjectName = roomName;
+
+                    string filepath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
+                    filepaths.Add(filepath);
+                }
+
+                //string filepath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
+                //SendFile(filepath, clientSocket);
+
+                SendFiles(filepaths.ToArray(), clientSocket);
+
+                UWB_Texturing.Config.RoomObject.GameObjectName = originalRoomName;
             }
             else if(clientPort == Config.Ports.RoomResourceBundle_ClientToServer)
             {
@@ -96,8 +113,23 @@ namespace UWBNetworkingPackage
             else if(clientPort == Config.Ports.RoomBundle)
             {
                 //string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
-                string filepath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
-                SendFile(filepath, clientSocket);
+                string originalRoomName = UWB_Texturing.Config.RoomObject.GameObjectName;
+
+                string[] roomNames = RoomManager.GetAllRoomNames();
+                List<string> filepaths = new List<string>();
+
+                foreach (string roomName in roomNames)
+                {
+                    UWB_Texturing.Config.RoomObject.GameObjectName = roomName;
+
+                    string filepath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+                    filepaths.Add(filepath);
+                    //SendFile(filepath, clientSocket);
+                }
+
+                SendFiles(filepaths.ToArray(), clientSocket);
+
+                UWB_Texturing.Config.RoomObject.GameObjectName = originalRoomName;
             }
             else if(clientPort == Config.Ports.RoomBundle_ClientToServer)
             {

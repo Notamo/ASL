@@ -13,10 +13,10 @@ namespace UWBNetworkingPackage
         /// </summary>
         public override void Start()
         {
-            // ERROR TESTING - REMOVE THIS METHOD - NOTHING SPECIAL HAPPENS IN IT UNIQUE TO THE MASTER CLIENT ANYMORE
             base.Start();
 #if UNITY_EDITOR
-            UWB_Texturing.Menu.InstantiateRoom();
+            //UWB_Texturing.Menu.InstantiateRoom();
+            UWB_Texturing.BundleHandler.InstantiateRoom(Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename()));
 #endif
             ServerFinder.ServerStart();
             SocketServer_PC.Start();

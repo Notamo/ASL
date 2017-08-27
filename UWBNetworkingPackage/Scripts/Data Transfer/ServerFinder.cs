@@ -19,13 +19,13 @@ namespace UWBNetworkingPackage
             int listenerPort = Config.Ports.FindServer;
             listener = new UdpClient(listenerPort);
             serverIP = IPManager.GetLocalIpAddress().ToString();
+
             AcceptClient();
         }
 
         public static void AcceptClient()
         {
             byte[] serverIPBytes = Encoding.UTF8.GetBytes(serverIP);
-
             new Thread(() =>
             {
                 while (true)

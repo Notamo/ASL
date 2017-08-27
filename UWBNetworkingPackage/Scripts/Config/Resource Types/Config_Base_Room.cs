@@ -37,9 +37,10 @@ namespace UWBNetworkingPackage
 
         public static new string CompileAbsoluteAssetDirectory()
         {
-            string roomName = RoomManager.GetAllRoomNames()[0];
-            Debug.Error("Defaulting to room " + roomName);
-            return CompileAbsoluteAssetDirectory(roomName);
+            //string roomName = RoomManager.GetAllRoomNames()[0];
+            //Debug.Error("Defaulting to room " + roomName);
+            //return CompileAbsoluteAssetDirectory(roomName);
+            return Path.Combine(AbsoluteAssetRootFolder, AssetSubFolder);
         }
 
         public static string CompileAbsoluteAssetDirectory(string roomName)
@@ -49,9 +50,10 @@ namespace UWBNetworkingPackage
         
         public static new string CompileAbsoluteAssetPath(string filename)
         {
-            string roomName = RoomManager.GetAllRoomNames()[0];
-            Debug.Error("Defaulting to room " + roomName);
-            return CompileAbsoluteAssetPath(roomName, filename);
+            //string roomName = RoomManager.GetAllRoomNames()[0];
+            //Debug.Error("Defaulting to room " + roomName);
+            //return CompileAbsoluteAssetPath(roomName, filename);
+            return Path.Combine(CompileAbsoluteAssetDirectory(), filename);
         }
 
         public static string CompileAbsoluteAssetPath(string roomName, string filename)
@@ -61,10 +63,12 @@ namespace UWBNetworkingPackage
 
         public static new string CompileUnityAssetDirectory()
         {
-            string roomName = RoomManager.GetAllRoomNames()[0];
-            Debug.Error("Defaulting to room " + roomName);
+            //string roomName = RoomManager.GetAllRoomNames()[0];
+            //Debug.Error("Defaulting to room " + roomName);
 
-            return CompileUnityAssetDirectory(roomName);
+            //return CompileUnityAssetDirectory(roomName);
+
+            return "Assets/" + AssetSubFolder;
         }
 
         public static string CompileUnityAssetDirectory(string roomName)
@@ -74,10 +78,12 @@ namespace UWBNetworkingPackage
 
         public static new string CompileUnityAssetPath(string filename)
         {
-            string roomName = RoomManager.GetAllRoomNames()[0];
-            Debug.Error("Defaulting to room " + roomName);
+            //string roomName = RoomManager.GetAllRoomNames()[0];
+            //Debug.Error("Defaulting to room " + roomName);
 
-            return CompileUnityAssetPath(roomName, filename);
+            //return CompileUnityAssetPath(roomName, filename);
+
+            return CompileUnityAssetDirectory() + '/' + filename;
         }
 
         public static string CompileUnityAssetPath(string roomName, string filename)
