@@ -9,19 +9,19 @@ namespace UWBNetworkingPackage
     public class Socket_Base_PC : Socket_Base
     {
 #if !UNITY_WSA_10_0
-        public static void SendFile(string filepath, Socket socket)
+        public static new void SendFile(string filepath, Socket socket)
         {
             SendFiles(new string[1] { filepath }, socket);
         }
 
-        public static void SendFiles(string[] filepaths, Socket socket)
+        public static new void SendFiles(string[] filepaths, Socket socket)
         {
             // Needs to tell the client socket what the server's ip is
             //string configString = IPManager.CompileNetworkConfigString(Config.Ports.ClientServerConnection);
 
             foreach(string filepath in filepaths)
             {
-                Debug.Log("Sending " + Path.GetFileName(filepath));
+                UnityEngine.Debug.Log("Sending " + Path.GetFileName(filepath));
             }
 
             MemoryStream ms = new MemoryStream();
@@ -32,7 +32,7 @@ namespace UWBNetworkingPackage
             socket.Shutdown(SocketShutdown.Both);
         }
 
-        public static void PrepSocketData(string[] filepaths, ref MemoryStream ms)
+        public static new void PrepSocketData(string[] filepaths, ref MemoryStream ms)
         {
             string header = BuildSocketHeader(filepaths);
 
@@ -53,7 +53,7 @@ namespace UWBNetworkingPackage
             }
         }
 
-        public static string BuildSocketHeader(string[] filepaths)
+        public static new string BuildSocketHeader(string[] filepaths)
         {
             System.Text.StringBuilder headerBuilder = new System.Text.StringBuilder();
 
@@ -67,7 +67,7 @@ namespace UWBNetworkingPackage
             return headerBuilder.ToString();
         }
 
-        public static void ReceiveFiles(Socket socket, string receiveDirectory)
+        public static new void ReceiveFiles(Socket socket, string receiveDirectory)
         {
             int bufferLength = 1024;
             byte[] data = new byte[bufferLength];
@@ -180,17 +180,17 @@ namespace UWBNetworkingPackage
 
             fileStream.Close();
             fileStream.Dispose();
-#if UNITY_EDITOR
-            UnityEditor.AssetDatabase.Refresh();
-#endif
+//#if UNITY_EDITOR
+//            UnityEditor.AssetDatabase.Refresh();
+//#endif
         }
 
-        public static string BytesToString(byte[] bytes)
+        public static new string BytesToString(byte[] bytes)
         {
             return System.Text.Encoding.UTF8.GetString(bytes);
         }
 
-        public static byte[] StringToBytes(string str)
+        public static new byte[] StringToBytes(string str)
         {
             return System.Text.Encoding.UTF8.GetBytes(str);
         }

@@ -28,19 +28,27 @@ namespace UWBNetworkingPackage
             //SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomResourceBundle, rawRoomBundleDirectory);
             string assetBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
             SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.Bundle, assetBundleDirectory);
-
-            // Generate the rooms
-            UWB_Texturing.BundleHandler.InstantiateAllRooms();
         }
 
         public void RequestRoomBundles()
         {
-            string roomBundleStorageDirectory = Config.Current.Room.CompileAbsoluteAssetDirectory();
+            // Generate temp bundle storage directory
+            string roomBundleStorageDirectory = Config.Current.Room.CompileAbsoluteAssetDirectory() + "/temp";
+            AbnormalDirectoryHandler.CreateDirectory(roomBundleStorageDirectory);
+
+            Debug.Log("Room bundle storage directory = " + roomBundleStorageDirectory);
             SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomBundle, roomBundleStorageDirectory);
 
+            InvokeRepeating("CopyRoomBundles", 3, 1);
+        }
+
+        private void CopyRoomBundles()
+        {
+            string roomBundleStorageDirectory = Config.Current.Room.CompileAbsoluteAssetDirectory() + "/temp";
             string[] tempRoomNames = Directory.GetFiles(roomBundleStorageDirectory);
+            Debug.Log("# of Room names found = " + tempRoomNames.Length);
             List<string> roomNameList = new List<string>();
-            foreach(string tempRoomName in tempRoomNames)
+            foreach (string tempRoomName in tempRoomNames)
             {
                 if (!Path.HasExtension(tempRoomName))
                 {
@@ -55,6 +63,8 @@ namespace UWBNetworkingPackage
             string[] roomNames = roomNameList.ToArray();
             foreach (string roomName in roomNames)
             {
+                Debug.Log("Making directory for room named: " + roomName);
+
                 string roomDirectory = Config.Current.Room.CompileAbsoluteAssetDirectory(roomName);
                 if (!Directory.Exists(roomDirectory))
                 {
@@ -62,13 +72,16 @@ namespace UWBNetworkingPackage
                 }
 
                 // Copy asset bundles to room directories
-                if (File.Exists(Config.Current.Room.CompileAbsoluteAssetPath(roomName)){
+                string sourceFilePath;
+                string destinationFilePath;
+                if (File.Exists(Config.Current.Room.CompileAbsoluteAssetPath(roomName)))
+                {
                     Debug.Error("Room asset bundle exists! File not copied to room directory to avoid potentially overwriting data. Manually copy from " + roomBundleStorageDirectory + " if you would like to update the room.");
                 }
                 else
                 {
-                    string sourceFilePath = Config.Current.Room.CompileAbsoluteAssetPath(roomName);
-                    string destinationFilePath = Config.Current.Room.CompileAbsoluteAssetPath(roomName, roomName);
+                    sourceFilePath = Path.Combine(roomBundleStorageDirectory, roomName);
+                    destinationFilePath = Config.Current.Room.CompileAbsoluteAssetPath(roomName, roomName);
                     File.Copy(sourceFilePath, destinationFilePath);
                 }
 
@@ -77,12 +90,29 @@ namespace UWBNetworkingPackage
                 {
                     File.Delete(Config.Current.AssetBundle.CompileAbsoluteAssetPath(roomName));
                 }
-                else
+                sourceFilePath = Path.Combine(roomBundleStorageDirectory, roomName);
+                destinationFilePath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(roomName);
+                File.Copy(sourceFilePath, destinationFilePath);
+
+                // Remove file from temp folder
+                File.Delete(Path.Combine(roomBundleStorageDirectory, roomName));
+            }
+
+            if (Directory.GetFiles(roomBundleStorageDirectory).Length <= 0)
+            {
+                CancelInvoke("CopyRoomBundles");
+
+                // Clean up temp storage folder
+                string[] tempFiles = Directory.GetFiles(roomBundleStorageDirectory);
+                foreach (string tempFile in tempFiles)
                 {
-                    string sourceFilePath = Config.Current.Room.CompileAbsoluteAssetPath(roomName);
-                    string destinationFilePath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(roomName);
-                    File.Copy(sourceFilePath, destinationFilePath);
+                    File.Delete(tempFile);
                 }
+
+                Directory.Delete(roomBundleStorageDirectory);
+
+                // Generate the rooms
+                UWB_Texturing.BundleHandler.UnpackAllFinalRoomTextureBundles();
             }
         }
 #endif
