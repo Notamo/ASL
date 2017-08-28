@@ -11,7 +11,7 @@ using System.Net.Sockets;
 using System.Threading;
 
 #if !UNITY_EDITOR && UNITY_WSA_10_0
-using HoloToolkit.Unity;
+using HoloToolkit.Unity.SpatialMapping;
 #endif
 
 namespace UWBNetworkingPackage
@@ -22,27 +22,28 @@ namespace UWBNetworkingPackage
     /// </summary>
     public abstract class Launcher : Photon.PunBehaviour
     {
-#region Private Properties
+        #region Private Properties
 
         private static string _version = "1";   // Should be set to the current version of your application 
         private DateTime lastRoomUpdate = DateTime.MinValue;
-        private NodeType lastNodeType = Config.AssetBundle.Current.NodeType;
-#endregion
+        //private NodeType lastNodeType = Config.AssetBundle.Current.NodeType;
+        private NodeType lastNodeType = Config.Current.NodeType;
+        #endregion
 
-#region Public Properties
+        #region Public Properties
 
         // Needed for Room Mesh sending
         [Tooltip("A port number for devices to communicate through. The port number should be the same for each set of projects that need to connect to each other and share the same Room Mesh.")]
-        public int Port; 
-       
+        public int Port;
+
         // Needed for Photon 
-        [Tooltip("The name of the room that this project will attempt to connect to. This room must be created by a \"Master Client\".")]    
+        [Tooltip("The name of the room that this project will attempt to connect to. This room must be created by a \"Master Client\".")]
         public string RoomName;
 
         // Used for SendMesh/ReceiveMesh compatibility
         // Locally stores version of assetbundle received
         public AssetBundle networkAssets;
-        
+
         #endregion
 
         /// <summary>
@@ -51,13 +52,13 @@ namespace UWBNetworkingPackage
         public virtual void Awake()
         {
             PhotonNetwork.logLevel = PhotonLogLevel.Full;
-            PhotonNetwork.autoJoinLobby = false;           
-            PhotonNetwork.automaticallySyncScene = true;    
+            PhotonNetwork.autoJoinLobby = false;
+            PhotonNetwork.automaticallySyncScene = true;
 
             Port = gameObject.GetComponent<NetworkManager>().Port;
             RoomName = gameObject.GetComponent<NetworkManager>().RoomName;
 
-            Debug.Log("Laucher awaken");
+            Debug.Log("Launcher awaken");
         }
 
         /// <summary>
@@ -97,40 +98,58 @@ namespace UWBNetworkingPackage
         }
 
         [PunRPC]
-        public static void SendAssetBundle(string path, int port)
-        //public static void SendAssetBundle(int id, string path, int port)
+        public virtual void RequestRoomModel()
         {
-            TcpListener listener = TCPManager.GetListener(port);
-            TCPManager.SendDataFromFile(listener, path);
-
-            //TcpListener bundleListener = new TcpListener(IPAddress.Any, port);
-
-            //bundleListener.Start();
-            //new Thread(() =>
-            //{
-            //    var client = bundleListener.AcceptTcpClient();
-
-            //    using (var stream = client.GetStream())
-            //    {
-            //        //needs to be changed back
-            //        byte[] data = File.ReadAllBytes(path);
-            //        stream.Write(data, 0, data.Length);
-            //        client.Close();
-            //    }
-
-            //    bundleListener.Stop();
-            //}).Start();
+            string roomName = UWB_Texturing.Config.RoomObject.GameObjectName;
+            //string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+            string roomBundleDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
+            int roomBundlePort = Config.Ports.RoomBundle;
+#if !UNITY_WSA_10_0
+            SocketClient_PC.RequestFiles(roomBundlePort, roomBundleDirectory);
+#elif !UNITY_EDITOR && UNITY_WSA_10_0
+            SocketClient_Hololens.RequestFiles(roomBundlePort, roomBundleDirectory);
+#endif
+            RoomManager.UpdateRoomBundle(roomName);
         }
 
-        [PunRPC]
-        public virtual void ReceiveAssetBundle(string networkConfig, string bundleName)
-        {
-            string bundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(Config.AssetBundle.Current.CompileFilename(bundleName));
-            TCPManager.ReceiveDataToFile(networkConfig, bundlePath);
 
-            //string bundlePath;
-            //ReceiveAssetBundle(networkConfig, out bundlePath);
-        }
+
+        //[PunRPC]
+        //public virtual void SendAssetBundle(string path, int port)
+        ////public static void SendAssetBundle(int id, string path, int port)
+        //{
+        //    //TcpListener listener = TCPManager.GetListener(port);
+        //    //TCPManager.SendDataFromFile(listener, path);
+        //    TCPManager.SendDataFromFile(port, path);
+
+        //    //TcpListener bundleListener = new TcpListener(IPAddress.Any, port);
+
+        //    //bundleListener.Start();
+        //    //new Thread(() =>
+        //    //{
+        //    //    var client = bundleListener.AcceptTcpClient();
+
+        //    //    using (var stream = client.GetStream())
+        //    //    {
+        //    //        //needs to be changed back
+        //    //        byte[] data = File.ReadAllBytes(path);
+        //    //        stream.Write(data, 0, data.Length);
+        //    //        client.Close();
+        //    //    }
+
+        //    //    bundleListener.Stop();
+        //    //}).Start();
+        //}
+
+        //[PunRPC]
+        //public virtual void ReceiveAssetBundle(string networkConfig, string bundleName)
+        //{
+        //    string bundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(Config.AssetBundle.Current.CompileFilename(bundleName));
+        //    TCPManager.ReceiveDataToFile(networkConfig, bundlePath);
+
+        //    //string bundlePath;
+        //    //ReceiveAssetBundle(networkConfig, out bundlePath);
+        //}
 
         //public static void ReceiveAssetBundle(string networkConfig, out string bundlePath)
         //{
@@ -199,110 +218,110 @@ namespace UWBNetworkingPackage
         //    Debug.Log("Callee is not HoloLens and this is a HoloLens only method");
         //}
 
-        [PunRPC]
-        public virtual void SendAssetBundles(int id)
-        {
-            string directory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory(); ;
+        //[PunRPC]
+        //public virtual void SendAssetBundles(int id)
+        //{
+        //    string directory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory(); ;
 
-            //// ERROR TESTING - MUST GET NODETYPE OF PLAYER BASED OFF OF ID AND THE CORRESPONDING PLAYER'S CUSTOM SETTINGS
-            //NodeType bundleType = Config.AssetBundle.Current.NodeType;
+        //    //// ERROR TESTING - MUST GET NODETYPE OF PLAYER BASED OFF OF ID AND THE CORRESPONDING PLAYER'S CUSTOM SETTINGS
+        //    //NodeType bundleType = Config.AssetBundle.Current.NodeType;
 
-            //switch (bundleType)
-            //{
-            //    case NodeType.Android:
-            //        directory = Config.AssetBundle.Android.CompileAbsoluteBundleDirectory();
-            //        break;
-            //    case NodeType.Hololens:
-            //        directory = Config.AssetBundle.Hololens.CompileAbsoluteBundleDirectory();
-            //        break;
-            //    case NodeType.Kinect:
-            //        directory = Config.AssetBundle.Kinect.CompileAbsoluteBundleDirectory();
-            //        break;
-            //    case NodeType.Oculus:
-            //        directory = Config.AssetBundle.Oculus.CompileAbsoluteBundleDirectory();
-            //        break;
-            //    case NodeType.PC:
-            //        directory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
-            //        break;
-            //    case NodeType.Vive:
-            //        directory = Config.AssetBundle.Vive.CompileAbsoluteBundleDirectory();
-            //        break;
-            //}
+        //    //switch (bundleType)
+        //    //{
+        //    //    case NodeType.Android:
+        //    //        directory = Config.AssetBundle.Android.CompileAbsoluteBundleDirectory();
+        //    //        break;
+        //    //    case NodeType.Hololens:
+        //    //        directory = Config.AssetBundle.Hololens.CompileAbsoluteBundleDirectory();
+        //    //        break;
+        //    //    case NodeType.Kinect:
+        //    //        directory = Config.AssetBundle.Kinect.CompileAbsoluteBundleDirectory();
+        //    //        break;
+        //    //    case NodeType.Oculus:
+        //    //        directory = Config.AssetBundle.Oculus.CompileAbsoluteBundleDirectory();
+        //    //        break;
+        //    //    case NodeType.PC:
+        //    //        directory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
+        //    //        break;
+        //    //    case NodeType.Vive:
+        //    //        directory = Config.AssetBundle.Vive.CompileAbsoluteBundleDirectory();
+        //    //        break;
+        //    //}
 
-            int bundlePort = Config.Ports.GetPort(Config.Ports.Types.Bundle);
-            if (Directory.Exists(directory)) {
-                foreach (string file in Directory.GetFiles(directory))
-                {
-                    if (!file.Contains("manifest") && !file.Contains("meta"))
-                    {
-                        //TCPManager.SendDataFromFile(Config.Ports.Types.RoomBundle, file);
-                        SendAssetBundle(file, bundlePort);
-                        //SendAssetBundle(id, file, Config.Ports.Bundle);
-                        string bundleName = Path.GetFileName(file);
-                        photonView.RPC("ReceiveAssetBundle", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(bundlePort), bundleName);
-                    }
-                }
-            }
-        }
+        //    int bundlePort = Config.Ports.GetPort(Config.Ports.Types.Bundle);
+        //    if (Directory.Exists(directory)) {
+        //        foreach (string file in Directory.GetFiles(directory))
+        //        {
+        //            if (!file.Contains("manifest") && !file.Contains("meta"))
+        //            {
+        //                //TCPManager.SendDataFromFile(Config.Ports.Types.RoomBundle, file);
+        //                SendAssetBundle(file, bundlePort);
+        //                //SendAssetBundle(id, file, Config.Ports.Bundle);
+        //                string bundleName = Path.GetFileName(file);
+        //                photonView.RPC("ReceiveAssetBundle", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(bundlePort), bundleName);
+        //            }
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Send mesh to a host specified by PhotonNetwork.Player.ID.
         /// Currently, only the MasterClient implements this method
         /// </summary>
         /// <param name="id">The player id that will sent the mesh</param>
-        [PunRPC]
-        public virtual void SendRoomModel(int id)
-        {
-            //Debug.Log("Callee is not MasterClient and this is a MasterClient only method");
-            //string bundlePath = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
-            string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
-            string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
-            RoomTextureManager.UpdateRoomBundle();
-            int roomModelPort = Config.Ports.GetPort(Config.Ports.Types.RoomBundle);
-            //SendAssetBundle(id, bundlePath, Config.Ports.RoomBundle);
-            SendAssetBundle(ASLBundlePath, roomModelPort);
-            photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(roomModelPort), bundleName);
-        }
+        //[PunRPC]
+        //public virtual void SendRoomModel(int id)
+        //{
+        //    //Debug.Log("Callee is not MasterClient and this is a MasterClient only method");
+        //    //string bundlePath = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+        //    string bundleName = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename();
+        //    string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
+        //    RoomTextureManager.UpdateRoomBundle();
+        //    int roomModelPort = Config.Ports.GetPort(Config.Ports.Types.RoomBundle);
+        //    //SendAssetBundle(id, bundlePath, Config.Ports.RoomBundle);
+        //    SendAssetBundle(ASLBundlePath, roomModelPort);
+        //    photonView.RPC("ReceiveRoomModel", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(roomModelPort), bundleName);
+        //}
 
-        [PunRPC]
-        public virtual void ReceiveRoomModel(string networkConfig, string bundleName)
-        {
-            //ReceiveAssetBundle(networkConfig);
-            ReceiveAssetBundle(networkConfig, bundleName);
-            //UWB_Texturing.BundleHandler.UnpackFinalRoomTextureBundle();
+        //[PunRPC]
+        //public virtual void ReceiveRoomModel(string networkConfig, string bundleName)
+        //{
+        //    //ReceiveAssetBundle(networkConfig);
+        //    ReceiveAssetBundle(networkConfig, bundleName);
+        //    //UWB_Texturing.BundleHandler.UnpackFinalRoomTextureBundle();
 
-            //string bundlePath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(Config.AssetBundle.Current.CompileFilename(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename()));
-            string bundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(Config.AssetBundle.Current.CompileFilename(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename()));
-            //string roomMatrixPath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.MatrixArray.CompileFilename());
-            string roomMatrixPath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.MatrixArray.CompileFilename());
+        //    //string bundlePath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(Config.AssetBundle.Current.CompileFilename(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename()));
+        //    string bundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(Config.AssetBundle.Current.CompileFilename(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename()));
+        //    //string roomMatrixPath = Config.AssetBundle.Current.CompileAbsoluteAssetPath(UWB_Texturing.Config.MatrixArray.CompileFilename());
+        //    string roomMatrixPath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.MatrixArray.CompileFilename());
 
-            UWB_Texturing.BundleHandler.UnpackFinalRoomTextureBundle(bundlePath, roomMatrixPath);
-        }
+        //    UWB_Texturing.BundleHandler.UnpackFinalRoomTextureBundle(bundlePath, roomMatrixPath);
+        //}
 
-        [PunRPC]
-        public virtual void SendRawRoomModelInfo(int id)
-        {
-            //SendAssetBundle(id, UWB_Texturing.Config.AssetBundle.RawPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename()), Config.Ports.RawRoomBundle);
-            
-            // Pinpoint the bundle's location and copy it if 
-            string bundleName = UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename();
-            string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
-            RoomTextureManager.UpdateRawRoomBundle();
-            int rawRoomBundlePort = Config.Ports.RawRoomBundle;
-            SendAssetBundle(ASLBundlePath, rawRoomBundlePort);
-            photonView.RPC("ReceiveRawRoomModelInfo", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(rawRoomBundlePort), bundleName);
-        }
+        //[PunRPC]
+        //public virtual void SendRawRoomModelInfo(int id)
+        //{
+        //    //SendAssetBundle(id, UWB_Texturing.Config.AssetBundle.RawPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename()), Config.Ports.RawRoomBundle);
 
-        [PunRPC]
-        public virtual void ReceiveRawRoomModelInfo(string networkConfig, string bundleName)
-        {
-            string bundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
-            string destinationDirectory = Config.AssetBundle.Current.CompileAbsoluteAssetDirectory();
+        //    // Pinpoint the bundle's location and copy it if 
+        //    string bundleName = UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename();
+        //    string ASLBundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(bundleName);
+        //    RoomTextureManager.UpdateRawRoomBundle();
+        //    int rawRoomBundlePort = Config.Ports.RawRoomBundle;
+        //    SendAssetBundle(ASLBundlePath, rawRoomBundlePort);
+        //    photonView.RPC("ReceiveRawRoomModelInfo", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(rawRoomBundlePort), bundleName);
+        //}
 
-            //ReceiveAssetBundle(networkConfig);
-            ReceiveAssetBundle(networkConfig, bundleName);
-            UWB_Texturing.BundleHandler.UnpackRoomTextureBundle(bundlePath, destinationDirectory, destinationDirectory, destinationDirectory, destinationDirectory);
-        }
+        //[PunRPC]
+        //public virtual void ReceiveRawRoomModelInfo(string networkConfig, string bundleName)
+        //{
+        //    string bundlePath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
+        //    string destinationDirectory = Config.AssetBundle.Current.CompileAbsoluteAssetDirectory();
+
+        //    //ReceiveAssetBundle(networkConfig);
+        //    ReceiveAssetBundle(networkConfig, bundleName);
+        //    UWB_Texturing.BundleHandler.UnpackRoomTextureBundle(bundlePath, destinationDirectory, destinationDirectory, destinationDirectory, destinationDirectory);
+        //}
 
         /// <summary>
         /// Receive room mesh from specified network configuration.
@@ -340,34 +359,35 @@ namespace UWBNetworkingPackage
         /// Deletes local copy of the mesh
         /// </summary>
         [PunRPC]
-        public void DeleteLocalRoomModelInfo()
+        public void DeleteLocalRoomModelInfo(string roomName)
         {
             // ERROR TESTING -> these might point to the wrong folders -> update to search through appropriate folders
-            string materialDirectory = Config.AssetBundle.Current.CompileAbsoluteAssetDirectory();
+            //string materialDirectory = Config.AssetBundle.Current.CompileAbsoluteAssetDirectory();
+            string materialDirectory = Config.Current.Room.CompileAbsoluteAssetDirectory();
             string meshesDirectory = materialDirectory;
             string texturesDirectory = materialDirectory;
 
             //UWB_Texturing.PrefabHandler.DeletePrefabs();
-            UWB_Texturing.BundleHandler.RemoveRoomObject();
-            UWB_Texturing.BundleHandler.RemoveRawInfo();
-            UWB_Texturing.BundleHandler.RemoveRoomResources(materialDirectory, meshesDirectory, texturesDirectory);
+            UWB_Texturing.BundleHandler.RemoveRoomObject(roomName);
+            UWB_Texturing.BundleHandler.RemoveRawInfo(roomName);
+            UWB_Texturing.BundleHandler.RemoveRoomResources(roomName);
         }
 
-        // ERROR TESTING - REMOVE if not needed
-        [PunRPC]
-        public virtual void SendNetworkConfig(int id, int port)
-        {
-            string networkConfig = IPManager.CompileNetworkConfigString(port);
-            int networkConfigPort = Config.Ports.GetPort(Config.Ports.Types.NetworkConfig);
-            photonView.RPC("ReceiveNetworkConfig", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(networkConfigPort));
-        }
+        //// ERROR TESTING - REMOVE if not needed
+        //[PunRPC]
+        //public virtual void SendNetworkConfig(int id, int port)
+        //{
+        //    string networkConfig = IPManager.CompileNetworkConfigString(port);
+        //    int networkConfigPort = Config.Ports.GetPort(Config.Ports.Types.NetworkConfig);
+        //    photonView.RPC("ReceiveNetworkConfig", PhotonPlayer.Find(id), IPManager.CompileNetworkConfigString(networkConfigPort));
+        //}
 
-        // ERROR TESTING - REMOVE if not needed
-        [PunRPC]
-        public virtual string ReceiveNetworkConfig(string networkConfig, string networkConfigToUse)
-        {
-            return networkConfigToUse;
-        }
+        //// ERROR TESTING - REMOVE if not needed
+        //[PunRPC]
+        //public virtual string ReceiveNetworkConfig(string networkConfig, string networkConfigToUse)
+        //{
+        //    return networkConfigToUse;
+        //}
 
         // ERROR TESTING - REWORK AND REIMPLEMENT
 
@@ -388,7 +408,7 @@ namespace UWBNetworkingPackage
         //}
 
 
-        #region Byte stream SendMesh/ReceiveMesh (i.e. uses Database class)
+#region Byte stream SendMesh/ReceiveMesh (i.e. uses Database class)
         /// <summary>
         /// Send mesh to a host specified by networkConfig.
         /// Currently, only the HoloLens implements this method
@@ -543,69 +563,67 @@ namespace UWBNetworkingPackage
         /// functionality needed to display a mesh created via a HoloLens
         /// </summary>
 #if !UNITY_EDITOR && UNITY_WSA_10_0
-    public class MeshDisplay : SpatialMappingSource
-    {
-        /// <summary>
-        /// Display the mesh currently saved in Database
-        /// </summary>
-        public void DisplayMesh()
-        {
-            var meshes = (List<Mesh>)Database.GetMeshAsList();
-            Debug.Log(meshes.Count);
-            foreach (var mesh in meshes)
-            {
-                GameObject surface = AddSurfaceObject(mesh, string.Format("Beamed-{0}", SurfaceObjects.Count), transform);
-                surface.transform.parent = SpatialMappingManager.Instance.transform;
-                surface.GetComponent<MeshRenderer>().enabled = true;
-                surface.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
-            }
-        }
+//    public class MeshDisplay : SpatialMappingSource
+//    {
+//        /// <summary>
+//        /// Display the mesh currently saved in Database
+//        /// </summary>
+//        public void DisplayMesh()
+//        {
+//            var meshes = (List<Mesh>)Database.GetMeshAsList();
+//            Debug.Log(meshes.Count);
+//            foreach (var mesh in meshes)
+//            {
+//                GameObject surface = AddSurfaceObject(mesh, string.Format("Beamed-{0}", SurfaceObjects.Count), transform);
+//                surface.transform.parent = SpatialMappingManager.Instance.transform;
+//                surface.GetComponent<MeshRenderer>().enabled = true;
+//                surface.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+//            }
+//        }
 
-        /// <summary>
-        /// Scan the room and return the scaned room as a RoomMesh (serialized as a byte array)
-        /// This method can ONLY be used by HoloLens
-        /// </summary>
-        /// <returns>Serialized Room Mesh</returns>
-        public byte[] LoadMesh()
-        {
-            SpatialMappingManager mappingManager = GetComponent<SpatialMappingManager>();
-            List<MeshFilter> meshFilters = mappingManager.GetMeshFilters();
-            List<Mesh> meshes = new List<Mesh>();
+//        /// <summary>
+//        /// Scan the room and return the scaned room as a RoomMesh (serialized as a byte array)
+//        /// This method can ONLY be used by HoloLens
+//        /// </summary>
+//        /// <returns>Serialized Room Mesh</returns>
+//        public byte[] LoadMesh()
+//        {
+//            SpatialMappingManager mappingManager = GetComponent<SpatialMappingManager>();
+//            List<MeshFilter> meshFilters = mappingManager.GetMeshFilters();
+//            List<Mesh> meshes = new List<Mesh>();
 
-            foreach (var meshFilter in meshFilters)
-            {
-                Mesh mesh = meshFilter.sharedMesh;
-                Mesh clone = new Mesh();
-                List<Vector3> verts = new List<Vector3>();
-                verts.AddRange(mesh.vertices);
+//            foreach (var meshFilter in meshFilters)
+//            {
+//                Mesh mesh = meshFilter.sharedMesh;
+//                Mesh clone = new Mesh();
+//                List<Vector3> verts = new List<Vector3>();
+//                verts.AddRange(mesh.vertices);
 
-                for (int i = 0; i < verts.Count; i++)
-                {
-                    verts[i] = meshFilter.transform.TransformPoint(verts[i]);
-                }
+//                for (int i = 0; i < verts.Count; i++)
+//                {
+//                    verts[i] = meshFilter.transform.TransformPoint(verts[i]);
+//                }
 
-                clone.SetVertices(verts);
-                clone.SetTriangles(mesh.triangles, 0);
-                meshes.Add(clone);
-            }
+//                clone.SetVertices(verts);
+//                clone.SetTriangles(mesh.triangles, 0);
+//                meshes.Add(clone);
+//            }
 
-            return SimpleMeshSerializer.Serialize(meshes);
-        }
-    }
-//   END OF NEEDED FOR HOLOLENS BUT NOTHING ELSE-------------------------------------------------------------------------------
-    /// <summary>
+//            return SimpleMeshSerializer.Serialize(meshes);
+//        }
+//    }
+////   END OF NEEDED FOR HOLOLENS BUT NOTHING ELSE-------------------------------------------------------------------------------
+//    /// <summary>
 #endif
-        #endregion
+#endregion
 
-    }
-
-    //NEEDED FOR HOLOLENS BUT NOTHING ELSE-------------------------------------------------------------------------------------
-    //WILL NOT COMPILE TO ANYTHING ELSE BUT HOLOLENS SO LEAVE THIS SECTION OF CODE COMMENTED OUT IF NOT HOLOLENS
-    //
-    /// <summary>
-    /// MeshDisplay extends SpatialMappingSource (provided by Holotoolkit) to implement the
-    /// functionality needed to display a mesh created via a HoloLens
-    /// </summary>
+        //NEEDED FOR HOLOLENS BUT NOTHING ELSE-------------------------------------------------------------------------------------
+        //WILL NOT COMPILE TO ANYTHING ELSE BUT HOLOLENS SO LEAVE THIS SECTION OF CODE COMMENTED OUT IF NOT HOLOLENS
+        //
+        /// <summary>
+        /// MeshDisplay extends SpatialMappingSource (provided by Holotoolkit) to implement the
+        /// functionality needed to display a mesh created via a HoloLens
+        /// </summary>
 #if !UNITY_EDITOR && UNITY_WSA_10_0
     public class MeshDisplay : SpatialMappingSource
     {
@@ -615,7 +633,7 @@ namespace UWBNetworkingPackage
         public void DisplayMesh()
         {
             var meshes = (List<Mesh>)Database.GetMeshAsList();
-            Debug.Log(meshes.Count);
+            Debug.Log(meshes.Count.ToString());
             foreach (var mesh in meshes)
             {
                 GameObject surface = AddSurfaceObject(mesh, string.Format("Beamed-{0}", SurfaceObjects.Count), transform);
@@ -659,6 +677,7 @@ namespace UWBNetworkingPackage
 //   END OF NEEDED FOR HOLOLENS BUT NOTHING ELSE-------------------------------------------------------------------------------
     /// <summary>
 #endif
+    }
 }
 
 

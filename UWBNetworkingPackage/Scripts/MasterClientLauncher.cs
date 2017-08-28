@@ -16,24 +16,13 @@ namespace UWBNetworkingPackage
     /// <summary>
     /// MasterClientLauncher implements launcher functionality specific to the MasterClient
     /// </summary>
-    public class MasterClientLauncher : Launcher
+    public abstract class MasterClientLauncher : Launcher
     {
 
-#if UNITY_STANDALONE
 #region Private Properties
         private DateTime lastRoomUpdate = DateTime.MinValue;
 #endregion
-
-        /// <summary>
-        /// Attempts to connect to the specified Room Name on start, and adds MeshDisplay component
-        /// for displaying the Room Mesh
-        /// </summary>
-        public override void Start()
-        {
-            // ERROR TESTING - REMOVE THIS METHOD - NOTHING SPECIAL HAPPENS IN IT UNIQUE TO THE MASTER CLIENT ANYMORE
-            base.Start();
-        }
-
+        
         /// <summary>
         /// Called once per frame
         /// When a new mesh is recieved, display it 
@@ -63,7 +52,10 @@ namespace UWBNetworkingPackage
 
         public void UpdateRoom()
         {
-            string path = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+            //string path = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+            //string path = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+            string path = Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+            Debug.Log("Asset path when updating room = " + path);
             if (File.Exists(path))
             {
                 FileInfo f = new FileInfo(path);
@@ -73,9 +65,15 @@ namespace UWBNetworkingPackage
                     lastRoomUpdate = f.LastWriteTime;
                     for (int i = 0; i < PhotonNetwork.otherPlayers.Length; i++)
                     {
-                        SendRoomModel(PhotonNetwork.otherPlayers[i].ID);
+                        //SendRoomModel(PhotonNetwork.otherPlayers[i].ID);
+                        PhotonNetwork.RPC(photonView, "RequestRoomModel", PhotonTargets.Others, false);
                     }
                 }
+            }
+            else
+            {
+                Debug.Log("Room model not found at path " + path);
+                PhotonNetwork.RPC(photonView, "RequestRoomModel", PhotonTargets.Others, false);
             }
         }
 
@@ -85,13 +83,13 @@ namespace UWBNetworkingPackage
         public override void OnConnectedToMaster()
         {
             PhotonNetwork.CreateRoom(RoomName);
-            foreach (PhotonPlayer player in PhotonNetwork.otherPlayers)
-            {
-                // ERROR TESTING - MUST APPROPRIATELY GET THE NODE TYPE OF THE OTHER PLAYER (HAS TO BE SET IN CUSTOM PROPERTIES)
-                // LOOK AT UPDATE() IN LAUNCHER, AND SET APPROPRIATELY
-                // NODETYPE.PC USED AS STOPGAP
-                SendAssetBundles(player.ID);
-            }
+            //foreach (PhotonPlayer player in PhotonNetwork.otherPlayers)
+            //{
+            //    // ERROR TESTING - MUST APPROPRIATELY GET THE NODE TYPE OF THE OTHER PLAYER (HAS TO BE SET IN CUSTOM PROPERTIES)
+            //    // LOOK AT UPDATE() IN LAUNCHER, AND SET APPROPRIATELY
+            //    // NODETYPE.PC USED AS STOPGAP
+            //    SendAssetBundles(player.ID);
+            //}
             BeginRoomRefreshCycle();
         }
 
@@ -366,8 +364,6 @@ namespace UWBNetworkingPackage
         //}
 
 //#endregion
-
-#endif
     }
 }
 
