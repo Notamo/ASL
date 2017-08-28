@@ -12,7 +12,7 @@ namespace UWBNetworkingPackage
             public class Current : Config_Base_AssetBundle
             {
                 public new static string AssetSubFolder = "ASL/Resources";
-                public new static string BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesPC";
+                public new static string BundleSubFolder = AssetSubFolder + "/Resources/StreamingAssets/AssetBundlesPC";
 
                 public Current()
                 {
@@ -23,10 +23,10 @@ namespace UWBNetworkingPackage
                     switch (NodeType)
                     {
                         case NodeType.PC:
-                            BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesPC";
+                            BundleSubFolder = AssetSubFolder + "/Resources/StreamingAssets/AssetBundlesPC";
                             break;
                         case NodeType.Android:
-                            BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesAndroid";
+                            BundleSubFolder = AssetSubFolder + "/Resources/StreamingAssets/AssetBundlesAndroid";
                             break;
                         case NodeType.Hololens:
                             break;
@@ -135,7 +135,7 @@ namespace UWBNetworkingPackage
                 }
 
                 public new static string AssetSubFolder = "ASL/Resources";
-                public new static string BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesAndroid";
+                public new static string BundleSubFolder = AssetSubFolder + "/Resources/StreamingAssets/AssetBundlesAndroid";
 
                 public new static string CompileUnityBundleDirectory()
                 {
@@ -199,7 +199,7 @@ namespace UWBNetworkingPackage
                 }
                 
                 public new static string AssetSubFolder = "ASL/Resources";
-                public new static string BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesPC";
+                public new static string BundleSubFolder = AssetSubFolder + "/Resources/StreamingAssets/AssetBundlesPC";
 
                 public new static string CompileUnityBundleDirectory()
                 {

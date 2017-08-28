@@ -113,7 +113,7 @@ namespace UWBNetworkingPackage
                 ////AssettBundle sample send for testing purposes
                 if (Input.GetKeyDown("b"))
                 {
-                    string path = Application.dataPath + "/ASL/StreamingAssets/AssetBundlesPC";
+                    string path = Application.dataPath + "/ASL/Resources/StreamingAssets/AssetBundlesPC";
                     foreach (string file in System.IO.Directory.GetFiles(path))
                     {
                         if (file.Contains("networkbundle") && !file.Contains("manifest") && !file.Contains("meta"))
@@ -151,7 +151,7 @@ namespace UWBNetworkingPackage
         public override void OnConnectedToMaster()
         {
             PhotonNetwork.CreateRoom(RoomName);
-            string path = Application.dataPath + "/ASL/StreamingAssets/AssetBundlesPC";
+            string path = Application.dataPath + "/ASL/Resources/StreamingAssets/AssetBundlesPC";
             foreach (string file in System.IO.Directory.GetFiles(path))
             {
                 if (file.Contains("networkbundle") && !file.Contains("manifest") && !file.Contains("meta"))
@@ -267,7 +267,7 @@ namespace UWBNetworkingPackage
         [PunRPC]
         public void SendPCBundles(int id)
         {
-            string path = Application.dataPath + "/ASL/StreamingAssets/AssetBundlesPC";
+            string path = Application.dataPath + "/ASL/Resources/StreamingAssets/AssetBundlesPC";
             foreach (string file in System.IO.Directory.GetFiles(path))
             {
                 if (file.Contains("networkbundle") && !file.Contains("manifest") && !file.Contains("meta"))
@@ -284,7 +284,7 @@ namespace UWBNetworkingPackage
         [PunRPC]
         public void SendAndroidBundles(int id)
         {
-            string path = Application.dataPath + "/ASL/StreamingAssets/AssetBundlesAndroid";
+            string path = Application.dataPath + "/ASL/Resources/StreamingAssets/AssetBundlesAndroid";
             foreach (string file in System.IO.Directory.GetFiles(path))
             {
                 if (file.Contains("networkbundle") && !file.Contains("manifest") && !file.Contains("meta"))
@@ -301,7 +301,7 @@ namespace UWBNetworkingPackage
         [PunRPC]
         public void SendHololensBundles(int id)
         {
-            string path = Application.dataPath + "/ASL/StreamingAssets/AssetBundlesHololens";
+            string path = Application.dataPath + "/ASL/Resources/StreamingAssets/AssetBundlesHololens";
             foreach (string file in System.IO.Directory.GetFiles(path))
             {
                 if (file.Contains("networkbundle") && !file.Contains("manifest") && !file.Contains("meta"))

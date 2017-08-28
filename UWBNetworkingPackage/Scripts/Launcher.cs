@@ -171,8 +171,8 @@ namespace UWBNetworkingPackage
 
         //            File.WriteAllBytes(bundlePath, ms.ToArray());
 
-        //            //File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/StreamingAssets/AssetBundlesPC/" + bundleName + ".asset"), ms.ToArray());
-        //            //File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/StreamingAssets/AssetBundlesAndroid/" + bundleName + ".asset"), ms.ToArray());
+        //            //File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/Resources/StreamingAssets/AssetBundlesPC/" + bundleName + ".asset"), ms.ToArray());
+        //            //File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/Resources/StreamingAssets/AssetBundlesAndroid/" + bundleName + ".asset"), ms.ToArray());
 
         //            //AssetBundle newBundle = AssetBundle.LoadFromMemory(ms.ToArray());
         //            //bundles.Add(bundleName, newBundle);

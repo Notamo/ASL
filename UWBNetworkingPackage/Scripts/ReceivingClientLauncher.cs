@@ -238,8 +238,8 @@ namespace UWBNetworkingPackage
         //            this.networkAssets = AssetBundle.LoadFromMemory(ms.ToArray());
 
         //            // Save the asset bundle
-        //            File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/StreamingAssets/AssetBundlesPC/" + this.networkAssets.name + ".asset"), ms.ToArray());
-        //            File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/StreamingAssets/AssetBundlesAndroid/" + this.networkAssets.name + ".asset"), ms.ToArray());
+        //            File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/Resources/StreamingAssets/AssetBundlesPC/" + this.networkAssets.name + ".asset"), ms.ToArray());
+        //            File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/Resources/StreamingAssets/AssetBundlesAndroid/" + this.networkAssets.name + ".asset"), ms.ToArray());
 
         //            //AssetBundle newBundle = AssetBundle.LoadFromMemory(ms.ToArray());
         //            //bundles.Add(bundleName, newBundle);
