@@ -33,6 +33,7 @@ namespace UWBNetworkingPackage
                             case NodeType.PC:
                                 return PC.AssetBundle.AssetSubFolder;
                             case NodeType.Android:
+                            case NodeType.Tango:
                                 return Android.AssetBundle.AssetSubFolder;
                             case NodeType.Kinect:
                                 return Kinect.AssetBundle.AssetSubFolder;
@@ -54,6 +55,7 @@ namespace UWBNetworkingPackage
                                 PC.AssetBundle.AssetSubFolder = value;
                                 break;
                             case NodeType.Android:
+                            case NodeType.Tango:
                                 Android.AssetBundle.AssetSubFolder = value;
                                 break;
                             case NodeType.Kinect:
@@ -85,6 +87,7 @@ namespace UWBNetworkingPackage
                         case NodeType.Kinect:
                             return Kinect.AssetBundle.CompileAbsoluteAssetDirectory();
                         case NodeType.Android:
+                        case NodeType.Tango:
                             return Android.AssetBundle.CompileAbsoluteAssetDirectory();
                         case NodeType.PC:
                             return PC.AssetBundle.CompileAbsoluteAssetDirectory();
@@ -102,6 +105,7 @@ namespace UWBNetworkingPackage
                         case NodeType.PC:
                             return PC.AssetBundle.CompileAbsoluteAssetPath(filename);
                         case NodeType.Android:
+                        case NodeType.Tango:
                             return Android.AssetBundle.CompileAbsoluteAssetPath(filename);
                         case NodeType.Kinect:
                             return Kinect.AssetBundle.CompileAbsoluteAssetPath(filename);
@@ -123,6 +127,7 @@ namespace UWBNetworkingPackage
                         case NodeType.PC:
                             return PC.AssetBundle.CompileUnityAssetDirectory();
                         case NodeType.Android:
+                        case NodeType.Tango:
                             return Android.AssetBundle.CompileUnityAssetDirectory();
                         case NodeType.Kinect:
                             return Kinect.AssetBundle.CompileUnityAssetDirectory();
@@ -144,6 +149,7 @@ namespace UWBNetworkingPackage
                         case NodeType.PC:
                             return PC.AssetBundle.CompileUnityAssetPath(filename);
                         case NodeType.Android:
+                        case NodeType.Tango:
                             return Android.AssetBundle.CompileUnityAssetPath(filename);
                         case NodeType.Kinect:
                             return Kinect.AssetBundle.CompileUnityAssetPath(filename);
@@ -165,6 +171,7 @@ namespace UWBNetworkingPackage
                         case NodeType.PC:
                             return PC.AssetBundle.CompileResourcesLoadPath(assetNameWithoutExtension);
                         case NodeType.Android:
+                        case NodeType.Tango:
                             return Android.AssetBundle.CompileResourcesLoadPath(assetNameWithoutExtension);
                         case NodeType.Kinect:
                             return Kinect.AssetBundle.CompileResourcesLoadPath(assetNameWithoutExtension);
@@ -295,6 +302,7 @@ namespace UWBNetworkingPackage
                         case NodeType.PC:
                             return PC.Room.CompileAbsoluteAssetDirectory();
                         case NodeType.Android:
+                        case NodeType.Tango:
                             return Android.Room.CompileAbsoluteAssetDirectory();
                         case NodeType.Hololens:
                             return Hololens.Room.CompileAbsoluteAssetDirectory();
@@ -316,6 +324,7 @@ namespace UWBNetworkingPackage
                         case NodeType.PC:
                             return PC.Room.CompileAbsoluteAssetDirectory(roomName);
                         case NodeType.Android:
+                        case NodeType.Tango:
                             return Android.Room.CompileAbsoluteAssetDirectory(roomName);
                         case NodeType.Hololens:
                             return Hololens.Room.CompileAbsoluteAssetDirectory(roomName);
@@ -337,6 +346,7 @@ namespace UWBNetworkingPackage
                         case NodeType.PC:
                             return PC.Room.CompileAbsoluteAssetPath(filename);
                         case NodeType.Android:
+                        case NodeType.Tango:
                             return Android.Room.CompileAbsoluteAssetPath(filename);
                         case NodeType.Hololens:
                             return Hololens.Room.CompileAbsoluteAssetPath(filename);
@@ -358,6 +368,7 @@ namespace UWBNetworkingPackage
                         case NodeType.PC:
                             return PC.Room.CompileAbsoluteAssetPath(roomName, filename);
                         case NodeType.Android:
+                        case NodeType.Tango:
                             return Android.Room.CompileAbsoluteAssetPath(roomName, filename);
                         case NodeType.Hololens:
                             return Hololens.Room.CompileAbsoluteAssetPath(roomName, filename);
@@ -379,6 +390,7 @@ namespace UWBNetworkingPackage
                         case NodeType.PC:
                             return PC.Room.CompileUnityAssetDirectory();
                         case NodeType.Android:
+                        case NodeType.Tango:
                             return Android.Room.CompileUnityAssetDirectory();
                         case NodeType.Hololens:
                             return Hololens.Room.CompileUnityAssetDirectory();
@@ -400,6 +412,7 @@ namespace UWBNetworkingPackage
                         case NodeType.PC:
                             return PC.Room.CompileUnityAssetDirectory(roomName);
                         case NodeType.Android:
+                        case NodeType.Tango:
                             return Android.Room.CompileUnityAssetDirectory(roomName);
                         case NodeType.Hololens:
                             return Hololens.Room.CompileUnityAssetDirectory(roomName);
@@ -421,6 +434,7 @@ namespace UWBNetworkingPackage
                         case NodeType.PC:
                             return PC.Room.CompileUnityAssetPath(filename);
                         case NodeType.Android:
+                        case NodeType.Tango:
                             return Android.Room.CompileUnityAssetPath(filename);
                         case NodeType.Hololens:
                             return Hololens.Room.CompileUnityAssetPath(filename);
@@ -442,6 +456,7 @@ namespace UWBNetworkingPackage
                         case NodeType.PC:
                             return PC.Room.CompileUnityAssetPath(roomName, filename);
                         case NodeType.Android:
+                        case NodeType.Tango:
                             return Android.Room.CompileUnityAssetPath(roomName, filename);
                         case NodeType.Hololens:
                             return Hololens.Room.CompileUnityAssetPath(roomName, filename);
@@ -463,6 +478,7 @@ namespace UWBNetworkingPackage
                         case NodeType.PC:
                             return PC.Room.CompileResourcesLoadPath(assetNameWithoutExtension);
                         case NodeType.Android:
+                        case NodeType.Tango:
                             return Android.Room.CompileResourcesLoadPath(assetNameWithoutExtension);
                         case NodeType.Hololens:
                             return Hololens.Room.CompileResourcesLoadPath(assetNameWithoutExtension);
@@ -484,6 +500,7 @@ namespace UWBNetworkingPackage
                         case NodeType.PC:
                             return PC.Room.CompileResourcesLoadPath(roomName, assetNameWithoutExtension);
                         case NodeType.Android:
+                        case NodeType.Tango:
                             return Android.Room.CompileResourcesLoadPath(roomName, assetNameWithoutExtension);
                         case NodeType.Hololens:
                             return Hololens.Room.CompileResourcesLoadPath(roomName, assetNameWithoutExtension);
@@ -525,34 +542,14 @@ namespace UWBNetworkingPackage
         {
             public class AssetBundle : Config_Base_AssetBundle
             {
-                //public AssetBundle()
-                //{
-                //    NodeType = NodeType.Android;
-                //}
+                static AssetBundle()
+                {
+                    Directory.CreateDirectory(CompileAbsoluteAssetDirectory());
 
-                //                public new static string AssetSubFolder = "ASL/Resources";
-                //                public new static string BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesAndroid";
-
-                //                public new static string CompileUnityBundleDirectory()
-                //                {
-                //                    return BundleSubFolder;
-                //                }
-                //                public new static string CompileUnityBundlePath(string filename)
-                //                {
-                //                    return CompileUnityBundleDirectory() + '/' + filename;
-                //                }
-                //                public new static string CompileAbsoluteBundleDirectory()
-                //                {
-                //#if UNITY_WSA_10_0
-                //            return AbsoluteAssetRootFolder;
-                //#else
-                //                    return Path.Combine(AbsoluteAssetRootFolder, BundleSubFolder);
-                //#endif
-                //                }
-                //                public new static string CompileAbsoluteBundlePath(string filename)
-                //                {
-                //                    return Path.Combine(CompileAbsoluteBundleDirectory(), filename);
-                //                }
+                    Debug.debugging = true;
+                    Debug.Log("Asset Bundle directory created at " + CompileAbsoluteAssetDirectory());
+                    Debug.debugging = false;
+                }
 
                 private static string assetSubFolder = Config_Base_AssetBundle.AssetSubFolder + "/AssetBundlesAndroid";
                 public static new string AssetSubFolder
@@ -599,7 +596,14 @@ namespace UWBNetworkingPackage
 
             public class Room : Config_Base_Room
             {
+                static Room()
+                {
+                    Directory.CreateDirectory(CompileAbsoluteAssetDirectory());
 
+                    Debug.debugging = true;
+                    Debug.Log("Room directory created at " + CompileAbsoluteAssetDirectory());
+                    Debug.debugging = false;
+                }
             }
         }
 
@@ -630,6 +634,11 @@ namespace UWBNetworkingPackage
 
             public class AssetBundle : Config_Base_AssetBundle
             {
+                static AssetBundle()
+                {
+                    Directory.CreateDirectory(CompileAbsoluteAssetDirectory());
+                }
+
                 public static new string AssetSubFolder
                 {
                     get
@@ -670,7 +679,10 @@ namespace UWBNetworkingPackage
 
             public class Room : Config_Base_Room
             {
-
+                static Room()
+                {
+                    Directory.CreateDirectory(CompileAbsoluteAssetDirectory());
+                }
             }
         }
 
@@ -683,6 +695,11 @@ namespace UWBNetworkingPackage
 
             public class AssetBundle : Config_Base_AssetBundle
             {
+                static AssetBundle()
+                {
+                    Directory.CreateDirectory(CompileAbsoluteAssetDirectory());
+                }
+
                 public static new string AssetSubFolder
                 {
                     get
@@ -723,7 +740,10 @@ namespace UWBNetworkingPackage
 
             public class Room : Config_Base_Room
             {
-
+                static Room()
+                {
+                    Directory.CreateDirectory(CompileAbsoluteAssetDirectory());
+                }
             }
         }
 
@@ -736,6 +756,11 @@ namespace UWBNetworkingPackage
 
             public class AssetBundle : Config_Base_AssetBundle
             {
+                static AssetBundle()
+                {
+                    Directory.CreateDirectory(CompileAbsoluteAssetDirectory());
+                }
+
                 public static new string AssetSubFolder
                 {
                     get
@@ -776,7 +801,10 @@ namespace UWBNetworkingPackage
 
             public class Room : Config_Base_Room
             {
-
+                static Room()
+                {
+                    Directory.CreateDirectory(CompileAbsoluteAssetDirectory());
+                }
             }
         }
 
@@ -784,34 +812,10 @@ namespace UWBNetworkingPackage
         {
             public class AssetBundle : Config_Base_AssetBundle
             {
-                //public PC()
-                //{
-                //    NodeType = NodeType.PC;
-                //}
-
-                //                public new static string AssetSubFolder = "ASL/Resources";
-                //                public new static string BundleSubFolder = AssetSubFolder + "/StreamingAssets/AssetBundlesPC";
-
-                //                public new static string CompileUnityBundleDirectory()
-                //                {
-                //                    return "Assets/" + BundleSubFolder;
-                //                }
-                //                public new static string CompileUnityBundlePath(string filename)
-                //                {
-                //                    return CompileUnityBundleDirectory() + '/' + filename;
-                //                }
-                //                public new static string CompileAbsoluteBundleDirectory()
-                //                {
-                //#if UNITY_WSA_10_0
-                //            return AbsoluteAssetRootFolder;
-                //#else
-                //                    return Path.Combine(AbsoluteAssetRootFolder, BundleSubFolder);
-                //#endif
-                //                }
-                //                public new static string CompileAbsoluteBundlePath(string filename)
-                //                {
-                //                    return Path.Combine(CompileAbsoluteBundleDirectory(), filename);
-                //                }
+                static AssetBundle()
+                {
+                    Directory.CreateDirectory(CompileAbsoluteAssetDirectory());
+                }
 
                 private static string assetSubFolder = Config_Base_AssetBundle.AssetSubFolder + "/AssetBundlesPC";
                 public static new string AssetSubFolder
@@ -857,7 +861,10 @@ namespace UWBNetworkingPackage
 
             public class Room : Config_Base_Room
             {
-
+                static Room()
+                {
+                    Directory.CreateDirectory(CompileAbsoluteAssetDirectory());
+                }
             }
         }
 

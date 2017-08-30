@@ -60,7 +60,6 @@ namespace UWBNetworkingPackage
             if (MasterClient)
             {
                 gameObject.AddComponent<MasterClientLauncher_Hololens>();
-                SocketServer_Hololens.StartAsync();
             }
             else
             {
@@ -80,10 +79,32 @@ namespace UWBNetworkingPackage
             //string filepath = System.IO.Path.Combine(Application.persistentDataPath, "debugfile.txt");
             //System.IO.File.WriteAllLines(filepath, filelines);
 #elif UNITY_ANDROID
-            Config.Start(NodeType.Android);
-            RoomHandler.Start();
-
-            gameObject.AddComponent<AndroidLauncher>();
+            bool isTango = true;
+            if (isTango)
+            {
+                Config.Start(NodeType.Tango);
+                RoomHandler.Start();
+                if (MasterClient)
+                {
+                    throw new System.Exception("Tango master client not yet implemented! If it is, then update NetworkManager where you see this error message.");
+                }
+                else { 
+                    gameObject.AddComponent<ReceivingClientLauncher_Tango>();
+                }
+            }
+            else
+            {
+                Config.Start(NodeType.Android);
+                RoomHandler.Start();
+                if (MasterClient)
+                {
+                    throw new System.Exception("Android master client not yet implemented! If it is, then update NetworkManager where you see this error message.");
+                }
+                else
+                {
+                    gameObject.AddComponent<ReceivingClientLauncher_Android>();
+                }
+            }
 #else
             Config.Start(NodeType.PC);
             RoomHandler.Start();

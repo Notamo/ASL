@@ -10,13 +10,10 @@ namespace UWBNetworkingPackage
     /// AndroidLauncher implements launcher functionality specific to the Android platform. Currently, AndroidLauncher
     /// just extends ReceivingClientLauncher, but for further development add android specific funtionality here
     /// </summary>
-    public class AndroidLauncher : ReceivingClientLauncher
+    public class ReceivingClientLauncher_Android : ReceivingClientLauncher_PC
     {
-        // Ensure not HoloLens
-        #if UNITY_EDITOR && !UNITY_WSA_10_0
-
-        // Add Android specific functionality here.
-
-        #endif
+#if UNITY_ANDROID
+        // Insert Android specific functionality/overrides here.
+#endif
     }
 }

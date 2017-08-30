@@ -14,6 +14,10 @@ namespace UWBNetworkingPackage
 
         public static void SetFolders()
         {
+            Directory.CreateDirectory(CompileAbsoluteAssetDirectory());
+#if UNITY_EDITOR
+            UnityEditor.AssetDatabase.Refresh();
+#endif
             UWB_Texturing.Config_Base.AbsoluteAssetRootFolder = AbsoluteAssetRootFolder;
             UWB_Texturing.Config_Base.AssetSubFolder = AssetSubFolder;
         }

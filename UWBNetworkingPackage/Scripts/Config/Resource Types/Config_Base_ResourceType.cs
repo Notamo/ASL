@@ -8,8 +8,15 @@ namespace UWBNetworkingPackage
     public class Config_Base_ResourceType
     {
         #region Fields/Properties
-        
+
+#if UNITY_WSA_10_0
+        private static string absoluteAssetRootFolder = Application.persistentDataPath;
+#elif UNITY_ANDROID
+        private static string absoluteAssetRootFolder = "/data/data/" + Application.bundleIdentifier;
+        // Application.bundleIdentifier may be replaced by Application.identifier in Unity 5.6.0+
+#else
         private static string absoluteAssetRootFolder = Path.Combine(Directory.GetCurrentDirectory(), "Assets");
+#endif
         public static string AbsoluteAssetRootFolder
         {
             get
@@ -20,6 +27,8 @@ namespace UWBNetworkingPackage
             {
 #if UNITY_WSA_10_0
                 absoluteAssetRootFolder = Application.persistentDataPath;
+#elif UNITY_ANDROID
+                absoluteAssetRootFolder = value;
 #else
                 //absoluteAssetRootFolder = Application.dataPath;
                 absoluteAssetRootFolder = value;
@@ -78,9 +87,9 @@ namespace UWBNetworkingPackage
         //            }
         //        }
 
-        #endregion
+#endregion
 
-        #region Methods
+#region Methods
 
         //        public static string CompileUnityRoomDirectory()
         //        {
@@ -194,6 +203,6 @@ namespace UWBNetworkingPackage
 //            return Path.Combine(CompileAbsoluteBundleDirectory(), filename);
 //        }
 
-        #endregion
+#endregion
     }
 }

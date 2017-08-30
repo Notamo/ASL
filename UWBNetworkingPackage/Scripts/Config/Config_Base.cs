@@ -12,7 +12,8 @@ namespace UWBNetworkingPackage
         Kinect,
         Oculus,
         Vive,
-        PC
+        PC,
+        Tango
     };
 
     public class Config_Base
@@ -82,6 +83,30 @@ namespace UWBNetworkingPackage
                 }
 
                 return Base;
+            }
+            public static Types GetPortType(int port)
+            {
+                if (port == Bundle)
+                    return Types.Bundle;
+                else if (port == Bundle_ClientToServer)
+                    return Types.Bundle_ClientToServer;
+                else if (port == RoomResourceBundle)
+                    return Types.RoomResourceBundle;
+                else if (port == RoomResourceBundle_ClientToServer)
+                    return Types.RoomResourceBundle_ClientToServer;
+                else if (port == RoomBundle)
+                    return Types.RoomBundle;
+                else if (port == RoomBundle_ClientToServer)
+                    return Types.RoomBundle_ClientToServer;
+                else if (port == ClientServerConnection)
+                    return Types.ClientServerConnection;
+                else if (port == FindServer)
+                    return Types.FindServer;
+                else
+                {
+                    Debug.Error("Port type not found for port " + port);
+                    throw new System.Exception();
+                }
             }
 
             private static int port = GameObject.Find("NetworkManager").GetComponent<NetworkManager>().Port;
@@ -160,186 +185,5 @@ namespace UWBNetworkingPackage
                 }
             }
         }
-
-
-        //        static Config_Base()
-        //        {
-        //            UWB_Texturing.Config_Base.AbsoluteAssetRootFolder = AbsoluteAssetRootFolder;
-        //            UWB_Texturing.Config_Base.AssetSubFolder = RoomResourceSubFolder;
-        //        }
-
-        //        public static void SetFolders()
-        //        {
-        //            // Triggers static constructor
-        //        }
-
-        //        #region Fields/Properties
-
-
-        //        //public static string absoluteAssetRootFolder = Directory.GetCurrentDirectory();//Application.persistentDataPath;
-        //        private static string absoluteAssetRootFolder = Path.Combine(Directory.GetCurrentDirectory(), "Assets");
-        //        public static string AbsoluteAssetRootFolder
-        //        {
-        //            get
-        //            {
-        //                return absoluteAssetRootFolder;
-        //            }
-        //            set
-        //            {
-        //#if UNITY_WSA_10_0
-        //                absoluteAssetRootFolder = Application.persistentDataPath;
-        //#else
-        //                //absoluteAssetRootFolder = Application.dataPath;
-        //                absoluteAssetRootFolder = value;
-        //                // Put in logic for all node types
-        //#endif
-        //                UWB_Texturing.Config_Base.AbsoluteAssetRootFolder = absoluteAssetRootFolder;
-        //            }
-        //        }
-
-        //        private static string assetSubFolder = "ASL/Resources";
-        //        public static string AssetSubFolder
-        //        {
-        //            get
-        //            {
-        //                return assetSubFolder;
-        //            }
-        //            set
-        //            {
-        //#if UNITY_WSA_10_0
-        //#else
-        //                assetSubFolder = value;
-        //#endif
-        //            }
-        //        }
-
-        //        private static string bundleSubFolder = AssetSubFolder + "/StreamingAssets";
-        //        public static string BundleSubFolder
-        //        {
-        //            get
-        //            {
-        //                return bundleSubFolder;
-        //            }
-        //            set
-        //            {
-        //#if UNITY_WSA_10_0
-        //#else
-        //                bundleSubFolder = value;
-        //#endif
-        //            }
-        //        }
-
-        //        private static string roomResourceSubFolder = AssetSubFolder + "/Rooms";
-        //        public static string RoomResourceSubFolder
-        //        {
-        //            get
-        //            {
-        //                return roomResourceSubFolder;
-        //            }
-        //            set
-        //            {
-        //#if UNITY_WSA_10_0
-        //#else
-        //                roomResourceSubFolder = value;
-        //                UWB_Texturing.Config_Base.AssetSubFolder = roomResourceSubFolder;
-        //#endif
-        //            }
-        //        }
-
-        //        #endregion
-
-        //        #region Methods
-
-        //        public static string CompileUnityRoomDirectory()
-        //        {
-        //            return RoomResourceSubFolder;
-        //        }
-        //        public static string CompileUnityRoomDirectory(string roomName)
-        //        {
-        //            return RoomResourceSubFolder + '/' + roomName;
-        //        }
-        //        public static string CompileUnityRoomPath(string filename, string roomName)
-        //        {
-        //            return CompileUnityRoomDirectory(roomName) + '/' + filename;
-        //        }
-        //        public static string CompileAbsoluteRoomDirectory()
-        //        {
-        //#if UNITY_WSA_10_0
-        //            return AbsoluteAssetRootFolder;
-        //#else
-        //            return Path.Combine(AbsoluteAssetRootFolder, RoomResourceSubFolder);
-        //#endif
-        //        }
-        //        public static string CompileAbsoluteRoomDirectory(string roomName)
-        //        {
-        //#if UNITY_WSA_10_0
-        //            return AbsoluteAssetRootFolder;
-        //#else
-        //            return Path.Combine(AbsoluteAssetRootFolder, Path.Combine(RoomResourceSubFolder, roomName));
-        //#endif
-        //        }
-        //        public static string CompileAbsoluteRoomPath(string filename, string roomName)
-        //        {
-        //            return Path.Combine(CompileAbsoluteRoomDirectory(roomName), filename);
-        //        }
-        //        public static string CompileUnityAssetDirectory()
-        //        {
-        //            //return "Assets/" + AssetSubFolder;
-        //            return AssetSubFolder;
-        //        }
-        //        public static string CompileUnityAssetPath(string filename)
-        //        {
-        //            return CompileUnityAssetDirectory() + '/' + filename;
-        //        }
-        //        public static string CompileAbsoluteAssetDirectory()
-        //        {
-        //#if UNITY_WSA_10_0
-        //            return AbsoluteAssetRootFolder;
-        //#else
-        //            return Path.Combine(AbsoluteAssetRootFolder, AssetSubFolder);
-        //#endif
-        //        }
-        //        public static string CompileAbsoluteAssetPath(string filename)
-        //        {
-        //            return Path.Combine(CompileAbsoluteAssetDirectory(), filename);
-        //        }
-        //        public static string CompileRoomResourcesLoadPath(string assetNameWithoutExtension, string roomName)
-        //        {
-        //            return RoomResourceSubFolder.Substring(RoomResourceSubFolder.IndexOf("Resources") + "Resources".Length + 1) + '/' + assetNameWithoutExtension;
-        //        }
-        //        public static string CompileResourcesLoadPath(string assetNameWithoutExtension)
-        //        {
-        //            return AssetSubFolder.Substring(AssetSubFolder.IndexOf("Resources") + "Resources".Length + 1) + '/' + assetNameWithoutExtension;
-        //            //return ResourcesSubFolder + '/' + assetNameWithoutExtension;
-        //        }
-        //        public static string CompileResourcesLoadPath(string assetSubDirectory, string assetNameWithoutExtension)
-        //        {
-        //            return assetSubDirectory.Substring(assetSubDirectory.IndexOf("Resources") + "Resources".Length + 1) + '/' + assetNameWithoutExtension;
-        //        }
-
-        //        public static string CompileUnityBundleDirectory()
-        //        {
-        //            return "Assets/" + BundleSubFolder;
-        //            //return BundleSubFolder;
-        //        }
-        //        public static string CompileUnityBundlePath(string filename)
-        //        {
-        //            //return CompileUnityBundleDirectory() + '/' + filename;
-        //            return Path.Combine(CompileUnityBundleDirectory(), filename);
-        //        }
-        //        public static string CompileAbsoluteBundleDirectory()
-        //        {
-        //#if UNITY_WSA_10_0
-        //            return AbsoluteAssetRootFolder;
-        //#else
-        //            return Path.Combine(AbsoluteAssetRootFolder, BundleSubFolder);
-        //#endif
-        //        }
-        //        public static string CompileAbsoluteBundlePath(string filename)
-        //        {
-        //            return Path.Combine(CompileAbsoluteBundleDirectory(), filename);
-        //        }
-
-        //#endregion
     }
 }
