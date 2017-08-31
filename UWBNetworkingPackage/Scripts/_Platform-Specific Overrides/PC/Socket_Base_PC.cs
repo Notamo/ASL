@@ -69,6 +69,11 @@ namespace UWBNetworkingPackage
 
         public static new void ReceiveFiles(Socket socket, string receiveDirectory)
         {
+            if (!Directory.Exists(receiveDirectory))
+            {
+                AbnormalDirectoryHandler.CreateDirectory(receiveDirectory);
+            }
+
             int bufferLength = 1024;
             byte[] data = new byte[bufferLength];
             int numBytesReceived = 0;

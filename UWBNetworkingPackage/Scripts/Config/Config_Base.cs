@@ -56,6 +56,12 @@ namespace UWBNetworkingPackage
                 RoomResourceBundle_ClientToServer,
                 RoomBundle,
                 RoomBundle_ClientToServer,
+                AndroidBundle,
+                AndroidBundle_ClientToServer,
+                AndroidRoomResourceBundle,
+                AndroidRoomResourceBundle_ClientToServer,
+                AndroidRoomBundle,
+                AndroidRoomBundle_ClientToServer,
                 ClientServerConnection,
                 FindServer
             }
@@ -80,6 +86,18 @@ namespace UWBNetworkingPackage
                         return ClientServerConnection;
                     case Types.FindServer:
                         return FindServer;
+                    case Types.AndroidBundle:
+                        return AndroidBundle;
+                    case Types.AndroidBundle_ClientToServer:
+                        return AndroidBundle_ClientToServer;
+                    case Types.AndroidRoomResourceBundle:
+                        return AndroidRoomResourceBundle;
+                    case Types.AndroidRoomResourceBundle_ClientToServer:
+                        return AndroidRoomResourceBundle_ClientToServer;
+                    case Types.AndroidRoomBundle:
+                        return AndroidRoomBundle;
+                    case Types.AndroidRoomBundle_ClientToServer:
+                        return AndroidRoomBundle_ClientToServer;
                 }
 
                 return Base;
@@ -102,6 +120,18 @@ namespace UWBNetworkingPackage
                     return Types.ClientServerConnection;
                 else if (port == FindServer)
                     return Types.FindServer;
+                else if (port == AndroidBundle)
+                    return Types.AndroidBundle;
+                else if (port == AndroidBundle_ClientToServer)
+                    return Types.AndroidBundle_ClientToServer;
+                else if (port == AndroidRoomResourceBundle)
+                    return Types.AndroidRoomResourceBundle;
+                else if (port == AndroidRoomResourceBundle_ClientToServer)
+                    return Types.AndroidRoomResourceBundle_ClientToServer;
+                else if (port == AndroidRoomBundle)
+                    return Types.AndroidRoomBundle;
+                else if (port == AndroidRoomBundle_ClientToServer)
+                    return Types.AndroidRoomBundle_ClientToServer;
                 else
                 {
                     Debug.Error("Port type not found for port " + port);
@@ -183,6 +213,30 @@ namespace UWBNetworkingPackage
                 {
                     return Base + 8;
                 }
+            }
+            public static int AndroidBundle
+            {
+                get { return Base + 9; }
+            }
+            public static int AndroidBundle_ClientToServer
+            {
+                get { return Base + 10; }
+            }
+            public static int AndroidRoomResourceBundle
+            {
+                get { return Base + 11; }
+            }
+            public static int AndroidRoomResourceBundle_ClientToServer
+            {
+                get { return Base + 12; }
+            }
+            public static int AndroidRoomBundle
+            {
+                get { return Base + 13; }
+            }
+            public static int AndroidRoomBundle_ClientToServer
+            {
+                get { return Base + 14; }
             }
         }
     }

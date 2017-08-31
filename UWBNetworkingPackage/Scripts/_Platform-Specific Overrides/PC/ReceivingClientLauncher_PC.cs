@@ -37,7 +37,11 @@ namespace UWBNetworkingPackage
             AbnormalDirectoryHandler.CreateDirectory(roomBundleStorageDirectory);
 
             Debug.Log("Room bundle storage directory = " + roomBundleStorageDirectory);
+#if UNITY_ANDROID
+            SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.AndroidRoomBundle, roomBundleStorageDirectory);
+#else
             SocketClient_PC.RequestFiles(ServerFinder.serverIP, Config.Ports.RoomBundle, roomBundleStorageDirectory);
+#endif
 
             InvokeRepeating("CopyRoomBundles", 3, 1);
         }
@@ -54,8 +58,8 @@ namespace UWBNetworkingPackage
                 {
                     string[] pass = tempRoomName.Split('/');
                     string[] pass2 = pass[pass.Length - 1].Split('\\');
-                    string roomName = pass2[pass2.Length - 1];
-                    roomNameList.Add(roomName);
+                    string bundleName = pass2[pass2.Length - 1];
+                    roomNameList.Add(UWB_Texturing.Config.AssetBundle.RoomPackage.ExtractRoomName(bundleName));
                 }
             }
 
@@ -116,5 +120,5 @@ namespace UWBNetworkingPackage
             }
         }
 #endif
-    }
+        }
 }

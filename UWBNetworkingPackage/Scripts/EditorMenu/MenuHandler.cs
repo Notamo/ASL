@@ -191,28 +191,32 @@ namespace UWBNetworkingPackage
         {
             Config.Current.Room.SetFolders();
             RoomManager.SyncRoomName();
-            UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(BuildTarget.StandaloneWindows);
+            //UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(BuildTarget.StandaloneWindows);
+            RoomHandler.PackRawRoomResourceBundle(UWB_Texturing.Config.RoomObject.GameObjectName);
         }
 
         public static void PackAllRoomResourceBundles()
         {
             Config.Current.Room.SetFolders();
             RoomManager.SyncRoomName();
-            UWB_Texturing.BundleHandler.PackAllRawRoomTextureBundles(BuildTarget.StandaloneWindows);
+            //UWB_Texturing.BundleHandler.PackAllRawRoomTextureBundles(BuildTarget.StandaloneWindows);
+            RoomHandler.PackAllRawRoomResourceBundles();
         }
 
         public static void PackRoomBundle()
         {
             Config.Current.Room.SetFolders();
             RoomManager.SyncRoomName();
-            UWB_Texturing.BundleHandler.PackFinalRoomBundle(BuildTarget.StandaloneWindows);
+            //UWB_Texturing.BundleHandler.PackFinalRoomBundle(BuildTarget.StandaloneWindows);
+            RoomHandler.PackRoomBundle(UWB_Texturing.Config.RoomObject.GameObjectName);
         }
 
         public static void PackAllRoomBundles()
         {
             Config.Current.Room.SetFolders();
             RoomManager.SyncRoomName();
-            UWB_Texturing.BundleHandler.PackAllFinalRoomBundles(BuildTarget.StandaloneWindows);
+            //UWB_Texturing.BundleHandler.PackAllFinalRoomBundles(BuildTarget.StandaloneWindows);
+            RoomHandler.PackAllRoomBundles();
         }
 #endif
 

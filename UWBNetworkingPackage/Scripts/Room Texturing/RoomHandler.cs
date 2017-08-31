@@ -83,12 +83,73 @@ namespace UWBNetworkingPackage
         }
 
 #if UNITY_EDITOR
-        public static void PackRoomBundle(BuildTarget targetPlatform)
+        public static void PackRoomBundle(string roomName)
         {
-            //string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
-            string destinationDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
-            //UWB_Texturing.BundleHandler.PackFinalRoomBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
-            UWB_Texturing.BundleHandler.PackFinalRoomBundle(targetPlatform);
+            // Have to generate Android bundle first or the PC one will be overwritten
+            // with the Android one (i.e. deleted) because of how this hooks into the 
+            // RoomTexture module
+            //string roomName = UWB_Texturing.Config.RoomObject.GameObjectName;
+            RoomManager.UpdateRoomBundle(roomName);
+            UWB_Texturing.BundleHandler.PackFinalRoomBundle(BuildTarget.Android);
+            string AndroidBundlePath = Config.Android.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+            string GeneratedBundlePath = UWB_Texturing.Config.AssetBundle.RoomPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename(), roomName);
+            if (File.Exists(AndroidBundlePath))
+            {
+                File.Delete(AndroidBundlePath);
+            }
+            File.Copy(GeneratedBundlePath, AndroidBundlePath);
+            UWB_Texturing.BundleHandler.PackFinalRoomBundle(BuildTarget.StandaloneWindows);
+        }
+
+        public static void PackAllRoomBundles()
+        {
+            string originalRoomName = UWB_Texturing.Config.RoomObject.GameObjectName;
+
+            string[] roomNames = RoomManager.GetAllRoomNames();
+            foreach(string roomName in roomNames)
+            {
+                UWB_Texturing.Config.RoomObject.GameObjectName = roomName;
+                PackRoomBundle(roomName);
+            }
+
+            UWB_Texturing.Config.RoomObject.GameObjectName = originalRoomName;
+        }
+
+        //public static void PackRoomBundle(BuildTarget targetPlatform)
+        //{
+        //    //string destinationDirectory = Config.AssetBundle.PC.CompileAbsoluteBundleDirectory();
+        //    string destinationDirectory = Config.Current.AssetBundle.CompileAbsoluteAssetDirectory();
+        //    //UWB_Texturing.BundleHandler.PackFinalRoomBundle(destinationDirectory, BuildTarget.StandaloneWindows);  // MUST INCORPORATE CODE THAT WILL ANALYZE TARGET ID/TARGET AND SET CORRECT BUILDTARGET FOR PACKING AND SENDING ASSET BUNDLE
+        //    UWB_Texturing.BundleHandler.PackFinalRoomBundle(targetPlatform);
+        //}
+
+        public static void PackRawRoomResourceBundle(string roomName)
+        {
+            string roomNAme = UWB_Texturing.Config.RoomObject.GameObjectName;
+            RoomManager.UpdateRawRoomBundle(roomName);
+            UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(BuildTarget.Android);
+            string AndroidBundlePath = Config.Android.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
+            string GeneratedBundlePath = UWB_Texturing.Config.AssetBundle.RawPackage.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename(), roomName);
+            if (File.Exists(AndroidBundlePath))
+            {
+                File.Delete(AndroidBundlePath);
+            }
+            File.Copy(GeneratedBundlePath, AndroidBundlePath);
+            UWB_Texturing.BundleHandler.PackRawRoomTextureBundle(BuildTarget.StandaloneWindows);
+        }
+
+        public static void PackAllRawRoomResourceBundles()
+        {
+            string originalRoomName = UWB_Texturing.Config.RoomObject.GameObjectName;
+
+            string[] roomNames = RoomManager.GetAllRoomNames();
+            foreach (string roomName in roomNames)
+            {
+                UWB_Texturing.Config.RoomObject.GameObjectName = roomName;
+                PackRawRoomResourceBundle(roomName);
+            }
+
+            UWB_Texturing.Config.RoomObject.GameObjectName = originalRoomName;
         }
 #endif
     }

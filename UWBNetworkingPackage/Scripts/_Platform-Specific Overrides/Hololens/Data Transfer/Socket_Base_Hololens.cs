@@ -77,6 +77,11 @@ namespace UWBNetworkingPackage
 
         public static async void ReceiveFilesAsync(StreamSocket socket, string receiveDirectory)
         {
+            if (!Directory.Exists(receiveDirectory))
+            {
+                AbnormalDirectoryHandler.CreateDirectory(receiveDirectory);
+            }
+
             MemoryStream fileStream = new MemoryStream();
 
             DataReader reader = new DataReader(socket.InputStream);

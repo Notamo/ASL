@@ -107,6 +107,79 @@ namespace UWBNetworkingPackage
                     string roomBundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
                     ReceiveFilesAsync(clientSocket, roomBundleDirectory);
                 }
+                else if (clientPort == Config.Ports.AndroidBundle)
+                {
+                    string[] allFilepaths = Directory.GetFiles(Config.Android.AssetBundle.CompileAbsoluteAssetDirectory());
+                    List<string> fileList = new List<string>();
+                    foreach (string filepath in allFilepaths)
+                    {
+                        if (!filepath.Contains(".meta"))
+                        {
+                            fileList.Add(filepath);
+                        }
+                    }
+
+                    SendFiles(fileList.ToArray(), clientSocket);
+                }
+                else if (clientPort == Config.Ports.AndroidBundle_ClientToServer)
+                {
+                    //string bundleDirectory = Config.AssetBundle.Current.CompileAbsoluteBundleDirectory();
+                    string bundleDirectory = Config.Android.AssetBundle.CompileAbsoluteAssetDirectory();
+                    ReceiveFiles(clientSocket, bundleDirectory);
+                }
+                else if (clientPort == Config.Ports.AndroidRoomResourceBundle)
+                {
+                    //string filepath = Config.AssetBundle.Current.CompileAbsoluteBundlePath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
+                    string originalRoomName = UWB_Texturing.Config.RoomObject.GameObjectName;
+
+                    string[] roomNames = RoomManager.GetAllRoomNames();
+                    List<string> filepaths = new List<string>();
+
+                    foreach (string roomName in roomNames)
+                    {
+                        UWB_Texturing.Config.RoomObject.GameObjectName = roomName;
+
+                        string filepath = Config.Android.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
+                        filepaths.Add(filepath);
+                    }
+
+                    //string filepath = Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename());
+                    //SendFile(filepath, clientSocket);
+
+                    SendFiles(filepaths.ToArray(), clientSocket);
+
+                    UWB_Texturing.Config.RoomObject.GameObjectName = originalRoomName;
+                }
+                else if (clientPort == Config.Ports.AndroidRoomResourceBundle_ClientToServer)
+                {
+                    string roomResourceBundleDirectory = Config.Android.AssetBundle.CompileAbsoluteAssetDirectory();
+                    ReceiveFiles(clientSocket, roomResourceBundleDirectory);
+                }
+                else if (clientPort == Config.Ports.AndroidRoomBundle)
+                {
+                    string originalRoomName = UWB_Texturing.Config.RoomObject.GameObjectName;
+
+                    string[] roomNames = RoomManager.GetAllRoomNames();
+                    List<string> filepaths = new List<string>();
+
+                    foreach (string roomName in roomNames)
+                    {
+                        UWB_Texturing.Config.RoomObject.GameObjectName = roomName;
+
+                        string filepath = Config.Android.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RoomPackage.CompileFilename());
+                        filepaths.Add(filepath);
+                        //SendFile(filepath, clientSocket);
+                    }
+
+                    SendFiles(filepaths.ToArray(), clientSocket);
+
+                    UWB_Texturing.Config.RoomObject.GameObjectName = originalRoomName;
+                }
+                else if (clientPort == Config.Ports.AndroidRoomBundle_ClientToServer)
+                {
+                    string roomBundleDirectory = Config.Android.AssetBundle.CompileAbsoluteAssetDirectory();
+                    ReceiveFiles(clientSocket, roomBundleDirectory);
+                }
                 else
                 {
                     Debug.Log("Port not found");
