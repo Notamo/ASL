@@ -421,18 +421,54 @@ namespace UWBNetworkingPackage
         #region EventHandler
         private void OnEvent(byte eventcode, object content, int senderid)
         {
-            if (eventcode == 101)
+            // Handle different event codes
+            // Technically REQOWN and RETURNOWN operate the same *currently*, but this structure allows for
+            // different handling for each case if desired later.
+            switch ((int)eventcode)
             {
-                PhotonPlayer sender = PhotonPlayer.Find(senderid);
+                // On instantiation of a new object via PhotonNetworkInstantiate
+                case (int)ASLE.INSTANTIATE:
+                    {
+                        PhotonPlayer sender = PhotonPlayer.Find(senderid);
 
-                // Retrieve PhotonView of the object to take control of
-                int viewID = (int)content;
-                PhotonView view = PhotonView.Find(viewID);
+                        // Retrieve PhotonView of the object to take control of
+                        int viewID = (int)content;
+                        PhotonView view = PhotonView.Find(viewID);
 
-                Debug.Log("Heard Event 101 from " + sender.name + " re: " + viewID);
+                        Debug.Log("Heard Event 101 from " + sender.name + " re: " + viewID);
 
-                view.TransferOwnership(PhotonNetwork.masterClient);
+                        view.TransferOwnership(PhotonNetwork.masterClient);
+                        break;
+                    }
+                case (int)ASLE.REQOWN:
+                    {
+                        object[] cont = (object[])content;
+                        int viewID = (int)cont[0];
+                        PhotonPlayer requestor = (PhotonPlayer) cont[1];
+                        PhotonView view = PhotonView.Find(viewID);
+
+                        Debug.Log("Player " + requestor + " was granted ownership of " + viewID);
+
+                        view.TransferOwnership(requestor);
+                        break;
+                    }
+                case (int)ASLE.RETURNOWN:
+                    {
+                        object[] cont = (object[])content;
+                        int viewID = (int)cont[0];
+                        PhotonPlayer requestor = (PhotonPlayer)cont[1];
+                        PhotonView view = PhotonView.Find(viewID);
+
+                        Debug.Log("Player " + requestor + " gained ownership " + viewID + "after ownership was relinquished");
+
+                        view.TransferOwnership(requestor);
+                        break;
+                    }
+                default:
+                    break;
+                    
             }
+            
         }
 
         #endregion
