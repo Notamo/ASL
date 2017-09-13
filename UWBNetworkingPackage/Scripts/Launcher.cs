@@ -51,9 +51,10 @@ namespace UWBNetworkingPackage
         /// </summary>
         public virtual void Awake()
         {
-            PhotonNetwork.logLevel = PhotonLogLevel.Full;
+            //PhotonNetwork.logLevel = PhotonLogLevel.Full;
+            PhotonNetwork.logLevel = PhotonLogLevel.ErrorsOnly;
             PhotonNetwork.autoJoinLobby = false;
-            PhotonNetwork.automaticallySyncScene = true;
+            PhotonNetwork.automaticallySyncScene = false;
 
             Port = gameObject.GetComponent<NetworkManager>().Port;
             RoomName = gameObject.GetComponent<NetworkManager>().RoomName;
