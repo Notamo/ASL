@@ -28,22 +28,26 @@ public class aslBase : Photon.PunBehaviour {
     // Fire an event when instantiated
     public override void OnPhotonInstantiate(PhotonMessageInfo info)
     {
-        // use the event code for instantiation
-        byte evCode = (byte)ASLE.INSTANTIATE;
 
-        Debug.Log("aslBase: OnPhotonInstantiate called.");
-        Debug.Log("Info: " + info);
+        this.gameObject.GetPhotonView().TransferOwnership(0);
+      //  this.gameObject.GetPhotonView().TransferOwnership(PhotonNetwork.masterClient);
 
-        // Call base class method
-        base.OnPhotonInstantiate(info);
+        //// use the event code for instantiation
+        //byte evCode = (byte)ASLE.INSTANTIATE;
 
-        //Fire event for Master Client to catch
-        //Send this' viewID as an int so that the MasterClient can request it
-        //(which lets the MasterClient decide *how* to take control of the PhotonView/GameObject
-        PhotonView view = this.gameObject.GetPhotonView();
+        //Debug.Log("aslBase: OnPhotonInstantiate called.");
+        //Debug.Log("Info: " + info);
 
-        // Send event; MasterClientLauncher should be the only registered handler
-        PhotonNetwork.RaiseEvent(evCode, view.viewID, RELIABLE, null);
+        //// Call base class method
+        //base.OnPhotonInstantiate(info);
+
+        ////Fire event for Master Client to catch
+        ////Send this' viewID as an int so that the MasterClient can request it
+        ////(which lets the MasterClient decide *how* to take control of the PhotonView/GameObject
+        //PhotonView view = this.gameObject.GetPhotonView();
+
+        //// Send event; MasterClientLauncher should be the only registered handler
+        //PhotonNetwork.RaiseEvent(evCode, view.viewID, RELIABLE, null);
     }
 
     [PunRPC]
