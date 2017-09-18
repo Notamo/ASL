@@ -13,6 +13,7 @@ public enum ASLE
 public class aslBase : Photon.PunBehaviour {
 
     private bool RELIABLE = true;
+    private PhotonPlayer scene;
     private List<PhotonPlayer> requestors = new List<PhotonPlayer>();
 
 	// Use this for initialization
@@ -29,7 +30,10 @@ public class aslBase : Photon.PunBehaviour {
     public override void OnPhotonInstantiate(PhotonMessageInfo info)
     {
 
+        base.OnPhotonInstantiate(info);
         this.gameObject.GetPhotonView().TransferOwnership(0);
+        this.scene = this.gameObject.GetPhotonView().owner;
+
       //  this.gameObject.GetPhotonView().TransferOwnership(PhotonNetwork.masterClient);
 
         //// use the event code for instantiation
@@ -73,8 +77,8 @@ public class aslBase : Photon.PunBehaviour {
                 Debug.Log("aslBase: Requesting Ownership of " + view.viewID + " from " + view.owner.ID + " to " + info.sender.ID);
 
                 // Send event; MasterClientLauncher should be the only registered handler
-                PhotonNetwork.RaiseEvent(evCode, ownershipArgs, RELIABLE, null);
-
+                //PhotonNetwork.RaiseEvent(evCode, ownershipArgs, RELIABLE, null);
+                this.gameObject.GetPhotonView().TransferOwnership(info.sender);
                 gotOwnership = true;
             }
         }
@@ -97,7 +101,7 @@ public class aslBase : Photon.PunBehaviour {
             // If nobody else wants to own this object, return it to the master client
             if (requestors.Count == 0)
             {
-                nextPlayer = PhotonNetwork.masterClient;
+                nextPlayer = scene;
             }
             else
             {
@@ -112,8 +116,9 @@ public class aslBase : Photon.PunBehaviour {
             Debug.Log("aslBase: Returning Ownership of " + view.viewID + " from " + info.sender + " to " + nextPlayer.ID);
 
             // Send event; MasterClientLauncher should be the only registered handler
-            PhotonNetwork.RaiseEvent(evCode, ownershipArgs, RELIABLE, null);
-            
+            //PhotonNetwork.RaiseEvent(evCode, ownershipArgs, RELIABLE, null);
+            this.gameObject.GetPhotonView().TransferOwnership(nextPlayer);
+
             returnedOwnership = true;
 
         }
