@@ -2,17 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Enumeration of event codes for ASL (ASLE[num])
-public enum ASLE
-    {
-        INSTANTIATE = 101,
-        REQOWN,
-        RETURNOWN
-    };
 
 public class aslBase : Photon.PunBehaviour {
 
-    private bool RELIABLE = true;
     private int SCENE_VALUE = 0;    // Hidden feature: assigning ownership to '0' makes object a scene object
     private List<PhotonPlayer> requestors = new List<PhotonPlayer>();
 
@@ -33,24 +25,6 @@ public class aslBase : Photon.PunBehaviour {
         base.OnPhotonInstantiate(info);
         this.gameObject.GetPhotonView().TransferOwnership(SCENE_VALUE);
         
-      //  this.gameObject.GetPhotonView().TransferOwnership(PhotonNetwork.masterClient);
-
-        //// use the event code for instantiation
-        //byte evCode = (byte)ASLE.INSTANTIATE;
-
-        //Debug.Log("aslBase: OnPhotonInstantiate called.");
-        //Debug.Log("Info: " + info);
-
-        //// Call base class method
-        //base.OnPhotonInstantiate(info);
-
-        ////Fire event for Master Client to catch
-        ////Send this' viewID as an int so that the MasterClient can request it
-        ////(which lets the MasterClient decide *how* to take control of the PhotonView/GameObject
-        //PhotonView view = this.gameObject.GetPhotonView();
-
-        //// Send event; MasterClientLauncher should be the only registered handler
-        //PhotonNetwork.RaiseEvent(evCode, view.viewID, RELIABLE, null);
     }
 
 
@@ -82,7 +56,6 @@ public class aslBase : Photon.PunBehaviour {
                 }
 
                 // Send event; MasterClientLauncher should be the only registered handler
-                //PhotonNetwork.RaiseEvent(evCode, ownershipArgs, RELIABLE, null);
                 this.gameObject.GetPhotonView().TransferOwnership(info.sender);
                 gotOwnership = true;
             }
@@ -96,8 +69,7 @@ public class aslBase : Photon.PunBehaviour {
     public bool relinquishOwnership(PhotonMessageInfo info)
     {
         bool returnedOwnership = false;
-        PhotonPlayer nextPlayer;
-
+        
         // Only the current owner can return ownership
         if (requestors.Count >= 1 &&  requestors[0] == info.sender)
         {
@@ -107,7 +79,7 @@ public class aslBase : Photon.PunBehaviour {
             // If nobody else wants to own this object, return it to the master client
             if (requestors.Count == 0)
             {
-                this.gameObject.GetPhotonView().TransferOwnership(0);              
+                this.gameObject.GetPhotonView().TransferOwnership(SCENE_VALUE);              
             }
             else
             {
