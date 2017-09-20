@@ -13,7 +13,7 @@ public enum ASLE
 public class aslBase : Photon.PunBehaviour {
 
     private bool RELIABLE = true;
-    private PhotonPlayer scene;
+    private int SCENE_VALUE = 0;    // Hidden feature: assigning ownership to '0' makes object a scene object
     private List<PhotonPlayer> requestors = new List<PhotonPlayer>();
 
 	// Use this for initialization
@@ -31,9 +31,8 @@ public class aslBase : Photon.PunBehaviour {
     {
 
         base.OnPhotonInstantiate(info);
-        this.gameObject.GetPhotonView().TransferOwnership(0);
-        this.scene = this.gameObject.GetPhotonView().owner;
-
+        this.gameObject.GetPhotonView().TransferOwnership(SCENE_VALUE);
+        
       //  this.gameObject.GetPhotonView().TransferOwnership(PhotonNetwork.masterClient);
 
         //// use the event code for instantiation
@@ -54,6 +53,7 @@ public class aslBase : Photon.PunBehaviour {
         //PhotonNetwork.RaiseEvent(evCode, view.viewID, RELIABLE, null);
     }
 
+
     [PunRPC]
     public bool requestOwnership(PhotonMessageInfo info)
     {
@@ -69,12 +69,17 @@ public class aslBase : Photon.PunBehaviour {
             // If the requesting player is at the front of the line, pass ownership to that player.
             if (requestors[0] == info.sender)
             {
-                // Compile info for ownership request - evCode, this' view, requesting player
-                byte evCode = (byte)ASLE.REQOWN;
+            
                 PhotonView view = this.gameObject.GetPhotonView();
-                object[] ownershipArgs = new object[] { view.viewID, info.sender };
-
-                Debug.Log("aslBase: Requesting Ownership of " + view.viewID + " from " + view.owner.ID + " to " + info.sender.ID);
+            
+                try
+                {
+                    Debug.Log("aslBase: Requesting Ownership of " + view.viewID + " from " + view.owner.ID + " to " + info.sender.ID);
+                }
+                catch (System.NullReferenceException e)
+                {
+                    Debug.Log("aslBase: Requesting Ownership of " + view.viewID + " from <scene> to " + info.sender.ID);
+                }
 
                 // Send event; MasterClientLauncher should be the only registered handler
                 //PhotonNetwork.RaiseEvent(evCode, ownershipArgs, RELIABLE, null);
@@ -85,6 +90,7 @@ public class aslBase : Photon.PunBehaviour {
 
         return gotOwnership;
     }
+
 
     [PunRPC]
     public bool relinquishOwnership(PhotonMessageInfo info)
@@ -101,24 +107,25 @@ public class aslBase : Photon.PunBehaviour {
             // If nobody else wants to own this object, return it to the master client
             if (requestors.Count == 0)
             {
-                nextPlayer = scene;
+                this.gameObject.GetPhotonView().TransferOwnership(0);              
             }
             else
             {
-                nextPlayer = requestors[0];
+                this.gameObject.GetPhotonView().TransferOwnership(requestors[0]);
             }
 
-            // Set info for ownership request - evCode, this' view, requesting player
-            byte evCode = (byte)ASLE.RETURNOWN;
+            
             PhotonView view = this.gameObject.GetPhotonView();
-            object[] ownershipArgs = new object[] { view.viewID, nextPlayer };
-
-            Debug.Log("aslBase: Returning Ownership of " + view.viewID + " from " + info.sender + " to " + nextPlayer.ID);
-
-            // Send event; MasterClientLauncher should be the only registered handler
-            //PhotonNetwork.RaiseEvent(evCode, ownershipArgs, RELIABLE, null);
-            this.gameObject.GetPhotonView().TransferOwnership(nextPlayer);
-
+            
+            try
+            {
+                Debug.Log("aslBase: Returning Ownership of " + view.viewID + " from " + info.sender + " to " + view.owner.ID);
+            }
+            catch (System.NullReferenceException e)
+            {
+                Debug.Log("aslBase: Returning Ownership of " + view.viewID + " from " + info.sender + " to <scene>");
+            }
+            
             returnedOwnership = true;
 
         }
