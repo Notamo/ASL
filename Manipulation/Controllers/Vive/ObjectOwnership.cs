@@ -16,7 +16,7 @@ namespace ASL.Manipulation.Controllers.Vive
         /// <summary>
         /// On start, subscribe OnInteractableObjectTouchedHandler to the on touched event 
         /// </summary>
-        protected override void Start()
+        protected void Start()
         {
             // Subscribe to on touched event 
             InteractableObjectTouched += OnInteractableObjectTouchedHandler;
