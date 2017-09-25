@@ -55,4 +55,31 @@ MonoBehaviour:
   - 4368616e6765436f6c6f72525043
   - 52657175657374436f6c6f72525043
   - 73657454657874525043
+  - ChangeColorRPC
+  - Chat
+  - ColorRpc
+  - DeleteLocalMesh
+  - DeleteLocalRoomModelInfo
+  - DeleteMesh
+  - DestroyRpc
+  - DoJump
+  - Flash
+  - InstantiateRpc
+  - Marco
+  - PickupItemInit
+  - Polo
+  - PunPickup
+  - PunPickupSimple
+  - PunRespawn
+  - ReceiveAddMesh
+  - ReceiveMesh
+  - RequestColorRPC
+  - RequestForPickupItems
+  - RequestForPickupTimes
+  - RequestRoomModel
+  - SendAddMesh
+  - SendMesh
+  - setTextRPC
+  - SpawnNetworkObject
+  - TaggedPlayer
   DisableAutoOpenWizard: 1
