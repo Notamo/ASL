@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -91,6 +91,53 @@ NavMeshSettings:
     cellSize: 0.16666667
     accuratePlacement: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &100102612
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4171305745067328, guid: 4e3f1e8e4f703594e8aced4410910545, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 1.6917429
+      objectReference: {fileID: 0}
+    - target: {fileID: 4171305745067328, guid: 4e3f1e8e4f703594e8aced4410910545, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -0.19289494
+      objectReference: {fileID: 0}
+    - target: {fileID: 4171305745067328, guid: 4e3f1e8e4f703594e8aced4410910545, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -1.5567045
+      objectReference: {fileID: 0}
+    - target: {fileID: 4171305745067328, guid: 4e3f1e8e4f703594e8aced4410910545, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4171305745067328, guid: 4e3f1e8e4f703594e8aced4410910545, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4171305745067328, guid: 4e3f1e8e4f703594e8aced4410910545, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4171305745067328, guid: 4e3f1e8e4f703594e8aced4410910545, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4171305745067328, guid: 4e3f1e8e4f703594e8aced4410910545, type: 2}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114520232721542312, guid: 4e3f1e8e4f703594e8aced4410910545,
+        type: 2}
+      propertyPath: RoomName
+      value: Room
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 4e3f1e8e4f703594e8aced4410910545, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1001 &767235400
 Prefab:
   m_ObjectHideFlags: 0
@@ -147,7 +194,6 @@ Prefab:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d8b9ab36ea167c74192f6e88e8bd1a39, type: 2}
-  m_RootGameObject: {fileID: 1660039604}
   m_IsPrefabParent: 0
 --- !u!1 &845107831
 GameObject:
@@ -299,77 +345,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1 &1660039604
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 1000013332197718, guid: d8b9ab36ea167c74192f6e88e8bd1a39,
-    type: 2}
-  m_PrefabInternal: {fileID: 767235400}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 1660039607}
-  - component: {fileID: 1660039606}
-  - component: {fileID: 1660039605}
-  m_Layer: 0
-  m_Name: NetworkManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1660039605
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114006206711275230, guid: d8b9ab36ea167c74192f6e88e8bd1a39,
-    type: 2}
-  m_PrefabInternal: {fileID: 767235400}
-  m_GameObject: {fileID: 1660039604}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ownerId: 0
-  group: 0
-  OwnerShipWasTransfered: 0
-  prefixBackup: -1
-  observed: {fileID: 0}
-  synchronization: 0
-  onSerializeTransformOption: 3
-  onSerializeRigidBodyOption: 2
-  ownershipTransfer: 0
-  ObservedComponents:
-  - {fileID: 0}
-  ObservedComponentsFoldoutOpen: 1
-  viewIdField: 1
-  instantiationId: 1
-  isRuntimeInstantiated: 0
---- !u!114 &1660039606
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114000011044434276, guid: d8b9ab36ea167c74192f6e88e8bd1a39,
-    type: 2}
-  m_PrefabInternal: {fileID: 767235400}
-  m_GameObject: {fileID: 1660039604}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 020cac032c6a4a54ab1d86bec6d8cd3d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MasterClient: 1
-  Port: 25827
-  RoomName: UWBNetworkingDemo
---- !u!4 &1660039607
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 4000010736516072, guid: d8b9ab36ea167c74192f6e88e8bd1a39,
-    type: 2}
-  m_PrefabInternal: {fileID: 767235400}
-  m_GameObject: {fileID: 1660039604}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

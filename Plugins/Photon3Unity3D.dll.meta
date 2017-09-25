@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 077d5bed66a99994bb77a79eec2ed89a
+guid: 9137dc5bb59a36041bc0b19afaab8884
 labels:
 - ExitGames
 - PUN
@@ -82,6 +82,11 @@ PluginImporter:
         SDK: AnySDK
         ScriptingBackend: Il2Cpp
     iOS:
+      enabled: 1
+      settings:
+        CompileFlags: 
+        FrameworkDependencies: 
+    tvOS:
       enabled: 1
       settings:
         CompileFlags: 

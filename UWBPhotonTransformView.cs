@@ -43,6 +43,8 @@ public class UWBPhotonTransformView : MonoBehaviour, IPunObservable
     PhotonTransformViewRotationControl m_RotationControl;
     PhotonTransformViewScaleControl m_ScaleControl;
 
+    Color netColor;
+
     PhotonView m_PhotonView;
 
     bool m_ReceivedNetworkUpdate = false;
@@ -59,6 +61,15 @@ public class UWBPhotonTransformView : MonoBehaviour, IPunObservable
         this.m_PositionControl = new PhotonTransformViewPositionControl(this.m_PositionModel);
         this.m_RotationControl = new PhotonTransformViewRotationControl(this.m_RotationModel);
         this.m_ScaleControl = new PhotonTransformViewScaleControl(this.m_ScaleModel);
+
+        if (this.gameObject.GetComponent<Renderer>() != null)
+        {
+            netColor = this.gameObject.GetComponent<Renderer>().material.color;
+        }
+        else
+        {
+            netColor = Color.white;
+        }
     }
 
     void OnEnable()
