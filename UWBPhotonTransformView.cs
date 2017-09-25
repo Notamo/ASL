@@ -22,6 +22,9 @@ using UnityEngine;
 [AddComponentMenu("Photon Networking/UWB Photon Transform View")]
 public class UWBPhotonTransformView : MonoBehaviour, IPunObservable
 {
+	// Object display text
+	private TextMesh objText = null;
+
     //Since this component is very complex, we seperated it into multiple objects.
     //The PositionModel, RotationModel and ScaleMode store the data you are able to
     //configure in the inspector while the control objects below are actually moving
@@ -218,15 +221,42 @@ public class UWBPhotonTransformView : MonoBehaviour, IPunObservable
         this.m_ScaleModel.SynchronizeEnabled = true;
     }
 
-    [PunRPC]
-    public void ChangeColor(float r, float g, float b)
-    {
-        if(this.gameObject.GetComponent<Renderer>() == null)
-        {
-            Debug.LogWarning("RPC [ChangeColor] called on object with no Renderer");
-            return;
-        }
+	[PunRPC]
+	public void ChangeColorRPC(float r, float g, float b)
+	{
+		if (this.gameObject.GetComponent<Renderer>() == null)
+		{
+			Debug.LogWarning("RPC [ChangeColor] called on object with no Renderer");
+			return;
+		}
 
-        this.gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
-    }
+		this.gameObject.GetComponent<Renderer>().material.color = new Color(r, g, b);
+	}
+
+	[PunRPC]
+	public void RequestColorRPC()
+	{
+		Debug.Log("Request Color RPC");
+		PhotonView phov = gameObject.GetComponent<PhotonView>();
+		Color thisColor = gameObject.GetComponent<Renderer>().material.color;
+		phov.RPC("ChangeColorRPC", PhotonTargets.All, thisColor.r, thisColor.g, thisColor.b);
+	}
+
+	[PunRPC]
+	public void setTextRPC(string text)
+	{
+		if (objText == null)
+			createText();
+
+		objText.text = text;
+	}
+
+	private void createText()
+	{
+		GameObject objTextGO = new GameObject();
+		objTextGO.transform.parent = gameObject.transform;
+		objTextGO.transform.localPosition = new Vector3(0, gameObject.transform.localScale.y, 0);
+		objText = objTextGO.AddComponent<TextMesh>();
+		objText.anchor = TextAnchor.LowerCenter;
+	}
 }
