@@ -17,7 +17,7 @@ namespace ASL.Manipulation.Controllers.Vive
     public class ControllerUIManager : MonoBehaviour
     {
         Transform controllerTip;
-        RadialMenu radialMenu;
+        VRTK_RadialMenu radialMenu;
         public Object[] buttons;
 
         // Use this for initialization
@@ -25,7 +25,7 @@ namespace ASL.Manipulation.Controllers.Vive
         {
             if (radialMenu == null)
             {
-                radialMenu = transform.parent.Find("RadialMenu/RadialMenuUI/Panel").GetComponent<RadialMenu>();
+                radialMenu = transform.parent.Find("RadialMenu/RadialMenuUI/Panel").GetComponent<VRTK_RadialMenu>();
             }
 
             // Look for controller tip on awake
@@ -39,7 +39,7 @@ namespace ASL.Manipulation.Controllers.Vive
         {
             if (radialMenu == null)
             {
-                radialMenu = transform.parent.Find("RadialMenu/RadialMenuUI/Panel").GetComponent<RadialMenu>();
+                radialMenu = transform.parent.Find("RadialMenu/RadialMenuUI/Panel").GetComponent<VRTK_RadialMenu>();
 
                 if (radialMenu == null)
                 {
