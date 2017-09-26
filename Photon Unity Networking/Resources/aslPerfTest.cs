@@ -115,10 +115,17 @@ public class aslPerfTest : Photon.PunBehaviour {
             // Randomly choose an object to either grab or release.
             func = (Random.Range(0, 1.0f) >= 0.5f) ? "grab" : "release";
             
+            // Generate new position
+            position = new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-1.0f, 1.0f), Random.Range(0.0f, 5.0f));
+
             // Select index to operate on, and call randomly-selected func on that PhotonView
             index = (int)Random.Range(1, photonViews.Length-1);
             photonViews[index].RPC(func, PhotonTargets.AllBuffered);
 
+            if(photonViews[index].ownerId == PhotonNetwork.player.ID)
+            {
+                photonViews[index].transform.position = position;
+            }
             
             // End after random period
             if (Random.Range(0, 1.0f) <= 0.001)
@@ -189,6 +196,7 @@ public class aslPerfTest : Photon.PunBehaviour {
     // Must use coroutine for non-blocking sleeps ;_;
     private IEnumerator runTest3B()
     {
+        Vector3 position;
         int index;
 
         var photonViews = Photon.PunBehaviour.FindObjectsOfType<PhotonView>();
@@ -205,6 +213,14 @@ public class aslPerfTest : Photon.PunBehaviour {
                 if (Random.Range(0, 1.0f) >= 0.5f)
                 {
                     photonViews[index].RPC("grabWithDelay", PhotonTargets.AllBuffered, 1000);
+
+                    if (photonViews[index].ownerId == PhotonNetwork.player.ID)
+                    {
+                        // Generate new position
+                        position = new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-1.0f, 1.0f), Random.Range(0.0f, 5.0f));
+                        photonViews[index].transform.position = position;
+                    }
+
                 }
                 else
                 {
