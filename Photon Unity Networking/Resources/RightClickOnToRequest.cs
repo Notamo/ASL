@@ -15,12 +15,12 @@ public class RightClickOnToRequest : Photon.MonoBehaviour
         if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
         {
             Debug.Log("Attempting to give up Ownership");
-            this.photonView.RPC("relinquishOwnership", PhotonTargets.AllBuffered);
+            this.photonView.RPC("release", PhotonTargets.AllBuffered);
         }
         else
         {
             Debug.Log("Attempting to take Ownership");
-            this.photonView.RPC("requestOwnership", PhotonTargets.AllBuffered);
+            this.photonView.RPC("grabWithDelay", PhotonTargets.AllBuffered, 10000);
         }
         
     }

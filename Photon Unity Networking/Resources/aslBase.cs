@@ -2,6 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Shorthand values for three common values of grab/release return values
+public static class ASLSTATE
+{
+    public const int FAIL = -1;
+    public const int NOW = 0;
+    public const int NEXT = 1;
+}
 
 public class aslBase : Photon.PunBehaviour {
 
@@ -27,12 +34,78 @@ public class aslBase : Photon.PunBehaviour {
         
     }
 
+    [PunRPC]
+    public int grab(PhotonMessageInfo info)
+    {
+        int grabbed = ASLSTATE.FAIL;
+
+        if (this.requestOwnership(info) == 0)
+            grabbed = ASLSTATE.NOW;
+
+        return grabbed;
+    }
 
     [PunRPC]
-    public bool requestOwnership(PhotonMessageInfo info)
+    public int grabWithDelay(int msDelay, PhotonMessageInfo info)
     {
-        // Assume the caller did not get ownership
-        bool gotOwnership = false;
+        int grabbed = this.requestOwnership(info);
+
+        // If the ownsershp request _fails_, something is wrong.  Return immediately
+        // Otherwise, wait the specified time to receive ownership before aborting the attempt.
+        if(grabbed != ASLSTATE.FAIL)
+        {
+            // Return immediately if the player is granted ownership right away, as well.
+            // Otherwise, ask Unity to retry the ownership request.
+            if(grabbed != ASLSTATE.NOW)
+            {
+                StartCoroutine(retryOwnership(msDelay/1000.0f, info));
+            }
+        }
+
+        return grabbed;
+    }
+
+    [PunRPC]
+    public int checkOwnership(PhotonMessageInfo info)
+    {
+        int hasOwnership = requestors.IndexOf(info.sender);
+
+        return hasOwnership;
+    }
+
+    // This are hacky kludge.  Kelvin requested "no coroutines", but without a coroutine,
+    // any timed loop will lock the players' clients up.  This is the least coroutine I could
+    // accomplish: retry requesting ownership on an object after some time has elapsed.
+    private IEnumerator retryOwnership(float delay, PhotonMessageInfo info)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (this.requestOwnership(info) != ASLSTATE.NOW)
+        {
+            this.relinquishOwnership(info);      
+        }
+        
+        yield break;
+    }
+
+    [PunRPC]
+    public int release(PhotonMessageInfo info)
+    {
+        return relinquishOwnership(info);
+    }
+
+
+    public int requestOwnership(PhotonMessageInfo info)
+    {
+        // Assume the caller will never get ownership
+        int gotOwnership = ASLSTATE.FAIL;
+
+        // Never allow any player to take control of an aslBase object tagged "room", "Room", or "ROOM."
+        if(string.Compare(this.tag.ToUpper(), "ROOM") == 0)
+        {
+            return gotOwnership;
+        }
+
 
         // Don't allow multiple requests; return false after first request by a player
         if (!requestors.Contains(info.sender))
@@ -57,21 +130,32 @@ public class aslBase : Photon.PunBehaviour {
 
                 // Send event; MasterClientLauncher should be the only registered handler
                 this.gameObject.GetPhotonView().TransferOwnership(info.sender);
-                gotOwnership = true;
+
+                // The player receives ownership immediately
+                gotOwnership = ASLSTATE.NOW;
             }
+            // If the player is not the current owner, but is in the list, return their current index in the list
+            else
+            {
+                gotOwnership = requestors.IndexOf(info.sender);
+            }
+        }
+        // If the player has already requested ownership, return their index in the list (may have moved up)
+        else
+        {
+            gotOwnership = requestors.IndexOf(info.sender);
         }
 
         return gotOwnership;
     }
 
-
-    [PunRPC]
-    public bool relinquishOwnership(PhotonMessageInfo info)
+    public int relinquishOwnership(PhotonMessageInfo info)
     {
-        bool returnedOwnership = false;
+        // Assume J. Random Player can never return this object.
+        int returnedOwnership = ASLSTATE.FAIL;
         
-        // Only the current owner can return ownership
-        if (requestors.Count >= 1 &&  requestors[0] == info.sender)
+        // Only the current owner can actually return ownership
+        if (requestors.Count >= 1 && requestors[0] == info.sender)
         {
             // Remove the player from list of requestors
             requestors.Remove(info.sender);
@@ -98,8 +182,19 @@ public class aslBase : Photon.PunBehaviour {
                 Debug.Log("aslBase: Returning Ownership of " + view.viewID + " from " + info.sender + " to <scene>");
             }
             
-            returnedOwnership = true;
+            returnedOwnership = ASLSTATE.NOW;
 
+        }
+        // But a player in the queue can relinquish their claim and remove themselves from the queue
+        else
+        {
+            int index = requestors.IndexOf(info.sender);
+
+            if (index >= 0)
+            {
+                returnedOwnership = index;
+                requestors.Remove(info.sender);
+            }
         }
         
         return returnedOwnership;
