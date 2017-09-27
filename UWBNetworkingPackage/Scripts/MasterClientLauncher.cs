@@ -27,6 +27,18 @@ namespace UWBNetworkingPackage
 #endregion
 
         /// <summary>
+        /// Setup OnEvent as callback handler
+        /// </summary>
+        public override void Awake()
+        {
+            base.Awake();
+            Debug.Log("MasterClientLauncher: Awake completed.");
+            /// Prevent GameObjects from being cleaned up after their original owner leaves the room
+            PhotonNetwork.autoCleanUpPlayerObjects = false;
+            Debug.Log("Disabled autoCleanUpPlayerObjects");
+        }
+
+        /// <summary>
         /// Attempts to connect to the specified Room Name on start, and adds MeshDisplay component
         /// for displaying the Room Mesh
         /// </summary>
@@ -406,6 +418,7 @@ namespace UWBNetworkingPackage
 #endregion
 
 #endif
+
     }
 }
 
