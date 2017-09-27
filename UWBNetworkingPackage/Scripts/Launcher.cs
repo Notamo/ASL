@@ -55,6 +55,10 @@ namespace UWBNetworkingPackage
             PhotonNetwork.logLevel = PhotonLogLevel.ErrorsOnly;
             PhotonNetwork.autoJoinLobby = false;
             PhotonNetwork.automaticallySyncScene = false;
+            
+            /// Prevent GameObjects from being cleaned up after their original owner leaves the room
+            PhotonNetwork.autoCleanUpPlayerObjects = false;
+            Debug.Log("Disabled autoCleanUpPlayerObjects");
 
             Port = gameObject.GetComponent<NetworkManager>().Port;
             RoomName = gameObject.GetComponent<NetworkManager>().RoomName;
@@ -68,6 +72,8 @@ namespace UWBNetworkingPackage
         public virtual void Start()
         {
             Connect();
+            // Adds mesh display component for displaying RoomMesh (?)
+            // gameObject.AddComponent<MeshDisplay>();
         }
 
         public virtual void Update()
@@ -194,8 +200,8 @@ namespace UWBNetworkingPackage
 
         //            File.WriteAllBytes(bundlePath, ms.ToArray());
 
-        //            //File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/StreamingAssets/AssetBundlesPC/" + bundleName + ".asset"), ms.ToArray());
-        //            //File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/StreamingAssets/AssetBundlesAndroid/" + bundleName + ".asset"), ms.ToArray());
+        //            //File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/Resources/StreamingAssets/AssetBundlesPC/" + bundleName + ".asset"), ms.ToArray());
+        //            //File.WriteAllBytes(Path.Combine(Application.dataPath, "ASL/Resources/StreamingAssets/AssetBundlesAndroid/" + bundleName + ".asset"), ms.ToArray());
 
         //            //AssetBundle newBundle = AssetBundle.LoadFromMemory(ms.ToArray());
         //            //bundles.Add(bundleName, newBundle);
