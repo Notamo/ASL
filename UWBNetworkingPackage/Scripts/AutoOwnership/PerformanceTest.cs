@@ -105,47 +105,53 @@ namespace UWBNetworkingPackage
         {
             base.OnPhotonCustomRoomPropertiesChanged(propertiesThatChanged);
 
-            int numInstantiations = (int)propertiesThatChanged["NumInstantiations"];
-
-            stopwatch.Reset();
-
-            Vector3 position;
-            for (int i = 0; i < numInstantiations; i++)
+            if (propertiesThatChanged.ContainsKey("NumInstantiations"))
             {
-                stopwatch.Start();
-                position = new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-1.0f, 1.0f), Random.Range(0.0f, 5.0f));
-                PhotonNetwork.Instantiate(prefabName, position, Quaternion.identity, 0);
-                stopwatch.Stop();
-            }
+                int numInstantiations = (int)propertiesThatChanged["NumInstantiations"];
 
-            Debug.LogWarning("Ownership Transferral metrics: Total time to create " + numInstantiations + " " + prefabName + " instantiations = " + stopwatch.ElapsedMilliseconds + "ms");
+                stopwatch.Reset();
 
-            Queue<PhotonView> viewQueue = ShufflePhotonViews();
-
-            stopwatch.Reset();
-            stopwatch.Start();
-            int numViews = viewQueue.Count;
-            while (viewQueue.Count > 0)
-            {
-                string GrabRPCName = "Grab";
-                viewQueue.Dequeue().RPC(GrabRPCName, PhotonTargets.Others);
-            }
-            stopwatch.Stop();
-
-            Debug.LogWarning("Ownership Transferral metrics: Total time to try grabbing " + numViews + " " + prefabName + " = " + stopwatch.ElapsedMilliseconds + "ms");
-
-            int numViewsOwned = 0;
-            var viewArray = GameObject.FindObjectsOfType<PhotonView>();
-            foreach (PhotonView view in viewArray)
-            {
-                if (view.owner.Equals(PhotonNetwork.player.ID))
+                Vector3 position;
+                for (int i = 0; i < numInstantiations; i++)
                 {
-                    Debug.Log("Original Owner: " + (view.viewID / 1000) + "; Current Owner: " + view.owner);
-                    ++numViewsOwned;
+                    stopwatch.Start();
+                    position = new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-1.0f, 1.0f), Random.Range(0.0f, 5.0f));
+                    PhotonNetwork.Instantiate(prefabName, position, Quaternion.identity, 0);
+                    stopwatch.Stop();
                 }
-            }
 
-            Debug.LogWarning("Ownership Transferral metrics: Total # of owned objects = " + numViewsOwned);
+                Debug.LogWarning("Ownership Transferral metrics: Total time to create " + numInstantiations + " " + prefabName + " instantiations = " + stopwatch.ElapsedMilliseconds + "ms");
+
+                Queue<PhotonView> viewQueue = ShufflePhotonViews();
+
+                stopwatch.Reset();
+                stopwatch.Start();
+                int numViews = viewQueue.Count;
+                while (viewQueue.Count > 0)
+                {
+                    string GrabRPCName = "Grab";
+                    viewQueue.Dequeue().RPC(GrabRPCName, PhotonTargets.Others);
+                }
+                stopwatch.Stop();
+
+                Debug.LogWarning("Ownership Transferral metrics: Total time to try grabbing " + numViews + " " + prefabName + " = " + stopwatch.ElapsedMilliseconds + "ms");
+
+                int numViewsOwned = 0;
+                var viewArray = GameObject.FindObjectsOfType<PhotonView>();
+                //foreach (PhotonView view in viewArray)
+                for(int i = 0; i < viewArray.Length; i++)
+                {
+                    PhotonView view = viewArray[i];
+                    
+                    if (view.owner.Equals(PhotonNetwork.player.ID))
+                    {
+                        Debug.Log("Original Owner: " + (view.viewID / 1000) + "; Current Owner: " + view.owner);
+                        ++numViewsOwned;
+                    }
+                }
+
+                Debug.LogWarning("Ownership Transferral metrics: Total # of owned objects = " + numViewsOwned);
+            }
         }
 
         private Queue<PhotonView> ShufflePhotonViews()
