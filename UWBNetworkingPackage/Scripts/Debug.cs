@@ -29,5 +29,10 @@ namespace UWBNetworkingPackage
         {
             UnityEngine.Debug.Log("ERROR: " + message);
         }
+
+        public static void LogWarning(string message)
+        {
+            UnityEngine.Debug.LogWarning(message);
+        }
     }
 }
