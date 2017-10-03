@@ -455,5 +455,93 @@ namespace UWBNetworkingPackage
         //}
 
         //    #endregion
+
+        [PunRPC]
+        public override void ReceiveTangoMesh(string networkConfig)
+        {
+            this.DeleteLocalMesh();
+            var networkConfigArray = networkConfig.Split(':');
+
+            TcpClient client = new TcpClient();
+            client.Connect(IPAddress.Parse(networkConfigArray[0]), Int32.Parse(networkConfigArray[1]));
+
+            using (var stream = client.GetStream())
+            {
+                byte[] data = new byte[1024];
+
+                Debug.Log("Start receiving mesh.");
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    int numBytesRead;
+                    while ((numBytesRead = stream.Read(data, 0, data.Length)) > 0)
+                    {
+                        ms.Write(data, 0, numBytesRead);
+                    }
+                    Debug.Log("Finish receiving mesh: size = " + ms.Length);
+                    client.Close();
+
+                    //DONE RECIEVING MESH FROM THE MASTER SERVER, NOW UPDATE IT
+
+                    TangoDatabase.UpdateMesh(ms.ToArray());
+                    Debug.Log("You updated the meshes in the database");
+                }
+            }
+
+            client.Close();
+
+
+            //CREATE AND DRAW THEM MESHES------------------------------------------------------
+            Debug.Log("Checking for them meshes in ze database");
+
+            //goes into the if statement if the database is not NULL
+            if (TangoDatabase.GetMeshAsList() != null)
+            {
+                //Create a material to apply to the mesh
+                Material meshMaterial = new Material(Shader.Find("Diffuse"));
+
+                //grab the meshes in the database
+                IEnumerable<Mesh> temp = new List<Mesh>(TangoDatabase.GetMeshAsList());
+
+                foreach (var mesh in temp)
+                {
+                    //for each mesh in the database, create a game object to represent
+                    //and display the mesh in the scene
+                    GameObject obj1 = new GameObject("mesh");
+
+                    //add a mesh filter to the object and assign it the mesh
+                    MeshFilter filter = obj1.AddComponent<MeshFilter>();
+                    filter.mesh = mesh;
+
+                    //add a mesh rendererer and add a material to it
+                    MeshRenderer rend1 = obj1.AddComponent<MeshRenderer>();
+                    rend1.material = meshMaterial;
+                }
+            }
+            else
+            {
+                UnityEngine.Debug.Log("YO... your mesh is empty...");
+            }
+            //END OF CREATING AND DRAWING THE MEESHES------------------------------------------
+        }
+
+        [PunRPC]
+        public override void SendTangoMesh(string networkConfig)
+        {
+            var networkConfigArray = networkConfig.Split(':');
+
+            TcpClient client = new TcpClient();
+            client.Connect(IPAddress.Parse(networkConfigArray[0]), Int32.Parse(networkConfigArray[1]));
+            new Thread(() =>
+            {
+                using (NetworkStream stream = client.GetStream())
+                {
+                    var data = TangoDatabase.GetMeshAsBytes();
+                    stream.Write(data, 0, data.Length);
+                    Debug.Log("Mesh sent: mesh size = " + data.Length);
+                }
+                client.Close();
+            }).Start();
+
+        }
     }
 }

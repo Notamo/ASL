@@ -21,8 +21,9 @@ namespace UWBNetworkingPackage
 
 #region Private Properties
         private DateTime lastRoomUpdate = DateTime.MinValue;
-#endregion
-        
+        private DateTime _lastUpdate = DateTime.MinValue;
+        #endregion
+
         /// <summary>
         /// Called once per frame
         /// When a new mesh is recieved, display it 
@@ -33,7 +34,7 @@ namespace UWBNetworkingPackage
             // ERROR TESTING - REMOVE THIS METHOD - NOTHING SPECIAL HAPPENS IN IT ANYMORE
             base.Update();
 
-            
+
             //    //AssetBundle object instantiation for testing purposes
             //    if (Input.GetKeyDown("i"))
             //    {
@@ -42,6 +43,36 @@ namespace UWBNetworkingPackage
             //        photonView.RPC("SpawnNetworkObject", PhotonTargets.AllBuffered, transform.position, transform.rotation, id1, "Cube");
             //    }
             //}
+
+            if (TangoDatabase.LastUpdate != DateTime.MinValue && DateTime.Compare(_lastUpdate, TangoDatabase.LastUpdate) < 0)
+            {
+                if (TangoDatabase.GetMeshAsBytes() != null)
+                {
+                    //    Create a material to apply to the mesh
+                    Material meshMaterial = new Material(Shader.Find("Diffuse"));
+
+                    //    grab the meshes in the database
+                    IEnumerable<Mesh> temp = new List<Mesh>(TangoDatabase.GetMeshAsList());
+
+                    foreach (var mesh in temp)
+                    {
+                        //        for each mesh in the database, create a game object to represent
+                        //        and display the mesh in the scene
+                        GameObject obj1 = new GameObject("tangomesh");
+
+                        //        add a mesh filter to the object and assign it the mesh
+                        MeshFilter filter = obj1.AddComponent<MeshFilter>();
+                        filter.mesh = mesh;
+
+                        //        add a mesh rendererer and add a material to it
+                        MeshRenderer rend1 = obj1.AddComponent<MeshRenderer>();
+                        rend1.material = meshMaterial;
+
+                        rend1.material.shader = Shader.Find("Custom/UnlitVertexColor");
+                    }
+                }
+                _lastUpdate = TangoDatabase.LastUpdate;
+            }
         }
 
         public void BeginRoomRefreshCycle()
@@ -93,6 +124,50 @@ namespace UWBNetworkingPackage
             BeginRoomRefreshCycle();
         }
 
+        [PunRPC]
+        public override void SendTangoMesh(int id)
+        {
+            if (TangoDatabase.GetMeshAsBytes() != null)
+            {
+                photonView.RPC("ReceiveTangoMesh", PhotonPlayer.Find(id), GetLocalIpAddress() + ":" + Port);
+            }
+        }
+
+        [PunRPC]
+        public override void ReceiveTangoMesh(int id)
+        {
+            // Setup TCPListener to wait and receive mesh
+            this.DeleteLocalMesh();
+            TcpListener receiveTcpListener = new TcpListener(IPAddress.Any, Port + 1);
+            receiveTcpListener.Start();
+            new Thread(() =>
+            {
+                var client = receiveTcpListener.AcceptTcpClient();
+                using (var stream = client.GetStream())
+                {
+                    byte[] data = new byte[1024];
+
+                    Debug.Log("Start receiving mesh");
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        int numBytesRead;
+                        while ((numBytesRead = stream.Read(data, 0, data.Length)) > 0)
+                        {
+                            ms.Write(data, 0, numBytesRead);
+                        }
+                        Debug.Log("finish receiving mesh: size = " + ms.Length);
+                        client.Close();
+                        TangoDatabase.UpdateMesh(ms.ToArray());
+                    }
+                }
+                client.Close();
+                receiveTcpListener.Stop();
+                photonView.RPC("ReceiveTangoMesh", PhotonTargets.Others, GetLocalIpAddress() + ":" + Port);
+            }).Start();
+
+            photonView.RPC("SendTangoMesh", PhotonPlayer.Find(id), GetLocalIpAddress() + ":" + (Port + 1));
+        }
+
         ///// <summary>
         ///// After creating a room, set up a multi-threading tcp listener to listen on the specified port
         ///// Once someone connects to the port, send the currently saved (in Database) Room Mesh
@@ -124,23 +199,23 @@ namespace UWBNetworkingPackage
         //        }
         //    }).Start();
         //}
-        
-        ///// <summary>
-        ///// This returns local IP address
-        ///// </summary>
-        ///// <returns>Local IP address of the machine running as the Master Client</returns>
-        //private IPAddress GetLocalIpAddress()
-        //{
-        //    var host = Dns.GetHostEntry(Dns.GetHostName());
-        //    foreach (IPAddress ip in host.AddressList)
-        //    {
-        //        if (ip.AddressFamily.ToString() == "InterNetwork")
-        //        {
-        //            return ip;
-        //        }
-        //    }
-        //    return null;
-        //}
+
+        /// <summary>
+        /// This returns local IP address
+        /// </summary>
+        /// <returns>Local IP address of the machine running as the Master Client</returns>
+        private IPAddress GetLocalIpAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ip.AddressFamily.ToString() == "InterNetwork")
+                {
+                    return ip;
+                }
+            }
+            return null;
+        }
 
         ///// <summary>
         ///// Performs the actual sending of bundles.  The path is determined
@@ -157,7 +232,7 @@ namespace UWBNetworkingPackage
         //            new Thread(() =>
         //                {
         //                    var client = bundleListener.AcceptTcpClient();
-                            
+
         //                    using (var stream = client.GetStream())
         //                    {
         //                        //needs to be changed back
@@ -165,7 +240,7 @@ namespace UWBNetworkingPackage
         //                        stream.Write(data, 0, data.Length);
         //                        client.Close();
         //                    }
-                            
+
         //                    bundleListener.Stop();
         //                }).Start();
         //}
@@ -363,7 +438,7 @@ namespace UWBNetworkingPackage
         //    photonView.RPC("SendAddMesh", PhotonPlayer.Find(id), GetLocalIpAddress() + ":" + (Port + 4));
         //}
 
-//#endregion
+        //#endregion
     }
 }
 

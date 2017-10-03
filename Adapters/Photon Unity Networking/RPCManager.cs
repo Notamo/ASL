@@ -37,12 +37,14 @@ namespace ASL.Adapters.PUN
         #region Methods
         public void FixedUpdate()
         {
+#if UNITY_EDITOR
             // Make sure not to dynamically change RPC methods while any of 
             // the clients are running! Will cause a desync issue, most likely
             if (!EditorApplication.isPlaying)
             {
                 RefreshRPCList();
             }
+#endif
         }
 
         // Cannot reference PhotonEditor class (may be due to assembly linkage?) -> If you can figure out a way to reference this class, USE THEIR METHODS INSTEAD OF THE LOGIC WHICH WAS COPY PASTED
@@ -160,11 +162,12 @@ namespace ASL.Adapters.PUN
                 //        return;
                 //    }
                 //}
-
+#if UNITY_EDITOR
                 additionalRpcs.Sort();
                 Undo.RecordObject(PhotonNetwork.PhotonServerSettings, "Update PUN RPC-list");
                 PhotonNetwork.PhotonServerSettings.RpcList.AddRange(additionalRpcs);
                 SaveSettings();
+#endif
             }
 
             if (countOldRpcs > 0)
@@ -193,7 +196,9 @@ namespace ASL.Adapters.PUN
 
         private static void SaveSettings()
         {
+#if UNITY_EDITOR
             EditorUtility.SetDirty(PhotonNetwork.PhotonServerSettings);
+#endif
         }
 
         ///  default path: "Assets"

@@ -16,6 +16,7 @@ namespace ASL.Manipulation.Controllers.Vive
     /// </summary>
     public class ControllerUIManager : MonoBehaviour
     {
+#if !UNITY_ANDROID
         Transform controllerTip;
         VRTK_RadialMenu radialMenu;
         public Object[] buttons;
@@ -93,5 +94,6 @@ namespace ASL.Manipulation.Controllers.Vive
             //GameObject g = GameObject.Instantiate((GameObject)obj);
             PhotonNetwork.Instantiate(obj.name, controllerTip.position, controllerTip.rotation, 0);
         }
+#endif
     }
 }

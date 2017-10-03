@@ -414,8 +414,46 @@ namespace UWBNetworkingPackage
         //    nViews[0].viewID = id1;
         //}
 
+#region TangoRPC
+        [PunRPC]
+        public virtual void SendTangoMesh()
+        {
 
-#region Byte stream SendMesh/ReceiveMesh (i.e. uses Database class)
+        }
+
+        [PunRPC]
+        public virtual void SendTangoMesh(int id)
+        {
+
+        }
+
+        [PunRPC]
+        public virtual void SendTangoMesh(string networkConfig)
+        {
+
+        }
+
+        [PunRPC]
+        public virtual void ReceiveTangoMesh()
+        {
+
+        }
+
+        [PunRPC]
+        public virtual void ReceiveTangoMesh(int id)
+        {
+
+        }
+
+        [PunRPC]
+        public virtual void ReceiveTangoMesh(string networkConfig)
+        {
+
+        }
+
+#endregion
+
+        #region Byte stream SendMesh/ReceiveMesh (i.e. uses Database class)
         /// <summary>
         /// Send mesh to a host specified by networkConfig.
         /// Currently, only the HoloLens implements this method
