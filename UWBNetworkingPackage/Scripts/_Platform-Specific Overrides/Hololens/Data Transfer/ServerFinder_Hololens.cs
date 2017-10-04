@@ -88,6 +88,10 @@ namespace UWBNetworkingPackage
         }).Start();
     }
 
+    public static bool KillThreads()
+        {
+            listener.Dispose();
+        }
 #endif
     }
 }

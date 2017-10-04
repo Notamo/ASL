@@ -26,7 +26,6 @@ namespace UWBNetworkingPackage
         // Needed for Photon 
         [Tooltip("The name of the room that this project will attempt to connect to. This room must be created by a \"Master Client\".")]
         public string RoomName;
-
 #endregion
 
         /// <summary>
@@ -125,7 +124,14 @@ namespace UWBNetworkingPackage
 #endif
         }
 
-
+        protected void OnApplicationQuit()
+        {
+#if UNITY_WSA_10_0 && !UNITY_EDITOR
+            ServerFinder_Hololens.KillThreads();
+#else
+            ServerFinder.KillThreads();
+#endif
+        }
 
 
         //-----------------------------------------------------------------------------

@@ -11,6 +11,8 @@ namespace UWBNetworkingPackage
     public class ServerFinder
     {
         public static string serverIP;
+        private static Thread thread_AcceptClient;
+
 #if !UNITY_WSA_10_0
         public static UdpClient listener;
 
@@ -26,7 +28,14 @@ namespace UWBNetworkingPackage
         public static void AcceptClient()
         {
             byte[] serverIPBytes = Encoding.UTF8.GetBytes(serverIP);
-            new Thread(() =>
+
+            if(thread_AcceptClient == null
+                || thread_AcceptClient.IsAlive)
+            {
+                thread_AcceptClient.Abort();
+            }
+
+            thread_AcceptClient = new Thread(() =>
             {
                 while (true)
                 {
@@ -36,7 +45,9 @@ namespace UWBNetworkingPackage
                     //string clientIPString = Encoding.UTF8.GetString(clientIPBytes);
                     listener.Send(serverIPBytes, serverIPBytes.Length, clientEndpoint);
                 }
-            }).Start();
+            });
+
+            thread_AcceptClient.Start();
         }
 
         // IPAddress string
@@ -55,6 +66,18 @@ namespace UWBNetworkingPackage
             IPString = Encoding.UTF8.GetString(serverIPBytes);
             serverIP = IPString;
             return IPString;
+        }
+
+        public static bool KillThreads()
+        {
+            if(thread_AcceptClient != null
+                && thread_AcceptClient.IsAlive)
+            {
+                thread_AcceptClient.Abort();
+                return thread_AcceptClient.IsAlive;
+            }
+
+            return true;
         }
 #endif
     }
