@@ -55,6 +55,7 @@ namespace UWBNetworkingPackage
             PhotonNetwork.logLevel = PhotonLogLevel.ErrorsOnly;
             PhotonNetwork.autoJoinLobby = false;
             PhotonNetwork.automaticallySyncScene = false;
+            PhotonNetwork.MaxResendsBeforeDisconnect = 2;
             
             /// Prevent GameObjects from being cleaned up after their original owner leaves the room
             PhotonNetwork.autoCleanUpPlayerObjects = false;
@@ -96,7 +97,23 @@ namespace UWBNetworkingPackage
         {
             if (PhotonNetwork.connected)
             {
-                PhotonNetwork.JoinRoom(RoomName);
+                bool roomFound = false;
+                RoomInfo[] roomList = PhotonNetwork.GetRoomList();
+                for (int i = 0; i < roomList.Length; i++)
+                {
+                    if (RoomName.Equals(roomList[i]))
+                    {
+                        PhotonNetwork.JoinRoom(RoomName);
+                        roomFound = true;
+                        break;
+                    }
+                }
+
+                if (!roomFound)
+                {
+                    Debug.Error("PUN room not found. Please verify name and determine if master client has initialized room.");
+                    PhotonNetwork.Disconnect();
+                }
             }
             else
             {

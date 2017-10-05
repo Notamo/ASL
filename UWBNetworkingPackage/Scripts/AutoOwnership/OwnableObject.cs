@@ -12,7 +12,7 @@ namespace UWBNetworkingPackage
         // Add object behavior components
         protected void Start()
         {
-            gameObject.AddComponent<ASL.UI.Mouse.OwnershipTransfer>();
+            //gameObject.AddComponent<ASL.UI.Mouse.OwnershipTransfer>();
         }
 
         // Fire an event when instantiated

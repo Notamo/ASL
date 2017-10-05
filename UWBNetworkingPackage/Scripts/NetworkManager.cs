@@ -33,6 +33,12 @@ namespace UWBNetworkingPackage
         /// </summary>
         void Awake()
         {
+            GameObject MenuUI = GameObject.Find("SceneLoaderObject");
+            if (MenuUI != null)
+            {
+                MasterClient = MenuUI.GetComponent<ASL.UI.Menus.MasterClient.SceneVariableSetter>().isMasterClient;
+            }
+            
             //Preprocessor directives to choose which component is added.  Note, master client still has to be hard coded
             //Haven't yet found a better solution for this
 

@@ -82,7 +82,23 @@ namespace UWBNetworkingPackage
         /// </summary>
         public override void OnConnectedToMaster()
         {
-            PhotonNetwork.JoinRoom(RoomName);
+            bool roomFound = false;
+            RoomInfo[] roomList = PhotonNetwork.GetRoomList();
+            for (int i = 0; i < roomList.Length; i++)
+            {
+                if (RoomName.Equals(roomList[i]))
+                {
+                    PhotonNetwork.JoinRoom(RoomName);
+                    roomFound = true;
+                    break;
+                }
+            }
+
+            if (!roomFound)
+            {
+                Debug.Error("PUN room not found. Please verify name and determine if master client has initialized room.");
+                PhotonNetwork.Disconnect();
+            }
         }
 
         /// <summary>
