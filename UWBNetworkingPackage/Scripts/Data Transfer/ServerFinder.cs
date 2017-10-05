@@ -73,6 +73,11 @@ namespace UWBNetworkingPackage
             if(thread_AcceptClient != null
                 && thread_AcceptClient.IsAlive)
             {
+                if(listener != null)
+                {
+                    listener.Close();
+                    listener = null;
+                }
                 thread_AcceptClient.Abort();
                 return thread_AcceptClient.IsAlive;
             }
