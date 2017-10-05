@@ -13,16 +13,22 @@ namespace ASL.Manipulation.Controllers.PC
             {
                 GameObject selectedObject = Select();
                 GameObject.Find("ObjectInteractionManager").GetComponent<ObjectInteractionManager>().Focus(selectedObject);
-                Debug.Log("Mouse click registered!");
             }
+            //if (Input.GetMouseButton(1))
+            //{
+            //    GameObject.CreatePrimitive(PrimitiveType.Cube);
+            //}
         }
 
         public GameObject Select()
         {
+
             Camera cam = GameObject.FindObjectOfType<Camera>();
-            Vector3 mouseRay = cam.ScreenToWorldPoint(Event.current.mousePosition);
+            Vector3 mousePos = Input.mousePosition;
+            Vector3 mouseRay = cam.ScreenToWorldPoint(mousePos);
             RaycastHit hit;
-            Physics.Raycast(cam.ScreenPointToRay(Event.current.mousePosition), out hit);
+            Physics.Raycast(cam.ScreenPointToRay(mousePos), out hit);
+
             if (hit.collider != null)
             {
                 return hit.collider.gameObject;

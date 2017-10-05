@@ -8,7 +8,7 @@ namespace ASL.Manipulation.Objects
     {
         
         public GameObject focusObject;
-        private float moveScale = 0.30f;
+        private float moveScale = 0.10f;
 
         public void Awake()
         {

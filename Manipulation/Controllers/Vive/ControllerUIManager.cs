@@ -56,22 +56,23 @@ namespace ASL.Manipulation.Controllers.Vive
 
             if (radialMenu != null)
             {
-                for (int i = 0; i < buttons.Length; i++)
-                {
-                    Texture2D newTexture = AssetPreview.GetAssetPreview(buttons[i]);
-                    Debug.Log("Create button preview for " + buttons[i].name);
-                    if (newTexture == null)
-                    {
-                        Debug.LogError("Null Texture created for RadialMenu button");
-                    }
-                    else
-                    {
-                        Sprite newSprite = Sprite.Create(newTexture, new Rect(0, 0, newTexture.width, newTexture.height), new Vector2(0.5f, 0.5f));
-                        radialMenu.buttons[i].ButtonIcon = newSprite;
-                        Object objClone = buttons[i];
-                        radialMenu.buttons[i].OnClick.AddListener(delegate { spawnObj(objClone); });
-                    }
-                }
+                // ERROR TESTING - REINCORPORATE
+                //for (int i = 0; i < buttons.Length; i++)
+                //{
+                //    Texture2D newTexture = AssetPreview.GetAssetPreview(buttons[i]);
+                //    Debug.Log("Create button preview for " + buttons[i].name);
+                //    if (newTexture == null)
+                //    {
+                //        Debug.LogError("Null Texture created for RadialMenu button");
+                //    }
+                //    else
+                //    {
+                //        Sprite newSprite = Sprite.Create(newTexture, new Rect(0, 0, newTexture.width, newTexture.height), new Vector2(0.5f, 0.5f));
+                //        radialMenu.buttons[i].ButtonIcon = newSprite;
+                //        Object objClone = buttons[i];
+                //        radialMenu.buttons[i].OnClick.AddListener(delegate { spawnObj(objClone); });
+                //    }
+                //}
             }
         }
 

@@ -17,23 +17,23 @@ namespace ASL.Manipulation.Controllers.PC
         // Update is called once per frame
         void Update()
         {
-            if(Input.GetKeyDown(KeyCode.DownArrow)
-                || Input.GetKeyDown(KeyCode.S))
+            if (Input.GetKey(KeyCode.DownArrow)
+                || Input.GetKey(KeyCode.S))
             {
                 MoveBehavior.Down();
             }
-            if(Input.GetKeyDown(KeyCode.UpArrow)
-                || Input.GetKeyDown(KeyCode.W))
+            if(Input.GetKey(KeyCode.UpArrow)
+                || Input.GetKey(KeyCode.W))
             {
                 MoveBehavior.Up();
             }
-            if(Input.GetKeyDown(KeyCode.LeftArrow)
-                || Input.GetKeyDown(KeyCode.A))
+            if(Input.GetKey(KeyCode.LeftArrow)
+                || Input.GetKey(KeyCode.A))
             {
                 MoveBehavior.Left();
             }
-            if(Input.GetKeyDown(KeyCode.RightArrow)
-                || Input.GetKeyDown(KeyCode.D))
+            if(Input.GetKey(KeyCode.RightArrow)
+                || Input.GetKey(KeyCode.D))
             {
                 MoveBehavior.Right();
             }
