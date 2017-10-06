@@ -15,8 +15,8 @@ namespace UWBNetworkingPackage
         {
             base.Start();
 #if UNITY_EDITOR
-            //UWB_Texturing.Menu.InstantiateRoom();
-            UWB_Texturing.BundleHandler.InstantiateRoom(Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename()));
+            ////UWB_Texturing.Menu.InstantiateRoom();
+            //UWB_Texturing.BundleHandler.InstantiateRoom(Config.Current.AssetBundle.CompileAbsoluteAssetPath(UWB_Texturing.Config.AssetBundle.RawPackage.CompileFilename()));
 #endif
             ServerFinder.ServerStart();
             SocketServer_PC.Start();

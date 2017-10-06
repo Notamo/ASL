@@ -32,11 +32,6 @@ namespace ASL.Manipulation.Objects
             gameObject.AddComponent<ASL.Manipulation.Controllers.PC.Mouse>();
             gameObject.AddComponent<ASL.Manipulation.Controllers.PC.Keyboard>();
 #endif
-
-            Debug.Log("Attempting to PUN-create object");
-            var a = gameObject.AddComponent<CreateObject>();
-            a.CreatePUNObject("Room2");
-            Debug.Log("Pun-created object instantiated.");
         }
 
         public void FixedUpdate()

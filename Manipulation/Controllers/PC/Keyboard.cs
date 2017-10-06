@@ -37,6 +37,11 @@ namespace ASL.Manipulation.Controllers.PC
             {
                 MoveBehavior.Right();
             }
+
+            if (Input.GetKey(KeyCode.R))
+            {
+                gameObject.GetComponent<CreateObject>().CreatePUNObject("Room2");
+            }
         }
 
         public MoveObject MoveBehavior
