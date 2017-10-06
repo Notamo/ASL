@@ -76,5 +76,16 @@ namespace UWBNetworkingPackage
                 }
             }
         }
+
+        public virtual void OnDestroy()
+        {
+            PhotonNetwork.UnAllocateViewID(gameObject.GetComponent<PhotonView>().viewID);
+        }
+
+        [PunRPC]
+        public virtual void Delete()
+        {
+            GameObject.Destroy(gameObject);
+        }
     }
 }

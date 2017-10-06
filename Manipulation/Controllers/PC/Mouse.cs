@@ -14,7 +14,7 @@ namespace ASL.Manipulation.Controllers.PC
                 GameObject selectedObject = Select();
                 GameObject.Find("ObjectInteractionManager").GetComponent<ObjectInteractionManager>().Focus(selectedObject);
             }
-            if (Input.GetMouseButton(1))
+            if (Input.GetMouseButtonDown(1))
             {
                 //GameObject.CreatePrimitive(PrimitiveType.Cube);
 
@@ -27,7 +27,6 @@ namespace ASL.Manipulation.Controllers.PC
 
         public GameObject Select()
         {
-
             Camera cam = GameObject.FindObjectOfType<Camera>();
             Vector3 mousePos = Input.mousePosition;
             Vector3 mouseRay = cam.ScreenToWorldPoint(mousePos);
@@ -40,7 +39,16 @@ namespace ASL.Manipulation.Controllers.PC
             }
             else
             {
-                return null;
+                GameObject camera = GameObject.Find("Main Camera");
+                if(camera != null)
+                {
+                    return camera;
+                }
+                else
+                {
+                    Debug.LogError("Cannot find camera object. Selecting null object.");
+                    return null;
+                }
             }
         }
     }

@@ -37,10 +37,20 @@ namespace ASL.Manipulation.Controllers.PC
             {
                 MoveBehavior.Right();
             }
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                MoveBehavior.RotateClockwise();
+            }
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                MoveBehavior.RotateCounterClockwise();
+            }
+
+
 
             if (Input.GetKey(KeyCode.R))
             {
-                gameObject.GetComponent<CreateObject>().CreatePUNObject("Room2");
+                gameObject.GetComponent<CreateObject>().CreatePUNObject("/Rooms/Room2");
             }
         }
 

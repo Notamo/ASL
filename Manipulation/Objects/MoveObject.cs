@@ -9,8 +9,9 @@ namespace ASL.Manipulation.Objects
         
         public GameObject focusObject;
         private float moveScale = 0.10f;
+        private float rotateScale = 15.0f;
 
-        public void Awake()
+        public virtual void Awake()
         {
             GameObject.Find("ObjectInteractionManager").GetComponent<ObjectInteractionManager>().FocusObjectChangedEvent += SetObject;
         }
@@ -20,7 +21,7 @@ namespace ASL.Manipulation.Objects
             focusObject = e.FocusObject;
         }
 
-        public void Up()
+        public virtual void Up()
         {
             if(focusObject != null)
             {
@@ -28,7 +29,7 @@ namespace ASL.Manipulation.Objects
             }
         }
 
-        public void Down()
+        public virtual void Down()
         {
             if (focusObject != null)
             {
@@ -36,7 +37,7 @@ namespace ASL.Manipulation.Objects
             }
         }
 
-        public void Left()
+        public virtual void Left()
         {
             if (focusObject != null)
             {
@@ -44,11 +45,27 @@ namespace ASL.Manipulation.Objects
             }
         }
 
-        public void Right()
+        public virtual void Right()
         {
             if (focusObject != null)
             {
                 focusObject.transform.Translate(Vector3.right * MoveScale);
+            }
+        }
+
+        public virtual void RotateClockwise()
+        {
+            if(focusObject != null)
+            {
+                focusObject.transform.Rotate(Vector3.up, RotateScale);
+            }
+        }
+
+        public virtual void RotateCounterClockwise()
+        {
+            if(focusObject != null)
+            {
+                focusObject.transform.Rotate(Vector3.up, RotateScale * -1);
             }
         }
 
@@ -64,6 +81,21 @@ namespace ASL.Manipulation.Objects
                 if (value > 0.0f)
                 {
                     moveScale = value;
+                }
+            }
+        }
+
+        public float RotateScale
+        {
+            get
+            {
+                return rotateScale;
+            }
+            set
+            {
+                if(value > 0.0f)
+                {
+                    rotateScale = value;
                 }
             }
         }

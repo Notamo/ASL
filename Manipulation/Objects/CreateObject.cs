@@ -9,32 +9,57 @@ namespace ASL.Manipulation.Objects
     {
         public GameObject CreatePUNObject(GameObject go)
         {
-            go = AttachPhotonViews(go);
-            go = AttachPhotonTransformViews(go);
-            go = SetViewIDs(go);
-            HandlePUNStuff(go);
-            
-            PhotonView[] viewIDs = go.GetPhotonViewsInChildren();
-            PhotonNetwork.RPC(go.GetPhotonView(), "InstantiateOnRemote", PhotonTargets.Others, false, go.name, viewIDs);
+            if (PhotonNetwork.connected)
+            {
+                go = AttachPhotonViews(go);
+                go = AttachPhotonTransformViews(go);
+                go = SetViewIDs(ref go);
+                HandlePUNStuff(go);
 
-            return go;
+                PhotonView[] views = go.GetPhotonViewsInChildren();
+                int[] viewIDs = new int[views.Length];
+                for (int i = 0; i < viewIDs.Length; i++)
+                {
+                    viewIDs[i] = views[i].viewID;
+                }
+                PhotonNetwork.RPC(go.GetPhotonView(), "InstantiateOnRemote", PhotonTargets.Others, false, go.name, viewIDs);
+
+                return go;
+            }
+            else
+            {
+                Debug.LogError("Photon network not yet connected. State = " + PhotonNetwork.connectionState);
+                return null;
+            }
         }
 
         // Emulates PUN object creation across the PUN network
         public GameObject CreatePUNObject(string prefabName)
         {
-            GameObject localObj = InstantiateOnLocal(prefabName);
-
-            if (localObj != null)
+            if (PhotonNetwork.connected)
             {
-                localObj.AddComponent<UWBNetworkingPackage.OwnableObject>();
-                if (PhotonNetwork.connectedAndReady)
+                GameObject localObj = InstantiateOnLocal(prefabName);
+
+                if (localObj != null)
                 {
-                    PhotonView[] viewIDs = localObj.GetPhotonViewsInChildren();
-                    PhotonNetwork.RPC(localObj.GetPhotonView(), "InstantiateOnRemote", PhotonTargets.Others, false, prefabName, viewIDs);
+                    if (PhotonNetwork.connectedAndReady)
+                    {
+                        PhotonView[] views = localObj.GetPhotonViewsInChildren();
+                        int[] viewIDs = new int[views.Length];
+                        for (int i = 0; i < viewIDs.Length; i++)
+                        {
+                            viewIDs[i] = views[i].viewID;
+                        }
+                        PhotonNetwork.RPC(localObj.GetPhotonView(), "InstantiateOnRemote", PhotonTargets.Others, false, prefabName, viewIDs);
+                    }
                 }
+                return localObj;
             }
-            return localObj;
+            else
+            {
+                Debug.LogError("Photon Network not yet connected. State = " + PhotonNetwork.connectionState);
+                return null;
+            }
         }
 
         private GameObject InstantiateOnLocal(string prefabName)
@@ -53,15 +78,19 @@ namespace ASL.Manipulation.Objects
             GameObject prefabGo;
             if(!RetrieveFromPUNCache(prefabName, out prefabGo))
             {
-                Debug.LogError("Failed to Instantiate prefab: " + prefabName + ". Verify the Prefab is in a Resources folder (and not in a subfolder)");
+                Debug.LogError("Failed to Instantiate prefab: " + prefabName + ".");
                 return null;
             }
             GameObject go = GameObject.Instantiate(prefabGo);
             go = AttachPhotonViews(go);
             go = AttachPhotonTransformViews(go);
-            go = SetViewIDs(go);
+            go = SetViewIDs(ref go);
+
+            //Debug.Log("ViewID of object after exiting SetViewIDs method = " + go.GetComponent<PhotonView>().viewID);
 
             HandlePUNStuff(go);
+
+            go.AddComponent<UWBNetworkingPackage.OwnableObject>();
 
             return go;
         }
@@ -81,6 +110,8 @@ namespace ASL.Manipulation.Objects
             go = AttachPhotonTransformViews(go);
             SynchViewIDs(go, viewIDs);
             HandlePUNStuff(go);
+
+            go.AddComponent<UWBNetworkingPackage.OwnableObject>();
         }
         
         private GameObject ResourceDive(string prefabName, string directory)
@@ -111,14 +142,18 @@ namespace ASL.Manipulation.Objects
 
         private GameObject AttachPhotonViews(GameObject go)
         {
-            NetworkingPeer networkingPeer = PhotonNetwork.networkingPeer;
+            //NetworkingPeer networkingPeer = PhotonNetwork.networkingPeer;
+
+            //Debug.Log("Attempting to attach photon view");
 
             // Generate and attach Photon Views
             if (go.GetComponent<PhotonView>() == null)
             {
+                //Debug.Log("Photon view not found...attaching...");
+
                 PhotonView pv = go.AddComponent<PhotonView>();
                 //pv.viewID = PhotonNetwork.AllocateViewID();
-                networkingPeer.RegisterPhotonView(pv);
+                //networkingPeer.RegisterPhotonView(pv);
 
                 for (int i = 0; i < go.transform.childCount; i++)
                 {
@@ -151,14 +186,31 @@ namespace ASL.Manipulation.Objects
             return go;
         }
 
-        private GameObject SetViewIDs(GameObject go)
+        private GameObject SetViewIDs(ref GameObject go)
         {
-            Component[] views = (Component[])go.GetPhotonViewsInChildren();
+            NetworkingPeer networkingPeer = PhotonNetwork.networkingPeer;
+
+            //Component[] views = (Component[])go.GetPhotonViewsInChildren();
+            //PhotonView[] views = go.GetPhotonViewsInChildren();
+
+            PhotonView[] views = new PhotonView[go.GetPhotonViewsInChildren().Length];
+            views[0] = go.GetComponent<PhotonView>();
+            for(int i = 0; i < go.transform.childCount; i++)
+            {
+                views[i+1] = go.transform.gameObject.GetComponent<PhotonView>();
+            }
+
+            //Debug.Log("Found " + views.Length + " photon views in " + go.name + " object and its children");
             int[] viewIDs = new int[views.Length];
             for (int i = 0; i < viewIDs.Length; i++) // ignore the main gameobject
             {
                 //Debug.Log("Instantiate prefabName: " + prefabName + " player.ID: " + player.ID);
                 viewIDs[i] = PhotonNetwork.AllocateViewID();
+                //Debug.Log("Allocated an id of " + viewIDs[i]);
+                views[i].viewID = viewIDs[i];
+                //views[i].instantiationId = viewIDs[i];
+                //Debug.Log("Assigning view id of " + viewIDs[i] + ", so now the view id is " + go.GetPhotonView().viewID + " for gameobject " + go.name);
+                networkingPeer.RegisterPhotonView(views[i]);
             }
 
             return go;
@@ -202,7 +254,7 @@ namespace ASL.Manipulation.Objects
             for (int i = 0; i < photonViews.Length; i++)
             {
                 photonViews[i].didAwake = false;
-                photonViews[i].viewID = 0;
+                //photonViews[i].viewID = 0; // why is this included in the original?
 
                 //photonViews[i].prefix = objLevelPrefix;
                 photonViews[i].prefix = networkingPeer.currentLevelPrefix;

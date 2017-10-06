@@ -16,9 +16,9 @@ namespace ASL.Manipulation.Objects
 
         protected void OnObjectSelected(GameObject obj)
         {
-            Debug.Log("About to trigger On Object Selected event");
+            //Debug.Log("About to trigger On Object Selected event");
             FocusObjectChangedEvent(new ObjectSelectedEventArgs(null, obj));
-            Debug.Log("Event triggered");
+            //Debug.Log("Event triggered");
         }
 
         public void Awake()
