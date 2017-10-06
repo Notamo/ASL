@@ -7,6 +7,15 @@ namespace ASL.Manipulation.Objects
 {
     public class CreateObject : MonoBehaviour
     {
+        public GameObject CreatePUNObject(string prefabName, Vector3 position, Quaternion rotation)
+        {
+            GameObject go = CreatePUNObject(prefabName);
+            go.transform.position = position;
+            go.transform.rotation = rotation;
+
+            return go;
+        }
+
         public GameObject CreatePUNObject(GameObject go)
         {
             if (PhotonNetwork.connected)

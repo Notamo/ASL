@@ -1,6 +1,7 @@
 ﻿using System;
 using Photon;
 using UnityEngine;
+using VRTK;
 
 namespace ASL.Avatars.Vive
 {
@@ -71,6 +72,16 @@ namespace ASL.Avatars.Vive
             get
             {
                 return _leftHand.transform.forward;
+            }
+        }
+
+        public uint ControllerID
+        {
+            get
+            {
+                VRTK_ControllerReference controllerReference = VRTK_ControllerReference.GetControllerReference(this.gameObject);
+                uint controllerIndex = VRTK_ControllerReference.GetRealIndex(controllerReference);
+                return controllerIndex;
             }
         }
         #endregion

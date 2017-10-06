@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Photon;
 using UnityEngine;
+using VRTK;
 
-namespace ASL.Manipulation.Tracking.Vive
+namespace ASL.Avatars.Vive
 {
     /// <summary>
     /// A script that is used for Vive Avatar instantiation/tracking. This script instantiates the 
@@ -73,6 +74,17 @@ namespace ASL.Manipulation.Tracking.Vive
             get
             {
                 return _rightHand.transform.forward;
+            }
+        }
+
+
+        public uint ControllerID
+        {
+            get
+            {
+                VRTK_ControllerReference controllerReference = VRTK_ControllerReference.GetControllerReference(this.gameObject);
+                uint controllerIndex = VRTK_ControllerReference.GetRealIndex(controllerReference);
+                return controllerIndex;
             }
         }
         #endregion

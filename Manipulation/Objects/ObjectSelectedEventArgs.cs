@@ -8,28 +8,30 @@ namespace ASL.Manipulation.Objects
 
     public class ObjectSelectedEventArgs : System.EventArgs
     {
-        private GameObject oldObject;
+        private int ownerID;
         private GameObject focusObject;
+        private int focuserID;
 
-        public ObjectSelectedEventArgs(GameObject oldObject, GameObject focusObject)
+        public ObjectSelectedEventArgs(GameObject focusObject, int ownerID, int focuserID)
         {
-            this.oldObject = oldObject;
+            this.ownerID = ownerID;
             this.focusObject = focusObject;
+            this.focuserID = focuserID;
         }
 
         public new ObjectSelectedEventArgs Empty
         {
             get
             {
-                return new ObjectSelectedEventArgs(null, null);
+                return new ObjectSelectedEventArgs(null, 0, 0);
             }
         }
 
-        public GameObject OldObject
+        public int OwnerID
         {
             get
             {
-                return oldObject;
+                return ownerID;
             }
         }
         public GameObject FocusObject
@@ -37,6 +39,13 @@ namespace ASL.Manipulation.Objects
             get
             {
                 return focusObject;
+            }
+        }
+        public int FocuserID
+        {
+            get
+            {
+                return focuserID;
             }
         }
     }

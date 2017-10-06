@@ -69,6 +69,14 @@ namespace ASL.Manipulation.Objects
             }
         }
 
+        public virtual void Drag(Vector3 deltaPosition)
+        {
+            if(focusObject != null)
+            {
+                focusObject.transform.Translate(deltaPosition);
+            }
+        }
+
         #region Properties
         public float MoveScale
         {

@@ -12,7 +12,9 @@ namespace ASL.Manipulation.Controllers.Vive
     /// </summary>
     public class TouchpadBehavior : VRTK_ControllerEvents
     {
-        public string PrefabString = "Trophy";
+        private ASL.Manipulation.Objects.CreateObject objManager;
+
+        public string PrefabString = "Sphere"; //"Trophy";
         private string ViveAvatarName = "ViveAvatar";
 
         /// <summary>
@@ -21,6 +23,7 @@ namespace ASL.Manipulation.Controllers.Vive
         void Start()
         {
             TouchpadPressed += OnTouchpadPressedHandler;
+            objManager = gameObject.GetComponent<ASL.Manipulation.Objects.CreateObject>();
         }
 
         /// <summary>
@@ -37,7 +40,8 @@ namespace ASL.Manipulation.Controllers.Vive
             // Generate a prefab two feet in front of your face
             Vector3 HeadPos = GameObject.Find(ViveAvatarName).GetComponent<ViveHead>().HeadPosition;
             Vector3 PrefabPos = HeadPos + new Vector3(0, 1, 0);
-            PhotonNetwork.Instantiate(PrefabString, PrefabPos, Quaternion.identity, 0);
+            //PhotonNetwork.Instantiate(PrefabString, PrefabPos, Quaternion.identity, 0);
+            objManager.CreatePUNObject(PrefabString, PrefabPos, Quaternion.identity);
         }
     }
 }

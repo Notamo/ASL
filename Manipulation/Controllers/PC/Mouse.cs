@@ -12,7 +12,7 @@ namespace ASL.Manipulation.Controllers.PC
             if (Input.GetMouseButtonDown(0))
             {
                 GameObject selectedObject = Select();
-                GameObject.Find("ObjectInteractionManager").GetComponent<ObjectInteractionManager>().Focus(selectedObject);
+                GameObject.Find("ObjectInteractionManager").GetComponent<ObjectInteractionManager>().RequestOwnership(selectedObject, PhotonNetwork.player.ID);
             }
             if (Input.GetMouseButtonDown(1))
             {

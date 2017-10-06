@@ -9,15 +9,21 @@ namespace ASL.Manipulation.Objects
         private UWBNetworkingPackage.NodeType platform;
         public event ObjectSelectedEventHandler FocusObjectChangedEvent;
 
-        public void Focus(GameObject obj)
+        public void RequestOwnership(GameObject obj, int focuserID)
         {
-            OnObjectSelected(obj);
+            OnObjectSelected(obj, focuserID);
+            gameObject.GetPhotonView().RPC("Grab", PhotonTargets.Others);
         }
 
-        protected void OnObjectSelected(GameObject obj)
+        public void Focus(GameObject obj, int focuserID)
+        {
+            OnObjectSelected(obj, focuserID);
+        }
+
+        protected void OnObjectSelected(GameObject obj, int focuserID)
         {
             //Debug.Log("About to trigger On Object Selected event");
-            FocusObjectChangedEvent(new ObjectSelectedEventArgs(null, obj));
+            FocusObjectChangedEvent(new ObjectSelectedEventArgs(obj, obj.GetPhotonView().owner.ID, focuserID));
             //Debug.Log("Event triggered");
         }
 
