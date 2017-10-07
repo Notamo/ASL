@@ -18,10 +18,10 @@ namespace ASL.Manipulation.Controllers.PC
             {
                 //GameObject.CreatePrimitive(PrimitiveType.Cube);
 
-                Debug.Log("Attempting to PUN-create object");
+                //Debug.Log("Attempting to PUN-create object");
                 var a = gameObject.AddComponent<CreateObject>();
                 a.CreatePUNObject("Sphere");
-                Debug.Log("Pun-created object instantiated.");
+                //Debug.Log("Pun-created object instantiated.");
             }
         }
 

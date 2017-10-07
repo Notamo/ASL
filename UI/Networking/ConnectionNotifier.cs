@@ -10,7 +10,8 @@ namespace ASL.UI.Networking
 
         public void Awake()
         {
-            displayText = GameObject.Find("NetworkManager").GetComponentInChildren<UnityEngine.UI.Text>();
+            //displayText = GameObject.Find("NetworkManager").GetComponentInChildren<UnityEngine.UI.Text>();
+            displayText = gameObject.GetComponent<UnityEngine.UI.Text>();
         }
 
         // Update is called once per frame
@@ -35,6 +36,8 @@ namespace ASL.UI.Networking
             }
 
             displayText.text = PhotonNetwork.connectionState.ToString();
+            displayText.text += "\n" + PhotonNetwork.room;
+            displayText.text += "\n" + PhotonNetwork.lobby;
         }
     }
 }

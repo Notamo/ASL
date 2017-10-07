@@ -83,16 +83,18 @@ namespace UWBNetworkingPackage
         public override void OnConnectedToMaster()
         {
             bool roomFound = false;
-            RoomInfo[] roomList = PhotonNetwork.GetRoomList();
-            for (int i = 0; i < roomList.Length; i++)
-            {
-                if (RoomName.Equals(roomList[i]))
-                {
-                    PhotonNetwork.JoinRoom(RoomName);
-                    roomFound = true;
-                    break;
-                }
-            }
+            //RoomInfo[] roomList = PhotonNetwork.GetRoomList();
+            //for (int i = 0; i < roomList.Length; i++)
+            //{
+            //    if (RoomName.Equals(roomList[i]))
+            //    {
+            //        PhotonNetwork.JoinRoom(RoomName);
+            //        roomFound = true;
+            //        break;
+            //    }
+            //}
+
+            roomFound = PhotonNetwork.JoinRoom(RoomName);
 
             if (!roomFound)
             {

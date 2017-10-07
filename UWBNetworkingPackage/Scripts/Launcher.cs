@@ -55,7 +55,7 @@ namespace UWBNetworkingPackage
             PhotonNetwork.logLevel = PhotonLogLevel.ErrorsOnly;
             PhotonNetwork.autoJoinLobby = false;
             PhotonNetwork.automaticallySyncScene = false;
-            PhotonNetwork.MaxResendsBeforeDisconnect = 2;
+            PhotonNetwork.MaxResendsBeforeDisconnect = 5;
             
             /// Prevent GameObjects from being cleaned up after their original owner leaves the room
             PhotonNetwork.autoCleanUpPlayerObjects = false;
@@ -97,23 +97,28 @@ namespace UWBNetworkingPackage
         {
             if (PhotonNetwork.connected)
             {
-                bool roomFound = false;
-                RoomInfo[] roomList = PhotonNetwork.GetRoomList();
-                for (int i = 0; i < roomList.Length; i++)
-                {
-                    if (RoomName.Equals(roomList[i]))
-                    {
-                        PhotonNetwork.JoinRoom(RoomName);
-                        roomFound = true;
-                        break;
-                    }
-                }
+                //bool roomFound = false;
+                ////RoomInfo[] roomList = PhotonNetwork.GetRoomList();
+                ////for (int i = 0; i < roomList.Length; i++)
+                ////{
+                ////    if (RoomName.Equals(roomList[i]))
+                ////    {
+                ////        PhotonNetwork.JoinRoom(RoomName);
+                ////        roomFound = true;
+                ////        break;
+                ////    }
+                ////    UnityEngine.Debug.LogError("Room found: " + roomList[i]);
+                ////}
 
-                if (!roomFound)
-                {
-                    Debug.Error("PUN room not found. Please verify name and determine if master client has initialized room.");
-                    PhotonNetwork.Disconnect();
-                }
+                //roomFound = PhotonNetwork.JoinRoom(RoomName);
+
+                //UnityEngine.Debug.LogError("Photon network was connected, and room found status = " + roomFound);
+
+                ////if (!roomFound)
+                ////{
+                ////    Debug.Error("PUN room not found. Please verify name and determine if master client has initialized room.");
+                ////    PhotonNetwork.Disconnect();
+                ////}
             }
             else
             {

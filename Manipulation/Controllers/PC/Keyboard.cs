@@ -50,7 +50,7 @@ namespace ASL.Manipulation.Controllers.PC
 
             if (Input.GetKey(KeyCode.R))
             {
-                gameObject.GetComponent<CreateObject>().CreatePUNObject("/Rooms/Room2");
+                gameObject.GetComponent<CreateObject>().CreatePUNObject("Rooms/Room2/Room2");
             }
         }
 

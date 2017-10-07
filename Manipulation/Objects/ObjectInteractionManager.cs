@@ -12,7 +12,10 @@ namespace ASL.Manipulation.Objects
         public void RequestOwnership(GameObject obj, int focuserID)
         {
             OnObjectSelected(obj, focuserID);
-            gameObject.GetPhotonView().RPC("Grab", PhotonTargets.Others);
+            if (gameObject.GetPhotonView() != null)
+            {
+                gameObject.GetPhotonView().RPC("Grab", PhotonTargets.Others);
+            }
         }
 
         public void Focus(GameObject obj, int focuserID)
@@ -23,7 +26,21 @@ namespace ASL.Manipulation.Objects
         protected void OnObjectSelected(GameObject obj, int focuserID)
         {
             //Debug.Log("About to trigger On Object Selected event");
-            FocusObjectChangedEvent(new ObjectSelectedEventArgs(obj, obj.GetPhotonView().owner.ID, focuserID));
+            if (obj != null)
+            {
+                if (obj.GetPhotonView() != null)
+                {
+                    FocusObjectChangedEvent(new ObjectSelectedEventArgs(obj, obj.GetPhotonView().owner.ID, focuserID));
+                }
+                else
+                {
+                    FocusObjectChangedEvent(new ObjectSelectedEventArgs(obj, 0, focuserID));
+                }
+            }
+            else
+            {
+                FocusObjectChangedEvent(new ObjectSelectedEventArgs(obj, 0, focuserID));
+            }
             //Debug.Log("Event triggered");
         }
 
@@ -31,10 +48,12 @@ namespace ASL.Manipulation.Objects
         {
 #if UNITY_WSA_10_0
 #elif UNITY_ANDROID
+            gameObject.AddComponent<ASL.Manipulation.Controllers.Android.BehaviorDifferentiator>();
 #else
             UWBNetworkingPackage.NodeType platform = UWBNetworkingPackage.Config.NodeType;
 
             gameObject.AddComponent<MoveObject>();
+            gameObject.AddComponent<CreateObject>();
             gameObject.AddComponent<ASL.Manipulation.Controllers.PC.Mouse>();
             gameObject.AddComponent<ASL.Manipulation.Controllers.PC.Keyboard>();
 #endif

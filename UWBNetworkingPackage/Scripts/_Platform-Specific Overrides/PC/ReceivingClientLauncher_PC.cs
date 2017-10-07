@@ -12,10 +12,10 @@ namespace UWBNetworkingPackage
         public override void Start()
         {
             base.Start();
-#if !UNITY_ANDROID
-            ServerFinder.FindServer();
-#endif
-            SocketServer_PC.Start(); // For sending files to other non-master clients
+//#if !UNITY_ANDROID
+//            ServerFinder.FindServer();
+//#endif
+//            SocketServer_PC.Start(); // For sending files to other non-master clients
         }
 
         public override void OnJoinedRoom()

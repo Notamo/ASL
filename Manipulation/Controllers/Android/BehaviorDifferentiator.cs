@@ -11,6 +11,12 @@ namespace ASL.Manipulation.Controllers.Android
         private TapBehavior tapBehavior;
         private PinchBehavior pinchBehavior;
 
+        public void Awake()
+        {
+            gameObject.AddComponent<TapBehavior>();
+            gameObject.AddComponent<PinchBehavior>();
+        }
+
         public void FixedUpdate()
         {
             Touch[] touches = Input.touches;

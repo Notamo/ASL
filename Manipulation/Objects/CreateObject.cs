@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using ExitGames.Client.Photon;
 
 namespace ASL.Manipulation.Objects
 {
     public class CreateObject : MonoBehaviour
     {
+        private const byte EV_INSTANTIATE = 99;
+
         public GameObject CreatePUNObject(string prefabName, Vector3 position, Quaternion rotation)
         {
             GameObject go = CreatePUNObject(prefabName);
@@ -59,6 +62,17 @@ namespace ASL.Manipulation.Objects
                         {
                             viewIDs[i] = views[i].viewID;
                         }
+
+                        Debug.Log("Attemping to send RPC now...");
+                        if (localObj.GetPhotonView() != null)
+                        {
+                            Debug.Log("Locally created object contains valid Photon view. View ID = " + localObj.GetPhotonView().viewID);
+                            bool isRPC = ASL.Adapters.PUN.RPCManager.IsAnRPC("InstantiateOnRemote");
+                            Debug.Log("InstantiateOnRemote is an RPC?" + isRPC);
+                            Debug.Log("prefab name = " + prefabName);
+                            Debug.Log("length of viewIDs = " + viewIDs.Length);
+                        }
+
                         PhotonNetwork.RPC(localObj.GetPhotonView(), "InstantiateOnRemote", PhotonTargets.Others, false, prefabName, viewIDs);
                     }
                 }
@@ -85,7 +99,7 @@ namespace ASL.Manipulation.Objects
 
             // retrieve PUN object from cache
             GameObject prefabGo;
-            if(!RetrieveFromPUNCache(prefabName, out prefabGo))
+            if (!RetrieveFromPUNCache(prefabName, out prefabGo))
             {
                 Debug.LogError("Failed to Instantiate prefab: " + prefabName + ".");
                 return null;
@@ -104,25 +118,25 @@ namespace ASL.Manipulation.Objects
             return go;
         }
 
-        [PunRPC]
-        public void InstantiateOnRemote(string prefabName, int[] viewIDs)
-        {
-            GameObject prefabGo;
-            if(!RetrieveFromPUNCache(prefabName, out prefabGo))
-            {
-                Debug.LogError("Failed to Instantiate prefab: " + prefabName + ". Verify the Prefab is in a Resources folder (and not in a subfolder)");
-                return;
-            }
+        //[PunRPC]
+        //public void InstantiateOnRemote(string prefabName, int[] viewIDs)
+        //{
+        //    GameObject prefabGo;
+        //    if (!RetrieveFromPUNCache(prefabName, out prefabGo))
+        //    {
+        //        Debug.LogError("Failed to Instantiate prefab: " + prefabName + ". Verify the Prefab is in a Resources folder (and not in a subfolder)");
+        //        return;
+        //    }
 
-            GameObject go = GameObject.Instantiate(prefabGo);
-            go = AttachPhotonViews(go);
-            go = AttachPhotonTransformViews(go);
-            SynchViewIDs(go, viewIDs);
-            HandlePUNStuff(go);
+        //    GameObject go = GameObject.Instantiate(prefabGo);
+        //    go = AttachPhotonViews(go);
+        //    go = AttachPhotonTransformViews(go);
+        //    SynchViewIDs(go, viewIDs);
+        //    HandlePUNStuff(go);
 
-            go.AddComponent<UWBNetworkingPackage.OwnableObject>();
-        }
-        
+        //    go.AddComponent<UWBNetworkingPackage.OwnableObject>();
+        //}
+
         private GameObject ResourceDive(string prefabName, string directory)
         {
             GameObject prefabGo = (GameObject)Resources.Load(prefabName, typeof(GameObject));
@@ -179,10 +193,10 @@ namespace ASL.Manipulation.Objects
         {
             NetworkingPeer networkingPeer = PhotonNetwork.networkingPeer;
 
-            if(go.GetComponent<UWBPhotonTransformView>() == null)
+            if (go.GetComponent<UWBPhotonTransformView>() == null)
             {
                 UWBPhotonTransformView ptv = go.AddComponent<UWBPhotonTransformView>();
-                for(int i = 0; i < go.transform.childCount; i++)
+                for (int i = 0; i < go.transform.childCount; i++)
                 {
                     GameObject child = go.transform.GetChild(i).gameObject;
                     UWBPhotonTransformView childPTV = child.AddComponent<UWBPhotonTransformView>();
@@ -204,9 +218,9 @@ namespace ASL.Manipulation.Objects
 
             PhotonView[] views = new PhotonView[go.GetPhotonViewsInChildren().Length];
             views[0] = go.GetComponent<PhotonView>();
-            for(int i = 0; i < go.transform.childCount; i++)
+            for (int i = 0; i < go.transform.childCount; i++)
             {
-                views[i+1] = go.transform.gameObject.GetComponent<PhotonView>();
+                views[i + 1] = go.transform.gameObject.GetComponent<PhotonView>();
             }
 
             //Debug.Log("Found " + views.Length + " photon views in " + go.name + " object and its children");
@@ -217,7 +231,7 @@ namespace ASL.Manipulation.Objects
                 viewIDs[i] = PhotonNetwork.AllocateViewID();
                 //Debug.Log("Allocated an id of " + viewIDs[i]);
                 views[i].viewID = viewIDs[i];
-                //views[i].instantiationId = viewIDs[i];
+                views[i].instantiationId = viewIDs[i];
                 //Debug.Log("Assigning view id of " + viewIDs[i] + ", so now the view id is " + go.GetPhotonView().viewID + " for gameobject " + go.name);
                 networkingPeer.RegisterPhotonView(views[i]);
             }
@@ -294,6 +308,116 @@ namespace ASL.Manipulation.Objects
             {
                 PVs[i].viewID = viewIDs[i];
             }
+            if (viewIDs != null && viewIDs.Length > 0)
+            {
+                go.GetPhotonView().instantiationId = viewIDs[0];
+            }
+        }
+
+
+        private void RaiseEventHandler(GameObject go)
+        {
+            NetworkingPeer peer = PhotonNetwork.networkingPeer;
+            
+            byte[] content = new byte[2];
+            ExitGames.Client.Photon.Hashtable instantiateEvent = new ExitGames.Client.Photon.Hashtable();
+            string prefabName = go.name;
+            instantiateEvent[(byte)0] = prefabName;
+
+            if(go.transform.position != Vector3.zero)
+            {
+                instantiateEvent[(byte)1] = go.transform.position;
+            }
+
+            if(go.transform.rotation != Quaternion.identity)
+            {
+                instantiateEvent[(byte)2] = go.transform.rotation;
+            }
+            
+            instantiateEvent[(byte)3] = go.GetPhotonViewsInChildren();
+            
+            if(peer.currentLevelPrefix > 0)
+            {
+                instantiateEvent[(byte)4] = peer.currentLevelPrefix;
+            }
+
+            instantiateEvent[(byte)5] = PhotonNetwork.ServerTimestamp;
+            instantiateEvent[(byte)6] = go.GetPhotonView().instantiationId;
+
+            //RaiseEventOptions options = new RaiseEventOptions();
+            //options.CachingOption = (isGlobalObject) ? EventCaching.AddToRoomCacheGlobal : EventCaching.AddToRoomCache;
+
+            peer.OpRaiseEvent(EV_INSTANTIATE, instantiateEvent, true, null);
+        }
+
+        private void OnEvent(EventData photonEvent)
+        {
+            if(PhotonNetwork.logLevel >= PhotonLogLevel.Informational)
+            {
+                Debug.Log(string.Format("Custom OnEvent for CreateObject: {0}", photonEvent.ToString()));
+            }
+
+            int actorNr = -1;
+            PhotonPlayer originatingPlayer = null;
+
+            if (photonEvent.Parameters.ContainsKey(ParameterCode.ActorNr))
+            {
+                actorNr = (int)photonEvent[ParameterCode.ActorNr];
+                originatingPlayer = PhotonNetwork.networkingPeer.GetPlayerWithId(actorNr);
+            }
+
+            if (photonEvent.Code.Equals(EV_INSTANTIATE))
+            {
+                //RemoteInstantiate((ExitGames.Client.Photon.Hashtable)photonEvent[ParameterCode.Data], originatingPlayer, null);
+                RemoteInstantiate((ExitGames.Client.Photon.Hashtable)photonEvent[ParameterCode.Data]);
+            }
+        }
+
+        private void RemoteInstantiate(ExitGames.Client.Photon.Hashtable eventData)
+        {
+            string prefabName = (string)eventData[(byte)0];
+            Vector3 position = Vector3.zero;
+            if (eventData.ContainsKey((byte)1))
+            {
+                position = (Vector3)eventData[(byte)1];
+            }
+            Quaternion rotation = Quaternion.identity;
+            if (eventData.ContainsKey((byte)2))
+            {
+                rotation = (Quaternion)eventData[(byte)2];
+            }
+            
+            int[] viewIDs = (int[])eventData[(byte)3];
+            if (eventData.ContainsKey((byte)4))
+            {
+                uint currentLevelPrefix = (uint)eventData[(byte)4];
+            }
+
+            int serverTimeStamp = (int)eventData[(byte)5];
+            int instantiationID = (int)eventData[(byte)6];
+
+            InstantiateOnRemote(prefabName, viewIDs, position, rotation);
+        }
+        
+        private void InstantiateOnRemote(string prefabName, int[] viewIDs, Vector3 position, Quaternion rotation)
+        {
+            GameObject prefabGo;
+            if (!RetrieveFromPUNCache(prefabName, out prefabGo))
+            {
+                Debug.LogError("Failed to Instantiate prefab: " + prefabName + ". Verify the Prefab is in a Resources folder (and not in a subfolder)");
+                return;
+            }
+
+            GameObject go = GameObject.Instantiate(prefabGo);
+            go = AttachPhotonViews(go);
+            go = AttachPhotonTransformViews(go);
+            SynchViewIDs(go, viewIDs);
+            HandlePUNStuff(go);
+
+            go.transform.position = position;
+            go.transform.rotation = rotation;
+
+            go.AddComponent<UWBNetworkingPackage.OwnableObject>();
         }
     }
 }
