@@ -11,8 +11,12 @@ using UnityEditor;
 
 namespace ASL.Adapters.PUN
 {
+    // Reference PhotonEditor.cs for the stuff that this class derives private
+    // methods from
     public class RPCManager : MonoBehaviour
     {
+        public List<string> RPCList;
+
         public static class Text
         {
             public static string IsNotRPC = "The passed RPC name is not an RPC.";
@@ -33,8 +37,13 @@ namespace ASL.Adapters.PUN
                 public static string RefreshRPCList = "No";
             }
         }
-        
+
         #region Methods
+        public void Awake()
+        {
+            RefreshDisplayedRPCList();
+        }
+
         public void FixedUpdate()
         {
 #if UNITY_EDITOR
@@ -43,6 +52,7 @@ namespace ASL.Adapters.PUN
             if (!EditorApplication.isPlaying)
             {
                 RefreshRPCList();
+                RefreshDisplayedRPCList();
             }
 #endif
         }
@@ -246,6 +256,13 @@ namespace ASL.Adapters.PUN
             }
 
             return scripts;
+        }
+
+        private void RefreshDisplayedRPCList()
+        {
+            string[] rpcArray = new string[PhotonNetwork.PhotonServerSettings.RpcList.Count];
+            PhotonNetwork.PhotonServerSettings.RpcList.CopyTo(rpcArray);
+            RPCList = new List<string>(rpcArray);
         }
 #endregion
         #endregion
