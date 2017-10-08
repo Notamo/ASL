@@ -772,7 +772,7 @@ using ExitGames.Client.Photon;
                     this.opParameters[(byte) ParameterCode.EventForward] = true; //TURNBASED
                 }
             }
-
+            
             return this.OpCustom((byte) OperationCode.RaiseEvent, this.opParameters, sendReliable, raiseEventOptions.SequenceChannel, raiseEventOptions.Encrypt);
         }
 

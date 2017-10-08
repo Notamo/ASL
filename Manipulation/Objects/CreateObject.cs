@@ -6,9 +6,15 @@ using ExitGames.Client.Photon;
 
 namespace ASL.Manipulation.Objects
 {
+    // PhotonHandler.cs updates things every 1 second (?)
     public class CreateObject : MonoBehaviour
     {
         private const byte EV_INSTANTIATE = 99;
+
+        public void Awake()
+        {
+            PhotonNetwork.OnEventCall += OnEvent;
+        }
 
         public GameObject CreatePUNObject(string prefabName, Vector3 position, Quaternion rotation)
         {
@@ -34,7 +40,8 @@ namespace ASL.Manipulation.Objects
                 {
                     viewIDs[i] = views[i].viewID;
                 }
-                PhotonNetwork.RPC(go.GetPhotonView(), "InstantiateOnRemote", PhotonTargets.Others, false, go.name, viewIDs);
+                //PhotonNetwork.RPC(go.GetPhotonView(), "InstantiateOnRemote", PhotonTargets.Others, false, go.name, viewIDs);
+                RaiseEventHandler(go);
 
                 return go;
             }
@@ -63,17 +70,17 @@ namespace ASL.Manipulation.Objects
                             viewIDs[i] = views[i].viewID;
                         }
 
-                        Debug.Log("Attemping to send RPC now...");
+                        //Debug.Log("Attemping to send RPC now...");
                         if (localObj.GetPhotonView() != null)
                         {
-                            Debug.Log("Locally created object contains valid Photon view. View ID = " + localObj.GetPhotonView().viewID);
+                            //Debug.Log("Locally created object contains valid Photon view. View ID = " + localObj.GetPhotonView().viewID);
                             bool isRPC = ASL.Adapters.PUN.RPCManager.IsAnRPC("InstantiateOnRemote");
-                            Debug.Log("InstantiateOnRemote is an RPC?" + isRPC);
-                            Debug.Log("prefab name = " + prefabName);
-                            Debug.Log("length of viewIDs = " + viewIDs.Length);
+                            //Debug.Log("InstantiateOnRemote is an RPC?" + isRPC);
+                            //Debug.Log("prefab name = " + prefabName);
+                            //Debug.Log("length of viewIDs = " + viewIDs.Length);
                         }
-
-                        PhotonNetwork.RPC(localObj.GetPhotonView(), "InstantiateOnRemote", PhotonTargets.Others, false, prefabName, viewIDs);
+                        //PhotonNetwork.RPC(localObj.GetPhotonView(), "InstantiateOnRemote", PhotonTargets.Others, false, prefabName, viewIDs);
+                        RaiseEventHandler(localObj);
                     }
                 }
                 return localObj;
@@ -105,6 +112,7 @@ namespace ASL.Manipulation.Objects
                 return null;
             }
             GameObject go = GameObject.Instantiate(prefabGo);
+            go.name = prefabGo.name;
             go = AttachPhotonViews(go);
             go = AttachPhotonTransformViews(go);
             go = SetViewIDs(ref go);
@@ -177,12 +185,14 @@ namespace ASL.Manipulation.Objects
                 PhotonView pv = go.AddComponent<PhotonView>();
                 //pv.viewID = PhotonNetwork.AllocateViewID();
                 //networkingPeer.RegisterPhotonView(pv);
+                pv.synchronization = ViewSynchronization.UnreliableOnChange;
 
                 for (int i = 0; i < go.transform.childCount; i++)
                 {
                     GameObject child = go.transform.GetChild(i).gameObject;
                     PhotonView childPV = child.AddComponent<PhotonView>();
                     //childPV.viewID = PhotonNetwork.AllocateViewID();
+                    childPV.synchronization = ViewSynchronization.UnreliableOnChange;
                 }
             }
 
@@ -196,6 +206,17 @@ namespace ASL.Manipulation.Objects
             if (go.GetComponent<UWBPhotonTransformView>() == null)
             {
                 UWBPhotonTransformView ptv = go.AddComponent<UWBPhotonTransformView>();
+                ptv.enableSyncPos();
+                ptv.enableSyncRot();
+                ptv.enableSyncScale();
+
+                PhotonView view = go.GetComponent<PhotonView>();
+                if(view.ObservedComponents == null)
+                {
+                    view.ObservedComponents = new List<Component>();
+                }
+                view.ObservedComponents.Add(ptv);
+
                 for (int i = 0; i < go.transform.childCount; i++)
                 {
                     GameObject child = go.transform.GetChild(i).gameObject;
@@ -203,6 +224,13 @@ namespace ASL.Manipulation.Objects
                     childPTV.enableSyncPos();
                     childPTV.enableSyncRot();
                     childPTV.enableSyncScale();
+
+                    PhotonView childView = child.GetComponent<PhotonView>();
+                    if(childView.ObservedComponents == null)
+                    {
+                        childView.ObservedComponents = new List<Component>();
+                    }
+                    childView.ObservedComponents.Add(childPTV);
                 }
             }
 
@@ -317,6 +345,8 @@ namespace ASL.Manipulation.Objects
 
         private void RaiseEventHandler(GameObject go)
         {
+            //Debug.Log("Attempting to raise event for instantiation");
+
             NetworkingPeer peer = PhotonNetwork.networkingPeer;
             
             byte[] content = new byte[2];
@@ -333,8 +363,14 @@ namespace ASL.Manipulation.Objects
             {
                 instantiateEvent[(byte)2] = go.transform.rotation;
             }
-            
-            instantiateEvent[(byte)3] = go.GetPhotonViewsInChildren();
+
+            PhotonView[] views = go.GetPhotonViewsInChildren();
+            int[] viewIDs = new int[views.Length];
+            for(int i = 0; i < views.Length; i++)
+            {
+                viewIDs[i] = views[i].viewID;
+            }
+            instantiateEvent[(byte)3] = viewIDs;
             
             if(peer.currentLevelPrefix > 0)
             {
@@ -347,29 +383,65 @@ namespace ASL.Manipulation.Objects
             //RaiseEventOptions options = new RaiseEventOptions();
             //options.CachingOption = (isGlobalObject) ? EventCaching.AddToRoomCacheGlobal : EventCaching.AddToRoomCache;
 
-            peer.OpRaiseEvent(EV_INSTANTIATE, instantiateEvent, true, null);
+            //Debug.Log("All items packed. Attempting to literally raise event now.");
+
+            RaiseEventOptions options = new RaiseEventOptions();
+            options.Receivers = ReceiverGroup.Others;
+            PhotonNetwork.RaiseEvent(EV_INSTANTIATE, instantiateEvent, true, options);
+
+            //peer.OpRaiseEvent(EV_INSTANTIATE, instantiateEvent, true, null);
         }
 
-        private void OnEvent(EventData photonEvent)
+        //private void OnEvent(EventData photonEvent)
+        //{
+            //if(PhotonNetwork.logLevel >= PhotonLogLevel.Informational)
+            //{
+            //    Debug.Log(string.Format("Custom OnEvent for CreateObject: {0}", photonEvent.ToString()));
+            //}
+
+            //int actorNr = -1;
+            //PhotonPlayer originatingPlayer = null;
+
+            //if (photonEvent.Parameters.ContainsKey(ParameterCode.ActorNr))
+            //{
+            //    actorNr = (int)photonEvent[ParameterCode.ActorNr];
+            //    originatingPlayer = PhotonNetwork.networkingPeer.GetPlayerWithId(actorNr);
+            //}
+
+            //if (photonEvent.Code.Equals(EV_INSTANTIATE))
+            //{
+            //    //RemoteInstantiate((ExitGames.Client.Photon.Hashtable)photonEvent[ParameterCode.Data], originatingPlayer, null);
+            //    RemoteInstantiate((ExitGames.Client.Photon.Hashtable)photonEvent[ParameterCode.Data]);
+            //}
+        //}
+
+        private void OnEvent(byte eventCode, object content, int senderID)
         {
-            if(PhotonNetwork.logLevel >= PhotonLogLevel.Informational)
+            Debug.Log("OnEvent method triggered.");
+
+            if (PhotonNetwork.logLevel >= PhotonLogLevel.Informational)
             {
-                Debug.Log(string.Format("Custom OnEvent for CreateObject: {0}", photonEvent.ToString()));
+                Debug.Log(string.Format("Custom OnEvent for CreateObject: {0}", eventCode.ToString()));
             }
 
-            int actorNr = -1;
-            PhotonPlayer originatingPlayer = null;
+            //int actorNr = -1;
+            //PhotonPlayer originatingPlayer = null;
 
-            if (photonEvent.Parameters.ContainsKey(ParameterCode.ActorNr))
-            {
-                actorNr = (int)photonEvent[ParameterCode.ActorNr];
-                originatingPlayer = PhotonNetwork.networkingPeer.GetPlayerWithId(actorNr);
-            }
+            //if (photonEvent.Parameters.ContainsKey(ParameterCode.ActorNr))
+            //{
+            //    actorNr = (int)photonEvent[ParameterCode.ActorNr];
+            //    originatingPlayer = PhotonNetwork.networkingPeer.GetPlayerWithId(actorNr);
+            //}
 
-            if (photonEvent.Code.Equals(EV_INSTANTIATE))
+            //if (photonEvent.Code.Equals(EV_INSTANTIATE))
+            //{
+            //    //RemoteInstantiate((ExitGames.Client.Photon.Hashtable)photonEvent[ParameterCode.Data], originatingPlayer, null);
+            //    RemoteInstantiate((ExitGames.Client.Photon.Hashtable)photonEvent[ParameterCode.Data]);
+            //}
+
+            if (eventCode.Equals(EV_INSTANTIATE))
             {
-                //RemoteInstantiate((ExitGames.Client.Photon.Hashtable)photonEvent[ParameterCode.Data], originatingPlayer, null);
-                RemoteInstantiate((ExitGames.Client.Photon.Hashtable)photonEvent[ParameterCode.Data]);
+                RemoteInstantiate((ExitGames.Client.Photon.Hashtable)content);
             }
         }
 
@@ -409,6 +481,7 @@ namespace ASL.Manipulation.Objects
             }
 
             GameObject go = GameObject.Instantiate(prefabGo);
+            go.name = prefabGo.name;
             go = AttachPhotonViews(go);
             go = AttachPhotonTransformViews(go);
             SynchViewIDs(go, viewIDs);

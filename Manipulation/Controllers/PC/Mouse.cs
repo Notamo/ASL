@@ -20,9 +20,16 @@ namespace ASL.Manipulation.Controllers.PC
 
                 //Debug.Log("Attempting to PUN-create object");
                 var a = gameObject.AddComponent<CreateObject>();
-                a.CreatePUNObject("Sphere");
+                //a.CreatePUNObject("Sphere");
+                a.CreatePUNObject("Sphere", new Vector3(2, 3, 4), Quaternion.identity);
+
                 //Debug.Log("Pun-created object instantiated.");
             }
+
+            //if (Input.GetMouseButtonDown(1))
+            //{
+            //    PhotonNetwork.Instantiate("PUNSphere", Vector3.zero, Quaternion.identity, 0);
+            //}
         }
 
         public GameObject Select()
