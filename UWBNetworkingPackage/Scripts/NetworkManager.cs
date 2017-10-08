@@ -26,24 +26,39 @@ namespace UWBNetworkingPackage
         // Needed for Photon 
         [Tooltip("The name of the room that this project will attempt to connect to. This room must be created by a \"Master Client\".")]
         public string RoomName;
-#endregion
+        #endregion
+
+        private const string SCENE_LOADER_NAME = "SceneLoaderObject";
+        private ASL.UI.Menus.Networking.SceneVariableSetter globalVariables;
 
         /// <summary>
         /// When Awake, NetworkManager will add the correct Launcher script
         /// </summary>
         void Awake()
         {
-            GameObject MenuUI = GameObject.Find("SceneLoaderObject");
+            GameObject MenuUI = GameObject.Find(SCENE_LOADER_NAME);
             if (MenuUI != null)
             {
-                MasterClient = MenuUI.GetComponent<ASL.UI.Menus.MasterClient.SceneVariableSetter>().isMasterClient;
+                globalVariables = MenuUI.GetComponent<ASL.UI.Menus.Networking.SceneVariableSetter>();
+                MasterClient = globalVariables.isMasterClient;
+                UWBNetworkingPackage.NodeType platform = globalVariables.platform;
+                Config.Start(platform);
+                //MasterClient = MenuUI.GetComponent<ASL.UI.Menus.Networking.SceneVariableSetter>().isMasterClient;
+            }
+            else
+            {
+#if !UNITY_EDITOR && UNITY_WSA_10_0
+                Config.Start(NodeType.Hololens);
+#elif !UNITY_EDITOR && UNITY_ANDROID
+                Config.Start(NodeType.Tango);
+#else
+                Config.Start(NodeType.PC);
             }
             
             //Preprocessor directives to choose which component is added.  Note, master client still has to be hard coded
             //Haven't yet found a better solution for this
 
 #if !UNITY_WSA_10_0 && !UNITY_ANDROID
-            Config.Start(NodeType.PC);
             RoomHandler.Start();
 
             if (MasterClient)
@@ -59,7 +74,6 @@ namespace UWBNetworkingPackage
                 // new Config.AssetBundle.Current(); // Sets some items
             }
 #elif !UNITY_EDITOR && UNITY_WSA_10_0
-            Config.Start(NodeType.Hololens);
             RoomHandler.Start();
 
             if (MasterClient)
@@ -88,7 +102,7 @@ namespace UWBNetworkingPackage
             if (isTango)
             {
                 //gameObject.AddComponent<TangoLauncher>();
-                Config.Start(NodeType.Tango);
+                //Config.Start(NodeType.Tango);
                 RoomHandler.Start();
                 if (MasterClient)
                 {
@@ -100,7 +114,7 @@ namespace UWBNetworkingPackage
             }
             else
             {
-                Config.Start(NodeType.Android);
+               // Config.Start(NodeType.Android);
                 RoomHandler.Start();
                 if (MasterClient)
                 {
@@ -112,7 +126,6 @@ namespace UWBNetworkingPackage
                 }
             }
 #else
-            Config.Start(NodeType.PC);
             RoomHandler.Start();
 
             if (MasterClient)
