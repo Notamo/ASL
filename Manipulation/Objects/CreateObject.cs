@@ -10,10 +10,12 @@ namespace ASL.Manipulation.Objects
     public class CreateObject : MonoBehaviour
     {
         private const byte EV_INSTANTIATE = 99;
+        private string resourceFolderPath;
 
         public void Awake()
         {
             PhotonNetwork.OnEventCall += OnEvent;
+            resourceFolderPath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), "Assets"), "ASL/Resources");
         }
 
         public GameObject CreatePUNObject(string prefabName, Vector3 position, Quaternion rotation)
@@ -147,15 +149,15 @@ namespace ASL.Manipulation.Objects
 
         private GameObject ResourceDive(string prefabName, string directory)
         {
-            GameObject prefabGo = (GameObject)Resources.Load(prefabName, typeof(GameObject));
-
+            string resourcePath = ConvertToResourcePath(directory, prefabName);
+            GameObject prefabGo = (GameObject)Resources.Load(resourcePath, typeof(GameObject));
+            
             if (prefabGo == null)
             {
                 string[] subdirectories = Directory.GetDirectories(directory);
                 foreach (string dir in subdirectories)
                 {
-                    string resourceDirectory = ConvertToResourcePath(dir);
-                    prefabGo = ResourceDive(prefabName, resourceDirectory);
+                    prefabGo = ResourceDive(prefabName, dir);
                     if (prefabGo != null)
                     {
                         break;
@@ -166,9 +168,21 @@ namespace ASL.Manipulation.Objects
             return prefabGo;
         }
 
-        private string ConvertToResourcePath(string directory)
+        private string ConvertToResourcePath(string directory, string prefabName)
         {
-            return string.Join("/", directory.Split('\\'));
+            string resourcePath = directory.Substring(directory.IndexOf("Resources") + "Resources".Length);
+            if(resourcePath.Length > 0)
+            {
+                resourcePath = resourcePath.Substring(1) + '/' + prefabName;
+                resourcePath.Replace('\\', '/');
+            }
+            else
+            {
+                resourcePath = prefabName;
+            }
+
+            return resourcePath;
+            //return string.Join("/", directory.Split('\\')) + "/" + prefabName;
         }
 
         private GameObject AttachPhotonViews(GameObject go)
@@ -278,9 +292,9 @@ namespace ASL.Manipulation.Objects
                 prefabGo = (GameObject)Resources.Load(prefabName, typeof(GameObject));
                 if (prefabGo == null)
                 {
-                    string directory = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), "Assets"), "ASL/Resources");
-                    directory = ConvertToResourcePath(directory);
-                    ResourceDive(prefabName, directory);
+                    string directory = resourceFolderPath;
+                    //directory = ConvertToResourcePath(directory);
+                    prefabGo = ResourceDive(prefabName, directory);
                 }
                 if (UsePrefabCache)
                 {
@@ -476,7 +490,7 @@ namespace ASL.Manipulation.Objects
             GameObject prefabGo;
             if (!RetrieveFromPUNCache(prefabName, out prefabGo))
             {
-                Debug.LogError("Failed to Instantiate prefab: " + prefabName + ". Verify the Prefab is in a Resources folder (and not in a subfolder)");
+                Debug.LogError("Failed to Instantiate prefab: " + prefabName + ".");
                 return;
             }
 
