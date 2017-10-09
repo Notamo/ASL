@@ -53,6 +53,7 @@ namespace UWBNetworkingPackage
                 Config.Start(NodeType.Tango);
 #else
                 Config.Start(NodeType.PC);
+#endif
             }
             
             //Preprocessor directives to choose which component is added.  Note, master client still has to be hard coded
