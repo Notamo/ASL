@@ -20,6 +20,7 @@ namespace ASL.UI.Menus.Networking
             accountedForOptions.AddRange(PCOptions);
 
             UnityEngine.UI.Dropdown dropdown = gameObject.GetComponent<UnityEngine.UI.Dropdown>();
+            dropdown.ClearOptions();
 
 #if UNITY_WSA_10_0
             dropdown.AddOptions(hololensOptions);
@@ -32,7 +33,8 @@ namespace ASL.UI.Menus.Networking
             DisplayUnaccountedForOptions(accountedForOptions);
 
             // Set platform
-            platform = (UWBNetworkingPackage.NodeType)(System.Enum.Parse(typeof(UWBNetworkingPackage.NodeType), dropdown.captionText.ToString()));
+            string platformString = dropdown.options[dropdown.value].text;
+            platform = (UWBNetworkingPackage.NodeType)(System.Enum.Parse(typeof(UWBNetworkingPackage.NodeType), platformString));
         }
 
         // Update is called once per frame
@@ -40,15 +42,16 @@ namespace ASL.UI.Menus.Networking
         {
             // Set platform
             UnityEngine.UI.Dropdown dropdown = gameObject.GetComponent<UnityEngine.UI.Dropdown>();
-            platform = (UWBNetworkingPackage.NodeType)(System.Enum.Parse(typeof(UWBNetworkingPackage.NodeType), dropdown.captionText.ToString()));
+            string platformString = dropdown.options[dropdown.value].text;
+            platform = (UWBNetworkingPackage.NodeType)(System.Enum.Parse(typeof(UWBNetworkingPackage.NodeType), platformString));
         }
-
+        
         public List<string> GetHololensOptions()
         {
             List<string> restrictedOptions = GetRestrictedOptions();
 
             List<string> hololensOptions = new List<string>();
-            hololensOptions.Add(UWBNetworkingPackage.NodeType.Hololens.ToString());
+            hololensOptions.Add(System.Enum.GetName(typeof(UWBNetworkingPackage.NodeType), UWBNetworkingPackage.NodeType.Hololens));
 
             foreach (string option in restrictedOptions)
             {
@@ -84,18 +87,21 @@ namespace ASL.UI.Menus.Networking
         {
             List<string> restrictedOptions = GetRestrictedOptions();
 
-            List<string> hololensOptions = new List<string>();
-            hololensOptions.Add(UWBNetworkingPackage.NodeType.Hololens.ToString());
+            List<string> PCOptions = new List<string>();
+            PCOptions.Add(System.Enum.GetName(typeof(UWBNetworkingPackage.NodeType), UWBNetworkingPackage.NodeType.PC));
+            PCOptions.Add(System.Enum.GetName(typeof(UWBNetworkingPackage.NodeType), UWBNetworkingPackage.NodeType.Vive));
+            PCOptions.Add(System.Enum.GetName(typeof(UWBNetworkingPackage.NodeType), UWBNetworkingPackage.NodeType.Oculus));
+            PCOptions.Add(System.Enum.GetName(typeof(UWBNetworkingPackage.NodeType), UWBNetworkingPackage.NodeType.Kinect));
 
             foreach (string option in restrictedOptions)
             {
-                if (hololensOptions.Contains(option))
+                if (PCOptions.Contains(option))
                 {
-                    hololensOptions.Remove(option);
+                    PCOptions.Remove(option);
                 }
             }
 
-            return hololensOptions;
+            return PCOptions;
         }
 
         public List<string> GetRestrictedOptions()
