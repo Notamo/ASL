@@ -199,12 +199,6 @@ public class ADMGUIController : MonoBehaviour, ITangoLifecycle, ITangoEvent
     /// </summary>
     public void Start()
     {
-#if UNITY_EDITOR
-        // We must initialize this on the main Unity thread, since the value
-        // is sometimes used within a separate saving thread.
-        AreaDescription.GenerateEmulatedSavePath();
-#endif
-
         m_tangoApplication = FindObjectOfType<TangoApplication>();
 
         if (m_tangoApplication != null)
@@ -465,10 +459,10 @@ public class ADMGUIController : MonoBehaviour, ITangoLifecycle, ITangoEvent
     /// <returns>Coroutine IEnumerator.</returns>
     private IEnumerator _DoImportAreaDescription()
     {
-        //if (TouchScreenKeyboard.visible)
-        //{
-        //    yield break;
-        //}
+        if (TouchScreenKeyboard.visible)
+        {
+            yield break;
+        }
 
         TouchScreenKeyboard kb = TouchScreenKeyboard.Open("/sdcard/", TouchScreenKeyboardType.Default, false);
         while (!kb.done && !kb.wasCanceled)
@@ -491,10 +485,10 @@ public class ADMGUIController : MonoBehaviour, ITangoLifecycle, ITangoEvent
     /// <param name="areaDescription">Area Description to export.</param>
     private IEnumerator _DoExportAreaDescription(AreaDescription areaDescription)
     {
-        //if (TouchScreenKeyboard.visible)
-        //{
-        //    yield break;
-        //}
+        if (TouchScreenKeyboard.visible)
+        {
+            yield break;
+        }
 
         TouchScreenKeyboard kb = TouchScreenKeyboard.Open("/sdcard/", TouchScreenKeyboardType.Default, false);
         while (!kb.done && !kb.wasCanceled)
@@ -576,16 +570,19 @@ public class ADMGUIController : MonoBehaviour, ITangoLifecycle, ITangoEvent
             yield return null;
         }
 #else
-        //if (TouchScreenKeyboard.visible || m_saveThread != null)
-        //{
-        //    yield break;
-        //}
+        if (TouchScreenKeyboard.visible || m_saveThread != null)
+        {
+            yield break;
+        }
 
         TouchScreenKeyboard kb = TouchScreenKeyboard.Open("Unnamed");
         while (!kb.done && !kb.wasCanceled)
         {
             yield return null;
         }
+
+        // Store name so it is available when we use it from thread delegate.
+        var fileNameFromKeyboard = kb.text;
 #endif
 
         // Save the text in a background thread.
@@ -598,7 +595,7 @@ public class ADMGUIController : MonoBehaviour, ITangoLifecycle, ITangoEvent
 #if UNITY_EDITOR
             metadata.m_name = m_guiTextInputContents;
 #else
-            metadata.m_name = kb.text;
+            metadata.m_name = fileNameFromKeyboard;
 #endif
             areaDescription.SaveMetadata(metadata);
         });

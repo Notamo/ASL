@@ -58,8 +58,7 @@ namespace Tango
 #elif (UNITY_IPHONE || UNITY_ANDROID)
             return Screen.orientation; 
 #else 
-//#error not supported platform
-            return ScreenOrientation.Unknown;
+#error not supported platform
 #endif
         }
 

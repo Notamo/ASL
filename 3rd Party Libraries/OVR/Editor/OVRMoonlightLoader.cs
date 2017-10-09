@@ -73,8 +73,9 @@ class OVRMoonlightLoader
 			// black.
 			if (QualitySettings.antiAliasing != 0 && QualitySettings.antiAliasing != 1)
 			{
-				Debug.Log("MoonlightLoader: Disabling antiAliasing");
-				QualitySettings.antiAliasing = 1;
+                Debug.LogWarning("Oculus: Make sure to uncomment the code listed below this comment in OVRMoonlightLoader to ensure proper operation of Oculus.");
+				//Debug.Log("MoonlightLoader: Disabling antiAliasing");
+				//QualitySettings.antiAliasing = 1;
 			}
 		}
 
