@@ -15,6 +15,9 @@ namespace ASL.Manipulation.Controllers.Android
         {
             gameObject.AddComponent<TapBehavior>();
             gameObject.AddComponent<PinchBehavior>();
+
+            // Remove the following AddComponent, separate general PUN creation/synchronization behavior in a different file, and then make sure that objectinteractionmanager script attaches it automatically
+            gameObject.AddComponent<ASL.Manipulation.Objects.CreateObject>();
         }
 
         public void FixedUpdate()

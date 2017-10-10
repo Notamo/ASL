@@ -12,9 +12,9 @@ namespace ASL.Manipulation.Objects
         public void RequestOwnership(GameObject obj, int focuserID)
         {
             OnObjectSelected(obj, focuserID);
-            if (gameObject.GetPhotonView() != null)
+            if (obj.GetPhotonView() != null)
             {
-                gameObject.GetPhotonView().RPC("Grab", PhotonTargets.Others);
+                obj.GetPhotonView().RPC("Grab", PhotonTargets.Others);
             }
         }
 
