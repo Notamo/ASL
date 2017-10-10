@@ -29,8 +29,8 @@ namespace UWBNetworkingPackage
         {
             byte[] serverIPBytes = Encoding.UTF8.GetBytes(serverIP);
 
-            if(thread_AcceptClient == null
-                || thread_AcceptClient.IsAlive)
+            if(thread_AcceptClient != null
+                && thread_AcceptClient.IsAlive)
             {
                 thread_AcceptClient.Abort();
             }
