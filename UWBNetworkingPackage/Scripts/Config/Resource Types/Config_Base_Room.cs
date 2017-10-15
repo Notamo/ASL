@@ -98,7 +98,7 @@ namespace UWBNetworkingPackage
         public static new string CompileResourcesLoadPath(string assetNameWithoutExtension)
         {
             string roomName = RoomManager.GetAllRoomNames()[0];
-            Debug.Error("Defaulting to room " + roomName);
+            Debug.LogError("Defaulting to room " + roomName);
 
             return CompileResourcesLoadPath(roomName, assetNameWithoutExtension);
         }

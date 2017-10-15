@@ -7,15 +7,13 @@ namespace ASL.Manipulation.Objects
     public class ObjectInteractionManager : MonoBehaviour
     {
         private UWBNetworkingPackage.NodeType platform;
+        private UWBNetworkingPackage.NetworkManager networkManager;
         public event ObjectSelectedEventHandler FocusObjectChangedEvent;
 
         public void RequestOwnership(GameObject obj, int focuserID)
         {
             OnObjectSelected(obj, focuserID);
-            if (obj.GetPhotonView() != null)
-            {
-                obj.GetPhotonView().RPC("Grab", PhotonTargets.Others);
-            }
+            networkManager.RequestOwnership(obj, focuserID);
         }
 
         public void Focus(GameObject obj, int focuserID)
@@ -46,16 +44,29 @@ namespace ASL.Manipulation.Objects
 
         public void Awake()
         {
+            networkManager = GameObject.Find("NetworkManager").GetComponent<UWBNetworkingPackage.NetworkManager>();
 #if UNITY_WSA_10_0
 #elif UNITY_ANDROID
             gameObject.AddComponent<ASL.Manipulation.Controllers.Android.BehaviorDifferentiator>();
 #else
             UWBNetworkingPackage.NodeType platform = UWBNetworkingPackage.Config.NodeType;
 
-            gameObject.AddComponent<MoveObject>();
-            gameObject.AddComponent<CreateObject>();
-            gameObject.AddComponent<ASL.Manipulation.Controllers.PC.Mouse>();
-            gameObject.AddComponent<ASL.Manipulation.Controllers.PC.Keyboard>();
+            switch (platform)
+            {
+                case UWBNetworkingPackage.NodeType.PC:
+                    gameObject.AddComponent<ASL.Manipulation.Controllers.PC.Mouse>();
+                    gameObject.AddComponent<ASL.Manipulation.Controllers.PC.Keyboard>();
+                    break;
+                case UWBNetworkingPackage.NodeType.Kinect:
+                    break;
+                case UWBNetworkingPackage.NodeType.Vive:
+                    break;
+                case UWBNetworkingPackage.NodeType.Oculus:
+                    break;
+                default:
+                    Debug.LogWarning("Unsupported platform encountered");
+                    break;
+            }
 #endif
         }
 
@@ -67,6 +78,21 @@ namespace ASL.Manipulation.Objects
                 Resources.Load("Prefabs/ObjectInteractionManager");
                 //GameObject.Destroy(gameObject);
             }
+        }
+
+        public void Instantiate(GameObject go)
+        {
+            networkManager.Instantiate(go);
+        }
+
+        public void Instantiate(string prefabName)
+        {
+            networkManager.Instantiate(prefabName);
+        }
+
+        public void Instantiate(string prefabName, Vector3 position, Quaternion rotation)
+        {
+            networkManager.Instantiate(prefabName, position, rotation);
         }
     }
 }

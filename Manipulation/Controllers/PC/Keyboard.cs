@@ -7,11 +7,13 @@ namespace ASL.Manipulation.Controllers.PC
 {
     public class Keyboard : MonoBehaviour
     {
-        private MoveObject _moveBehavior;
+        private MoveBehavior _moveBehavior;
+        private ObjectInteractionManager objManager;
 
         private void Awake()
         {
-            _moveBehavior = gameObject.GetComponent<MoveObject>();
+            _moveBehavior = gameObject.GetComponent<MoveBehavior>();
+            objManager = GameObject.Find("ObjectInteractionManager").GetComponent<ObjectInteractionManager>();
         }
 
         // Update is called once per frame
@@ -45,16 +47,16 @@ namespace ASL.Manipulation.Controllers.PC
             {
                 MoveBehavior.RotateCounterClockwise();
             }
-
-
-
+            
             if (Input.GetKey(KeyCode.R))
             {
-                gameObject.GetComponent<CreateObject>().CreatePUNObject("Rooms/Room2/Room2");
+                //gameObject.GetComponent<CreateObject>().CreatePUNObject("Rooms/Room2/Room2");
+                string prefabName = "Rooms/Room2/Room2";
+                objManager.Instantiate(prefabName);
             }
         }
 
-        public MoveObject MoveBehavior
+        public MoveBehavior MoveBehavior
         {
             get
             {

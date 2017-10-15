@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using ExitGames.Client.Photon;
 
-namespace ASL.Manipulation.Objects
+namespace UWBNetworkingPackage
 {
-    // PhotonHandler.cs updates things every 1 second (?)
-    public class CreateObject : MonoBehaviour
+    public class ObjectManager : MonoBehaviour
     {
         private const byte EV_INSTANTIATE = 99;
         private string resourceFolderPath;
@@ -18,16 +16,16 @@ namespace ASL.Manipulation.Objects
             resourceFolderPath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), "Assets"), "ASL/Resources");
         }
 
-        public GameObject CreatePUNObject(string prefabName, Vector3 position, Quaternion rotation)
+        public GameObject Instantiate(string prefabName, Vector3 position, Quaternion rotation)
         {
-            GameObject go = CreatePUNObject(prefabName);
+            GameObject go = Instantiate(prefabName);
             go.transform.position = position;
             go.transform.rotation = rotation;
 
             return go;
         }
 
-        public GameObject CreatePUNObject(GameObject go)
+        public GameObject Instantiate(GameObject go)
         {
             if (PhotonNetwork.connected)
             {
@@ -55,7 +53,7 @@ namespace ASL.Manipulation.Objects
         }
 
         // Emulates PUN object creation across the PUN network
-        public GameObject CreatePUNObject(string prefabName)
+        public GameObject Instantiate(string prefabName)
         {
             if (PhotonNetwork.connected)
             {
@@ -151,7 +149,7 @@ namespace ASL.Manipulation.Objects
         {
             string resourcePath = ConvertToResourcePath(directory, prefabName);
             GameObject prefabGo = (GameObject)Resources.Load(resourcePath, typeof(GameObject));
-            
+
             if (prefabGo == null)
             {
                 string[] subdirectories = Directory.GetDirectories(directory);
@@ -171,7 +169,7 @@ namespace ASL.Manipulation.Objects
         private string ConvertToResourcePath(string directory, string prefabName)
         {
             string resourcePath = directory.Substring(directory.IndexOf("Resources") + "Resources".Length);
-            if(resourcePath.Length > 0)
+            if (resourcePath.Length > 0)
             {
                 resourcePath = resourcePath.Substring(1) + '/' + prefabName;
                 resourcePath.Replace('\\', '/');
@@ -225,7 +223,7 @@ namespace ASL.Manipulation.Objects
                 ptv.enableSyncScale();
 
                 PhotonView view = go.GetComponent<PhotonView>();
-                if(view.ObservedComponents == null)
+                if (view.ObservedComponents == null)
                 {
                     view.ObservedComponents = new List<Component>();
                 }
@@ -240,7 +238,7 @@ namespace ASL.Manipulation.Objects
                     childPTV.enableSyncScale();
 
                     PhotonView childView = child.GetComponent<PhotonView>();
-                    if(childView.ObservedComponents == null)
+                    if (childView.ObservedComponents == null)
                     {
                         childView.ObservedComponents = new List<Component>();
                     }
@@ -362,31 +360,31 @@ namespace ASL.Manipulation.Objects
             //Debug.Log("Attempting to raise event for instantiation");
 
             NetworkingPeer peer = PhotonNetwork.networkingPeer;
-            
+
             byte[] content = new byte[2];
             ExitGames.Client.Photon.Hashtable instantiateEvent = new ExitGames.Client.Photon.Hashtable();
             string prefabName = go.name;
             instantiateEvent[(byte)0] = prefabName;
 
-            if(go.transform.position != Vector3.zero)
+            if (go.transform.position != Vector3.zero)
             {
                 instantiateEvent[(byte)1] = go.transform.position;
             }
 
-            if(go.transform.rotation != Quaternion.identity)
+            if (go.transform.rotation != Quaternion.identity)
             {
                 instantiateEvent[(byte)2] = go.transform.rotation;
             }
 
             PhotonView[] views = go.GetPhotonViewsInChildren();
             int[] viewIDs = new int[views.Length];
-            for(int i = 0; i < views.Length; i++)
+            for (int i = 0; i < views.Length; i++)
             {
                 viewIDs[i] = views[i].viewID;
             }
             instantiateEvent[(byte)3] = viewIDs;
-            
-            if(peer.currentLevelPrefix > 0)
+
+            if (peer.currentLevelPrefix > 0)
             {
                 instantiateEvent[(byte)4] = peer.currentLevelPrefix;
             }
@@ -408,25 +406,25 @@ namespace ASL.Manipulation.Objects
 
         //private void OnEvent(EventData photonEvent)
         //{
-            //if(PhotonNetwork.logLevel >= PhotonLogLevel.Informational)
-            //{
-            //    Debug.Log(string.Format("Custom OnEvent for CreateObject: {0}", photonEvent.ToString()));
-            //}
+        //if(PhotonNetwork.logLevel >= PhotonLogLevel.Informational)
+        //{
+        //    Debug.Log(string.Format("Custom OnEvent for CreateObject: {0}", photonEvent.ToString()));
+        //}
 
-            //int actorNr = -1;
-            //PhotonPlayer originatingPlayer = null;
+        //int actorNr = -1;
+        //PhotonPlayer originatingPlayer = null;
 
-            //if (photonEvent.Parameters.ContainsKey(ParameterCode.ActorNr))
-            //{
-            //    actorNr = (int)photonEvent[ParameterCode.ActorNr];
-            //    originatingPlayer = PhotonNetwork.networkingPeer.GetPlayerWithId(actorNr);
-            //}
+        //if (photonEvent.Parameters.ContainsKey(ParameterCode.ActorNr))
+        //{
+        //    actorNr = (int)photonEvent[ParameterCode.ActorNr];
+        //    originatingPlayer = PhotonNetwork.networkingPeer.GetPlayerWithId(actorNr);
+        //}
 
-            //if (photonEvent.Code.Equals(EV_INSTANTIATE))
-            //{
-            //    //RemoteInstantiate((ExitGames.Client.Photon.Hashtable)photonEvent[ParameterCode.Data], originatingPlayer, null);
-            //    RemoteInstantiate((ExitGames.Client.Photon.Hashtable)photonEvent[ParameterCode.Data]);
-            //}
+        //if (photonEvent.Code.Equals(EV_INSTANTIATE))
+        //{
+        //    //RemoteInstantiate((ExitGames.Client.Photon.Hashtable)photonEvent[ParameterCode.Data], originatingPlayer, null);
+        //    RemoteInstantiate((ExitGames.Client.Photon.Hashtable)photonEvent[ParameterCode.Data]);
+        //}
         //}
 
         private void OnEvent(byte eventCode, object content, int senderID)
@@ -472,7 +470,7 @@ namespace ASL.Manipulation.Objects
             {
                 rotation = (Quaternion)eventData[(byte)2];
             }
-            
+
             int[] viewIDs = (int[])eventData[(byte)3];
             if (eventData.ContainsKey((byte)4))
             {
@@ -484,7 +482,7 @@ namespace ASL.Manipulation.Objects
 
             InstantiateOnRemote(prefabName, viewIDs, position, rotation);
         }
-        
+
         private void InstantiateOnRemote(string prefabName, int[] viewIDs, Vector3 position, Quaternion rotation)
         {
             GameObject prefabGo;

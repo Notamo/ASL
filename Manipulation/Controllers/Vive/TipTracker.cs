@@ -10,7 +10,8 @@ namespace ASL.Manipulation.Controllers.Vive
 {
     public class TipTracker : VRTK_ControllerEvents
     {
-        private ASL.Manipulation.Objects.CreateObject objManager;
+        //private ASL.Manipulation.Objects.CreateObject objManager;
+        private ObjectInteractionManager objManager;
         private ViveHead viveHead;
         private ViveLeftHand leftHand;
         private ViveRightHand rightHand;
@@ -19,6 +20,8 @@ namespace ASL.Manipulation.Controllers.Vive
         
         public void Start()
         {
+            objManager = GameObject.Find("ObjectInteractionManager").GetComponent<ObjectInteractionManager>();
+
             TriggerPressed += Select;
             TriggerReleased += Unselect;
 
@@ -74,14 +77,16 @@ namespace ASL.Manipulation.Controllers.Vive
                 }
             }
 
-            objManager.GetComponent<ObjectInteractionManager>().RequestOwnership(hit.collider.gameObject, PhotonNetwork.player.ID);
+            //objManager.GetComponent<ObjectInteractionManager>().RequestOwnership(hit.collider.gameObject, PhotonNetwork.player.ID);
+            objManager.RequestOwnership(hit.collider.gameObject, PhotonNetwork.player.ID);
         }
 
         public void Unselect(object sender, ControllerInteractionEventArgs e)
         {
             bool isLeftController;
             GameObject controllerAvatar = GetViveControllerAvatar(e.controllerReference, out isLeftController);
-            objManager.GetComponent<ObjectInteractionManager>().Focus(null, PhotonNetwork.player.ID);
+            //objManager.GetComponent<ObjectInteractionManager>().Focus(null, PhotonNetwork.player.ID);
+            objManager.Focus(null, PhotonNetwork.player.ID);
             if (isLeftController)
             {
                 leftSelectedObject = null;

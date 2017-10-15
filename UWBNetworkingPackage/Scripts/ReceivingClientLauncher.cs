@@ -98,7 +98,7 @@ namespace UWBNetworkingPackage
 
             if (!roomFound)
             {
-                Debug.Error("PUN room not found. Please verify name and determine if master client has initialized room.");
+                Debug.LogError("PUN room not found. Please verify name and determine if master client has initialized room.");
                 PhotonNetwork.Disconnect();
             }
         }

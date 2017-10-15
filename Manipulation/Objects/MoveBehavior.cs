@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ASL.Manipulation.Objects
 {
-    public class MoveObject : MonoBehaviour
+    public class MoveBehavior : MonoBehaviour
     {
         
         public GameObject focusObject;

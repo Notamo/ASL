@@ -134,7 +134,7 @@ namespace UWBNetworkingPackage
                     return Types.AndroidRoomBundle_ClientToServer;
                 else
                 {
-                    Debug.Error("Port type not found for port " + port);
+                    Debug.LogError("Port type not found for port " + port);
                     throw new System.Exception();
                 }
             }
