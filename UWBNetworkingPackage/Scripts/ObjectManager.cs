@@ -510,6 +510,7 @@ namespace UWBNetworkingPackage
             foreach(int viewID in viewIDs)
             {
                 PhotonNetwork.networkingPeer.photonViewList.Remove(viewID);
+                PhotonNetwork.UnAllocateViewID(viewID);
             }
         }
         

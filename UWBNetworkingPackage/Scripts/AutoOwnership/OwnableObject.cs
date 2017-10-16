@@ -59,7 +59,7 @@ namespace UWBNetworkingPackage
                 return null;
             }
         }
-        
+
         public void RelinquishOwnership(int newPlayerID)
         {
             // Ignore all items tagged with "room" tag
@@ -76,17 +76,6 @@ namespace UWBNetworkingPackage
                 }
                 gameObject.GetPhotonView().ownerId = newPlayerID;
             }
-        }
-
-        public virtual void OnDestroy()
-        {
-            PhotonNetwork.UnAllocateViewID(gameObject.GetComponent<PhotonView>().viewID);
-        }
-
-        [PunRPC]
-        public virtual void Delete()
-        {
-            GameObject.Destroy(gameObject);
         }
     }
 }
