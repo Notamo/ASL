@@ -12,8 +12,8 @@ namespace ASL.Manipulation.Controllers.PC
 
         private void Awake()
         {
-            _moveBehavior = gameObject.GetComponent<MoveBehavior>();
             objManager = GameObject.Find("ObjectInteractionManager").GetComponent<ObjectInteractionManager>();
+            _moveBehavior = objManager.RegisterBehavior<MoveBehavior>();
         }
 
         // Update is called once per frame
