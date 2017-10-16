@@ -20,8 +20,6 @@ namespace UWBNetworkingPackage
 
         public void OnDestroy()
         {
-            Debug.LogWarning("OnDestroy called");
-
             string objName = this.gameObject.name;
             PhotonView view = gameObject.GetComponent<PhotonView>();
             if(view != null)
