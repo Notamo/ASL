@@ -19,7 +19,7 @@ namespace ASL.Manipulation.Controllers.PC
             if (Input.GetMouseButtonDown(0))
             {
                 GameObject selectedObject = Select();
-                GameObject.Find("ObjectInteractionManager").GetComponent<ObjectInteractionManager>().RequestOwnership(selectedObject, PhotonNetwork.player.ID);
+                objManager.RequestOwnership(selectedObject, PhotonNetwork.player.ID);
             }
             if (Input.GetMouseButtonDown(1))
             {
@@ -27,22 +27,7 @@ namespace ASL.Manipulation.Controllers.PC
                 Vector3 position = new Vector3(0, 0, 2);
                 Quaternion rotation = Quaternion.identity;
                 objManager.Instantiate(prefabName, position, rotation);
-
-                //GameObject.CreatePrimitive(PrimitiveType.Cube);
-
-                //Debug.Log("Attempting to PUN-create object");
-                //var a = gameObject.AddComponent<CreateObject>();
-                //a.CreatePUNObject("Sphere");
-                //a.CreatePUNObject("Sphere", new Vector3(2, 3, 4), Quaternion.identity);
-                //a.CreatePUNObject("Sphere", new Vector3(0, 0, 2), Quaternion.identity);
-
-                //Debug.Log("Pun-created object instantiated.");
             }
-
-            //if (Input.GetMouseButtonDown(1))
-            //{
-            //    PhotonNetwork.Instantiate("PUNSphere", Vector3.zero, Quaternion.identity, 0);
-            //}
         }
 
         public GameObject Select()

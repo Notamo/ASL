@@ -74,6 +74,7 @@ namespace UWBNetworkingPackage
                 {
                     photonView.RequestOwnership();
                 }
+                gameObject.GetPhotonView().ownerId = newPlayerID;
             }
         }
 

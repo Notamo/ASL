@@ -60,6 +60,7 @@ namespace ASL.Manipulation.Objects
                 case UWBNetworkingPackage.NodeType.Kinect:
                     break;
                 case UWBNetworkingPackage.NodeType.Vive:
+                    //gameObject.AddComponent<ASL.Manipulation.Controllers.Vive.ControllerUIManager>();
                     break;
                 case UWBNetworkingPackage.NodeType.Oculus:
                     break;
@@ -93,6 +94,20 @@ namespace ASL.Manipulation.Objects
         public void Instantiate(string prefabName, Vector3 position, Quaternion rotation)
         {
             networkManager.Instantiate(prefabName, position, rotation);
+        }
+
+        public T RegisterBehavior<T>()
+        {
+            if(gameObject.GetComponent<T>() != null)
+            {
+                Debug.Log("ObjectInteractionManager already has behavior attached. Ignoring request to reattach behavior script to avoid missing proper startup logic calls.");
+            }
+            else
+            {
+                gameObject.AddComponent(typeof(T));
+            }
+
+            return gameObject.GetComponent<T>();
         }
     }
 }
