@@ -496,12 +496,12 @@ namespace UWBNetworkingPackage
         private void RemoteDestroyObject(ExitGames.Client.Photon.Hashtable eventData)
         {
             string objectName = (string)eventData[(byte)0];
-            PhotonView[] views = (PhotonView[])eventData[(byte)1];
+            int[] viewIDs = (int[])eventData[(byte)1];
             int timeStamp = (int)eventData[(byte)2];
 
             // Handle destroy logic
-            GameObject go = LocateObjectToDestroy(objectName, views[0].viewID);
-            
+            GameObject go = LocateObjectToDestroy(objectName, viewIDs[0]);
+            HandleLocalDestroyLogic(go, viewIDs);
         }
         
         private void HandleLocalDestroyLogic(GameObject go, int[] viewIDs)
