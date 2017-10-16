@@ -7,9 +7,13 @@ namespace UWBNetworkingPackage
 {
     public class ObjectManager : MonoBehaviour
     {
+        #region Fields
         private const byte EV_INSTANTIATE = 99;
+        private const byte EV_DESTROYOBJECT = 98;
         private string resourceFolderPath;
+        #endregion
 
+        #region Methods
         public void Awake()
         {
             PhotonNetwork.OnEventCall += OnEvent;
@@ -32,7 +36,7 @@ namespace UWBNetworkingPackage
                 go = AttachPhotonViews(go);
                 go = AttachPhotonTransformViews(go);
                 go = SetViewIDs(ref go);
-                HandlePUNStuff(go);
+                AddressFinalPUNSynch(go);
 
                 PhotonView[] views = go.GetPhotonViewsInChildren();
                 int[] viewIDs = new int[views.Length];
@@ -41,7 +45,7 @@ namespace UWBNetworkingPackage
                     viewIDs[i] = views[i].viewID;
                 }
                 //PhotonNetwork.RPC(go.GetPhotonView(), "InstantiateOnRemote", PhotonTargets.Others, false, go.name, viewIDs);
-                RaiseEventHandler(go);
+                RaiseInstantiateEventHandler(go);
 
                 return go;
             }
@@ -80,7 +84,7 @@ namespace UWBNetworkingPackage
                             //Debug.Log("length of viewIDs = " + viewIDs.Length);
                         }
                         //PhotonNetwork.RPC(localObj.GetPhotonView(), "InstantiateOnRemote", PhotonTargets.Others, false, prefabName, viewIDs);
-                        RaiseEventHandler(localObj);
+                        RaiseInstantiateEventHandler(localObj);
                     }
                 }
                 return localObj;
@@ -92,6 +96,16 @@ namespace UWBNetworkingPackage
             }
         }
 
+        // This function exists to be called when a gameobject is destroyed 
+        // since OnDestroy callbacks are local to the GameObject being destroyed
+        public void DestroyObject(string objectName, int viewID)
+        {
+            GameObject go = LocateObjectToDestroy(objectName, viewID);
+            RaiseDestroyObjectEventHandler(go);
+            HandleDestroyLogic(go);
+        }
+
+        #region Helper Functions
         private GameObject InstantiateOnLocal(string prefabName)
         {
             bool connected = PhotonNetwork.connectedAndReady;
@@ -119,12 +133,22 @@ namespace UWBNetworkingPackage
 
             //Debug.Log("ViewID of object after exiting SetViewIDs method = " + go.GetComponent<PhotonView>().viewID);
 
-            HandlePUNStuff(go);
+            AddressFinalPUNSynch(go);
 
             go.AddComponent<UWBNetworkingPackage.OwnableObject>();
+            go.AddComponent<UWBNetworkingPackage.DestroyObjectSynchronizer>();
 
             return go;
         }
+        
+        //private GameObject HandlePUNStuff(GameObject go)
+        //{
+        //    go = AttachPhotonViews(go);
+        //    go = AttachPhotonTransformViews(go);
+        //    go = SynchViewIDs(ref go);
+
+        //    AddressFinalPUNSynch(go);
+        //}
 
         //[PunRPC]
         //public void InstantiateOnRemote(string prefabName, int[] viewIDs)
@@ -303,7 +327,7 @@ namespace UWBNetworkingPackage
             return prefabGo != null;
         }
 
-        private void HandlePUNStuff(GameObject go)
+        private void AddressFinalPUNSynch(GameObject go)
         {
             NetworkingPeer networkingPeer = PhotonNetwork.networkingPeer;
 
@@ -353,9 +377,8 @@ namespace UWBNetworkingPackage
                 go.GetPhotonView().instantiationId = viewIDs[0];
             }
         }
-
-
-        private void RaiseEventHandler(GameObject go)
+        
+        private void RaiseInstantiateEventHandler(GameObject go)
         {
             //Debug.Log("Attempting to raise event for instantiation");
 
@@ -402,6 +425,33 @@ namespace UWBNetworkingPackage
             PhotonNetwork.RaiseEvent(EV_INSTANTIATE, instantiateEvent, true, options);
 
             //peer.OpRaiseEvent(EV_INSTANTIATE, instantiateEvent, true, null);
+        }
+
+        private void RaiseDestroyObjectEventHandler(GameObject go)
+        {
+            //Debug.Log("Attempting to raise event for destruction of object");
+
+            NetworkingPeer peer = PhotonNetwork.networkingPeer;
+            
+            ExitGames.Client.Photon.Hashtable destroyObjectEvent = new ExitGames.Client.Photon.Hashtable();
+            string objectName = go.name;
+            destroyObjectEvent[(byte)0] = objectName;
+
+            // need the viewID
+            
+            PhotonView[] views = go.GetPhotonViewsInChildren();
+            int[] viewIDs = new int[views.Length];
+            for (int i = 0; i < views.Length; i++)
+            {
+                viewIDs[i] = views[i].viewID;
+            }
+            destroyObjectEvent[(byte)1] = viewIDs;
+
+            destroyObjectEvent[(byte)2] = PhotonNetwork.ServerTimestamp;
+
+            RaiseEventOptions options = new RaiseEventOptions();
+            options.Receivers = ReceiverGroup.Others;
+            PhotonNetwork.RaiseEvent(EV_DESTROYOBJECT, destroyObjectEvent, true, options);
         }
 
         //private void OnEvent(EventData photonEvent)
@@ -455,6 +505,10 @@ namespace UWBNetworkingPackage
             {
                 RemoteInstantiate((ExitGames.Client.Photon.Hashtable)content);
             }
+            else if (eventCode.Equals(EV_DESTROYOBJECT))
+            {
+                RemoteDestroyObject((ExitGames.Client.Photon.Hashtable)content);
+            }
         }
 
         private void RemoteInstantiate(ExitGames.Client.Photon.Hashtable eventData)
@@ -482,7 +536,7 @@ namespace UWBNetworkingPackage
 
             InstantiateOnRemote(prefabName, viewIDs, position, rotation);
         }
-
+        
         private void InstantiateOnRemote(string prefabName, int[] viewIDs, Vector3 position, Quaternion rotation)
         {
             GameObject prefabGo;
@@ -497,12 +551,69 @@ namespace UWBNetworkingPackage
             go = AttachPhotonViews(go);
             go = AttachPhotonTransformViews(go);
             SynchViewIDs(go, viewIDs);
-            HandlePUNStuff(go);
+            AddressFinalPUNSynch(go);
 
             go.transform.position = position;
             go.transform.rotation = rotation;
 
             go.AddComponent<UWBNetworkingPackage.OwnableObject>();
+            go.AddComponent<UWBNetworkingPackage.DestroyObjectSynchronizer>();
         }
+
+        private void RemoteDestroyObject(ExitGames.Client.Photon.Hashtable eventData)
+        {
+            string objectName = (string)eventData[(byte)0];
+            PhotonView[] views = (PhotonView[])eventData[(byte)1];
+            int timeStamp = (int)eventData[(byte)2];
+
+            // Handle destroy logic
+            GameObject go = LocateObjectToDestroy(objectName, views[0].viewID);
+            
+        }
+
+        private GameObject LocateObjectToDestroy(string objectName, int viewID)
+        {
+            GameObject objectToDestroy = null;
+            GameObject[] goArray = GameObject.FindObjectsOfType<GameObject>();
+            foreach(GameObject go in goArray)
+            {
+                if (go.name.Equals(objectName))
+                {
+                    PhotonView view = go.GetComponent<PhotonView>();
+                    if(view != null)
+                    {
+                        if(viewID == view.viewID)
+                        {
+                            objectToDestroy = go;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return objectToDestroy;
+        }
+
+        private void HandleDestroyLogic(GameObject go)
+        {
+            if (go != null)
+            {
+                for (int i = 0; i < go.transform.childCount; i++)
+                {
+                    HandleDestroyLogic(go.transform.GetChild(i).gameObject);
+                }
+
+                PhotonView view = go.GetComponent<PhotonView>();
+                if (view != null)
+                {
+                    // Clear up the local view and delete it from the registration list
+                    PhotonNetwork.networkingPeer.LocalCleanPhotonView(view);
+                }
+
+                GameObject.Destroy(go);
+            }
+        }
+        #endregion
+#endregion
     }
 }
