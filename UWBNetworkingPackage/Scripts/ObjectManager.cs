@@ -67,11 +67,11 @@ namespace UWBNetworkingPackage
 
         // This function exists to be called when a gameobject is destroyed 
         // since OnDestroy callbacks are local to the GameObject being destroyed
-        public void DestroyObject(string objectName, int viewID)
+        public void DestroyObject(string objectName, int[] viewIDs)
         {
-            GameObject go = LocateObjectToDestroy(objectName, viewID);
-            RaiseDestroyObjectEventHandler(go);
-            HandleLocalDestroyLogic(go);
+            GameObject go = LocateObjectToDestroy(objectName, viewIDs[0]);
+            RaiseDestroyObjectEventHandler(objectName, viewIDs);
+            HandleLocalDestroyLogic(go, viewIDs);
         }
 
         #region Helper Functions
@@ -387,24 +387,18 @@ namespace UWBNetworkingPackage
             //peer.OpRaiseEvent(EV_INSTANTIATE, instantiateEvent, true, null);
         }
 
-        private void RaiseDestroyObjectEventHandler(GameObject go)
+        private void RaiseDestroyObjectEventHandler(string objectName, int[] viewIDs)
         {
             //Debug.Log("Attempting to raise event for destruction of object");
 
             NetworkingPeer peer = PhotonNetwork.networkingPeer;
             
             ExitGames.Client.Photon.Hashtable destroyObjectEvent = new ExitGames.Client.Photon.Hashtable();
-            string objectName = go.name;
+            //string objectName = go.name;
             destroyObjectEvent[(byte)0] = objectName;
 
             // need the viewID
             
-            PhotonView[] views = go.GetPhotonViewsInChildren();
-            int[] viewIDs = new int[views.Length];
-            for (int i = 0; i < views.Length; i++)
-            {
-                viewIDs[i] = views[i].viewID;
-            }
             destroyObjectEvent[(byte)1] = viewIDs;
 
             destroyObjectEvent[(byte)2] = PhotonNetwork.ServerTimestamp;
@@ -510,6 +504,17 @@ namespace UWBNetworkingPackage
             
         }
         
+        private void HandleLocalDestroyLogic(GameObject go, int[] viewIDs)
+        {
+            Debug.LogWarning("handleLocalDestroyLogic called");
+
+            HandleLocalDestroyLogic(go);
+            foreach(int viewID in viewIDs)
+            {
+                PhotonNetwork.networkingPeer.photonViewList.Remove(viewID);
+            }
+        }
+        
         private void HandleLocalDestroyLogic(GameObject go)
         {
             if (go != null)
@@ -523,7 +528,9 @@ namespace UWBNetworkingPackage
                 if (view != null)
                 {
                     // Clear up the local view and delete it from the registration list
-                    PhotonNetwork.networkingPeer.LocalCleanPhotonView(view);
+                    //PhotonNetwork.networkingPeer.LocalCleanPhotonView(view);
+
+                    view.removedFromLocalViewList = true;
                 }
 
                 GameObject.Destroy(go);
