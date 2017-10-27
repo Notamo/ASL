@@ -154,7 +154,11 @@ namespace UWBNetworkingPackage
                 Debug.LogError("Failed to Instantiate prefab: " + prefabName + ".");
                 return null;
             }
+#if UNITY_EDITOR
+            GameObject go = UnityEditor.PrefabUtility.InstantiatePrefab(prefabGo) as GameObject;
+#else
             GameObject go = GameObject.Instantiate(prefabGo);
+#endif
             go.name = prefabGo.name;
 
             HandleLocalLogic(go);
@@ -164,7 +168,6 @@ namespace UWBNetworkingPackage
 
         private bool RetrieveFromPUNCache(string prefabName, out GameObject prefabGo)
         {
-
             bool UsePrefabCache = true;
 
             if (!UsePrefabCache || !PhotonNetwork.PrefabCache.TryGetValue(prefabName, out prefabGo))
@@ -472,7 +475,7 @@ namespace UWBNetworkingPackage
 #if UNITY_EDITOR
                     string prefabName = UnityEditor.PrefabUtility.GetPrefabObject(go).name;
 #else
-                string prefabName = go.name;
+                    string prefabName = go.name;
 #endif
                     syncSceneData[(byte)1] = prefabName;
 
@@ -592,7 +595,11 @@ namespace UWBNetworkingPackage
                 return;
             }
 
+#if UNITY_EDITOR
+            GameObject go = UnityEditor.PrefabUtility.InstantiatePrefab(prefabGo) as GameObject;
+#else
             GameObject go = GameObject.Instantiate(prefabGo);
+#endif
             go.name = prefabGo.name;
 
             HandleLocalLogic(go, viewIDs);
