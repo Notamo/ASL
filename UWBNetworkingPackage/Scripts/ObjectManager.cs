@@ -8,9 +8,6 @@ namespace UWBNetworkingPackage
     public class ObjectManager : MonoBehaviour
     {
         #region Fields
-        private const byte EV_INSTANTIATE = 99;
-        private const byte EV_DESTROYOBJECT = 98;
-        private const byte EV_SYNCSCENE = 97;
         private string resourceFolderPath;
 
         private List<GameObject> nonSyncItems;
@@ -449,7 +446,7 @@ namespace UWBNetworkingPackage
 
             RaiseEventOptions options = new RaiseEventOptions();
             options.Receivers = ReceiverGroup.Others;
-            PhotonNetwork.RaiseEvent(EV_INSTANTIATE, instantiateEvent, true, options);
+            PhotonNetwork.RaiseEvent(ASLEventCode.EV_INSTANTIATE, instantiateEvent, true, options);
 
             //peer.OpRaiseEvent(EV_INSTANTIATE, instantiateEvent, true, null);
         }
@@ -458,6 +455,8 @@ namespace UWBNetworkingPackage
         {
             if (PhotonNetwork.isMasterClient || forceSync)
             {
+                UnityEngine.Debug.Log(otherPlayerID + " player joined. Sending sync");
+
                 List<GameObject> ASLObjectList = GrabAllASLObjects();
 
                 NetworkingPeer peer = PhotonNetwork.networkingPeer;
@@ -507,7 +506,7 @@ namespace UWBNetworkingPackage
 
                     RaiseEventOptions options = new RaiseEventOptions();
                     options.Receivers = ReceiverGroup.Others;
-                    PhotonNetwork.RaiseEvent(EV_SYNCSCENE, syncSceneData, true, options);
+                    PhotonNetwork.RaiseEvent(ASLEventCode.EV_SYNCSCENE, syncSceneData, true, options);
                 }
             }
         }
@@ -530,31 +529,34 @@ namespace UWBNetworkingPackage
 
             RaiseEventOptions options = new RaiseEventOptions();
             options.Receivers = ReceiverGroup.Others;
-            PhotonNetwork.RaiseEvent(EV_DESTROYOBJECT, destroyObjectEvent, true, options);
+            PhotonNetwork.RaiseEvent(ASLEventCode.EV_DESTROYOBJECT, destroyObjectEvent, true, options);
         }
         
         private void OnEvent(byte eventCode, object content, int senderID)
         {
             Debug.Log("OnEvent method triggered.");
 
+            UnityEngine.Debug.Log("On Event triggered with event code " + (int)eventCode);
+
             if (PhotonNetwork.logLevel >= PhotonLogLevel.Informational)
             {
                 Debug.Log(string.Format("Custom OnEvent for CreateObject: {0}", eventCode.ToString()));
             }
 
-            if (eventCode.Equals(EV_INSTANTIATE))
+            if (eventCode.Equals(ASLEventCode.EV_INSTANTIATE))
             {
                 RemoteInstantiate((ExitGames.Client.Photon.Hashtable)content);
             }
-            else if (eventCode.Equals(EV_DESTROYOBJECT))
+            else if (eventCode.Equals(ASLEventCode.EV_DESTROYOBJECT))
             {
                 RemoteDestroyObject((ExitGames.Client.Photon.Hashtable)content);
             }
-            else if (eventCode.Equals(EventCode.Join))
+            else if (eventCode.Equals(ASLEventCode.EV_JOIN))
             {
+                Debug.Log("Player joined");
                 RaiseSyncSceneEventHandler(senderID, false);
             }
-            else if (eventCode.Equals(EV_SYNCSCENE))
+            else if (eventCode.Equals(ASLEventCode.EV_SYNCSCENE))
             {
                 HandleSyncSceneEvent((ExitGames.Client.Photon.Hashtable)content);
             }
@@ -618,12 +620,12 @@ namespace UWBNetworkingPackage
         private void RemoteDestroyObject(ExitGames.Client.Photon.Hashtable eventData)
         {
             string objectName = (string)eventData[(byte)0];
-            PhotonView[] views = (PhotonView[])eventData[(byte)1];
+            int[] viewIDs = (int[])eventData[(byte)1];
             int timeStamp = (int)eventData[(byte)2];
 
             // Handle destroy logic
-            GameObject go = LocateObjectToDestroy(objectName, views[0].viewID);
-            
+            GameObject go = LocateObjectToDestroy(objectName, viewIDs[0]);
+            HandleLocalDestroyLogic(go, viewIDs);
         }
         
         private void HandleLocalDestroyLogic(GameObject go, int[] viewIDs)
