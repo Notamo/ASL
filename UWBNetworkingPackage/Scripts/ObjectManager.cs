@@ -159,6 +159,7 @@ namespace UWBNetworkingPackage
             go.name = prefabGo.name;
 
             HandleLocalLogic(go);
+            RegisterObjectCreation(go, prefabName);
 
             return go;
         }
@@ -414,7 +415,8 @@ namespace UWBNetworkingPackage
 #if UNITY_EDITOR
             string prefabName = UnityEditor.PrefabUtility.GetPrefabParent(go).name;
 #else
-            string prefabName = go.name;
+            //string prefabName = go.name;
+            string prefabName = ObjectInstantiationDatabase.GetPrefabName(go);
 #endif
             instantiateEvent[(byte)0] = prefabName;
 
@@ -474,7 +476,8 @@ namespace UWBNetworkingPackage
 #if UNITY_EDITOR
                     string prefabName = UnityEditor.PrefabUtility.GetPrefabParent(go).name;
 #else
-                    string prefabName = go.name;
+                    //string prefabName = go.name;
+                    string prefabName = ObjectInstantiationDatabase.GetPrefabName(go);
 #endif
                     UnityEngine.Debug.Log("Prefab name = " + prefabName);
                     syncSceneData[(byte)1] = prefabName;
@@ -605,6 +608,8 @@ namespace UWBNetworkingPackage
             HandleLocalLogic(go, viewIDs);
             go.transform.position = position;
             go.transform.rotation = rotation;
+
+            RegisterObjectCreation(go, prefabName);
         }
 
         private GameObject HandleLocalLogic(GameObject go, int[] viewIDs)
@@ -655,6 +660,8 @@ namespace UWBNetworkingPackage
                 }
 
                 GameObject.Destroy(go);
+
+                RegisterObjectDeletion(go, go.name);
             }
         }
 
@@ -748,6 +755,18 @@ namespace UWBNetworkingPackage
 
             return goList;
         }
+
+        #region Instantiation Database
+        private void RegisterObjectCreation(GameObject go, string prefabName)
+        {
+            ObjectInstantiationDatabase.Add(prefabName, go);
+        }
+
+        private void RegisterObjectDeletion(GameObject go, string goName)
+        {
+            ObjectInstantiationDatabase.Remove(go, goName);
+        }
+#endregion
         #endregion
         #endregion
     }
