@@ -453,10 +453,10 @@ namespace UWBNetworkingPackage
         
         private void RaiseSyncSceneEventHandler(int otherPlayerID, bool forceSync)
         {
+            UnityEngine.Debug.Log("Raising Scene Sync handler");
+
             if (PhotonNetwork.isMasterClient || forceSync)
             {
-                UnityEngine.Debug.Log(otherPlayerID + " player joined. Sending sync");
-
                 List<GameObject> ASLObjectList = GrabAllASLObjects();
 
                 NetworkingPeer peer = PhotonNetwork.networkingPeer;
@@ -472,10 +472,11 @@ namespace UWBNetworkingPackage
                     syncSceneData[(byte)0] = otherPlayerID;
 
 #if UNITY_EDITOR
-                    string prefabName = UnityEditor.PrefabUtility.GetPrefabObject(go).name;
+                    string prefabName = UnityEditor.PrefabUtility.GetPrefabParent(go).name;
 #else
                     string prefabName = go.name;
 #endif
+                    UnityEngine.Debug.Log("Prefab name = " + prefabName);
                     syncSceneData[(byte)1] = prefabName;
 
                     if (go.transform.position != Vector3.zero)
@@ -536,8 +537,6 @@ namespace UWBNetworkingPackage
         {
             Debug.Log("OnEvent method triggered.");
 
-            UnityEngine.Debug.Log("On Event triggered with event code " + (int)eventCode);
-
             if (PhotonNetwork.logLevel >= PhotonLogLevel.Informational)
             {
                 Debug.Log(string.Format("Custom OnEvent for CreateObject: {0}", eventCode.ToString()));
@@ -553,7 +552,6 @@ namespace UWBNetworkingPackage
             }
             else if (eventCode.Equals(ASLEventCode.EV_JOIN))
             {
-                Debug.Log("Player joined");
                 RaiseSyncSceneEventHandler(senderID, false);
             }
             else if (eventCode.Equals(ASLEventCode.EV_SYNCSCENE))
