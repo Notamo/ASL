@@ -455,8 +455,6 @@ namespace UWBNetworkingPackage
         
         private void RaiseSyncSceneEventHandler(int otherPlayerID, bool forceSync)
         {
-            UnityEngine.Debug.Log("Raising Scene Sync handler");
-
             if (PhotonNetwork.isMasterClient || forceSync)
             {
                 List<GameObject> ASLObjectList = GrabAllASLObjects();

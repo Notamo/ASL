@@ -51,8 +51,8 @@ namespace UWBNetworkingPackage
         /// </summary>
         public virtual void Awake()
         {
-            PhotonNetwork.logLevel = PhotonLogLevel.Full;
-            //PhotonNetwork.logLevel = PhotonLogLevel.ErrorsOnly;
+            //PhotonNetwork.logLevel = PhotonLogLevel.Full;
+            PhotonNetwork.logLevel = PhotonLogLevel.ErrorsOnly;
             PhotonNetwork.autoJoinLobby = false;
             PhotonNetwork.automaticallySyncScene = false;
             PhotonNetwork.MaxResendsBeforeDisconnect = 5;
