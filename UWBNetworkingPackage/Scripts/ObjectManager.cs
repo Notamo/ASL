@@ -22,11 +22,12 @@ namespace UWBNetworkingPackage
             SetNonAutoSyncItems();
         }
 
-        public GameObject Instantiate(string prefabName, Vector3 position, Quaternion rotation)
+        public GameObject Instantiate(string prefabName, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             GameObject go = Instantiate(prefabName);
             go.transform.position = position;
             go.transform.rotation = rotation;
+            go.transform.localScale = scale;
 
             return go;
         }
@@ -415,17 +416,19 @@ namespace UWBNetworkingPackage
             {
                 instantiateEvent[(byte)2] = go.transform.rotation;
             }
+
+            instantiateEvent[(byte)3] = go.transform.localScale;
             
             int[] viewIDs = ExtractPhotonViewIDs(go);
-            instantiateEvent[(byte)3] = viewIDs;
+            instantiateEvent[(byte)4] = viewIDs;
 
             if (peer.currentLevelPrefix > 0)
             {
-                instantiateEvent[(byte)4] = peer.currentLevelPrefix;
+                instantiateEvent[(byte)5] = peer.currentLevelPrefix;
             }
 
-            instantiateEvent[(byte)5] = PhotonNetwork.ServerTimestamp;
-            instantiateEvent[(byte)6] = go.GetPhotonView().instantiationId;
+            instantiateEvent[(byte)6] = PhotonNetwork.ServerTimestamp;
+            instantiateEvent[(byte)7] = go.GetPhotonView().instantiationId;
 
             //RaiseEventOptions options = new RaiseEventOptions();
             //options.CachingOption = (isGlobalObject) ? EventCaching.AddToRoomCacheGlobal : EventCaching.AddToRoomCache;
@@ -475,17 +478,18 @@ namespace UWBNetworkingPackage
                     {
                         syncSceneData[(byte)3] = go.transform.rotation;
                     }
+                    syncSceneData[(byte)4] = go.transform.localScale;
 
                     int[] viewIDs = ExtractPhotonViewIDs(go);
-                    syncSceneData[(byte)4] = viewIDs;
+                    syncSceneData[(byte)5] = viewIDs;
 
                     if (peer.currentLevelPrefix > 0)
                     {
-                        syncSceneData[(byte)5] = peer.currentLevelPrefix;
+                        syncSceneData[(byte)6] = peer.currentLevelPrefix;
                     }
 
-                    syncSceneData[(byte)6] = PhotonNetwork.ServerTimestamp;
-                    syncSceneData[(byte)7] = go.GetPhotonView().instantiationId;
+                    syncSceneData[(byte)7] = PhotonNetwork.ServerTimestamp;
+                    syncSceneData[(byte)8] = go.GetPhotonView().instantiationId;
 
                     //RaiseEventOptions options = new RaiseEventOptions();
                     //options.CachingOption = (isGlobalObject) ? EventCaching.AddToRoomCacheGlobal : EventCaching.AddToRoomCache;
@@ -551,6 +555,7 @@ namespace UWBNetworkingPackage
         {
             string prefabName = (string)eventData[(byte)0];
             Vector3 position = Vector3.zero;
+            Vector3 scale = Vector3.one;
             if (eventData.ContainsKey((byte)1))
             {
                 position = (Vector3)eventData[(byte)1];
@@ -561,19 +566,21 @@ namespace UWBNetworkingPackage
                 rotation = (Quaternion)eventData[(byte)2];
             }
 
-            int[] viewIDs = (int[])eventData[(byte)3];
-            if (eventData.ContainsKey((byte)4))
+            scale = (Vector3)eventData[(byte)3];
+
+            int[] viewIDs = (int[])eventData[(byte)4];
+            if (eventData.ContainsKey((byte)5))
             {
-                uint currentLevelPrefix = (uint)eventData[(byte)4];
+                uint currentLevelPrefix = (uint)eventData[(byte)5];
             }
 
-            int serverTimeStamp = (int)eventData[(byte)5];
-            int instantiationID = (int)eventData[(byte)6];
+            int serverTimeStamp = (int)eventData[(byte)6];
+            int instantiationID = (int)eventData[(byte)7];
 
-            InstantiateLocally(prefabName, viewIDs, position, rotation);
+            InstantiateLocally(prefabName, viewIDs, position, rotation, scale);
         }
         
-        private void InstantiateLocally(string prefabName, int[] viewIDs, Vector3 position, Quaternion rotation)
+        private void InstantiateLocally(string prefabName, int[] viewIDs, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             GameObject prefabGo;
             if (!RetrieveFromPUNCache(prefabName, out prefabGo))
@@ -592,6 +599,7 @@ namespace UWBNetworkingPackage
             HandleLocalLogic(go, viewIDs);
             go.transform.position = position;
             go.transform.rotation = rotation;
+            go.transform.localScale = scale;
 
             RegisterObjectCreation(go, prefabName);
         }
@@ -649,6 +657,7 @@ namespace UWBNetworkingPackage
             {
                 string prefabName = (string)eventData[(byte)1];
                 Vector3 position = Vector3.zero;
+                Vector3 scale = Vector3.one;
                 if (eventData.ContainsKey((byte)2))
                 {
                     position = (Vector3)eventData[(byte)2];
@@ -658,17 +667,18 @@ namespace UWBNetworkingPackage
                 {
                     rotation = (Quaternion)eventData[(byte)3];
                 }
+                scale = (Vector3)eventData[(byte)4];
 
-                int[] viewIDs = (int[])eventData[(byte)4];
-                if (eventData.ContainsKey((byte)5))
+                int[] viewIDs = (int[])eventData[(byte)5];
+                if (eventData.ContainsKey((byte)6))
                 {
-                    uint currentLevelPrefix = (uint)eventData[(byte)5];
+                    uint currentLevelPrefix = (uint)eventData[(byte)6];
                 }
 
-                int serverTimeStamp = (int)eventData[(byte)6];
-                int instantiationID = (int)eventData[(byte)7];
+                int serverTimeStamp = (int)eventData[(byte)7];
+                int instantiationID = (int)eventData[(byte)8];
 
-                InstantiateLocally(prefabName, viewIDs, position, rotation);
+                InstantiateLocally(prefabName, viewIDs, position, rotation, scale);
             }
         }
 #endregion
