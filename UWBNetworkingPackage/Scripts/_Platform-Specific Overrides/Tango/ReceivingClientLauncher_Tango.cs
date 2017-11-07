@@ -17,7 +17,7 @@ namespace UWBNetworkingPackage
         {
             UpdateMesh();
 
-            photonView.RPC("ReceiveTangoMesh", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
+            photonView.RPC("ReceiveTangoMesh", PhotonTargets.MasterClient, PhotonNetwork.player.ID, TangoDatabase.GetMeshAsBytes().Length);
         }
 
         private void UpdateMesh()

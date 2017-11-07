@@ -443,7 +443,7 @@ namespace UWBNetworkingPackage
         //    nViews[0].viewID = id1;
         //}
 
-#region TangoRPC
+        #region TangoRPC
         [PunRPC]
         public virtual void SendTangoMesh()
         {
@@ -463,24 +463,30 @@ namespace UWBNetworkingPackage
         }
 
         [PunRPC]
-        public virtual void ReceiveTangoMesh()
+        public virtual void ReceiveTangoMesh(int id, int size)
         {
 
         }
 
         [PunRPC]
-        public virtual void ReceiveTangoMesh(int id)
+        public virtual void SendTangoMeshByName(string networkConfig)
         {
 
         }
 
         [PunRPC]
-        public virtual void ReceiveTangoMesh(string networkConfig)
+        public virtual void RecieveTangoRoomInfo(string data)
         {
 
         }
 
-#endregion
+        [PunRPC]
+        public virtual void SendTangoRoomInfo(int ID)
+        {
+
+        }
+
+        #endregion
 
         #region Byte stream SendMesh/ReceiveMesh (i.e. uses Database class)
         /// <summary>

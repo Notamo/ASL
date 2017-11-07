@@ -17,65 +17,124 @@ namespace UWBNetworkingPackage
     {
         #region Private Properties
         private DateTime lastRoomUpdate = DateTime.MinValue;
+        private DateTime _lastUpdate = DateTime.MinValue;
+        List<Thread> threads = new List<Thread>();
+        Stack<TangoDatabase.TangoData> TangoRoomStack = new Stack<TangoDatabase.TangoData>();
+        private static bool _ThreadFinished = true;
         #endregion
 
         //// Ensure not HoloLens
 
-        //public void Update()
-        //{
-        //    if (Database.LastUpdate != DateTime.MinValue && DateTime.Compare(_lastUpdate, Database.LastUpdate) < 0)
-        //    {
-        //        if (Database.GetMeshAsBytes() != null)
-        //        {
-        //            //Create a material to apply to the mesh
-        //            Material meshMaterial = new Material(Shader.Find("Diffuse"));
+        public override void Update()
+        {
+            //    if (Database.LastUpdate != DateTime.MinValue && DateTime.Compare(_lastUpdate, Database.LastUpdate) < 0)
+            //    {
+            //        if (Database.GetMeshAsBytes() != null)
+            //        {
+            //            //Create a material to apply to the mesh
+            //            Material meshMaterial = new Material(Shader.Find("Diffuse"));
 
-        //            //grab the meshes in the database
-        //            IEnumerable<Mesh> temp = new List<Mesh>(Database.GetMeshAsList());
+            //            //grab the meshes in the database
+            //            IEnumerable<Mesh> temp = new List<Mesh>(Database.GetMeshAsList());
 
-        //            foreach (var mesh in temp)
-        //            {
-        //                //for each mesh in the database, create a game object to represent
-        //                //and display the mesh in the scene
-        //                GameObject obj1 = new GameObject("mesh"); 
+            //            foreach (var mesh in temp)
+            //            {
+            //                //for each mesh in the database, create a game object to represent
+            //                //and display the mesh in the scene
+            //                GameObject obj1 = new GameObject("mesh"); 
 
-        //                //add a mesh filter to the object and assign it the mesh
-        //                MeshFilter filter = obj1.AddComponent<MeshFilter>();
-        //                filter.mesh = mesh;
+            //                //add a mesh filter to the object and assign it the mesh
+            //                MeshFilter filter = obj1.AddComponent<MeshFilter>();
+            //                filter.mesh = mesh;
 
-        //                //add a mesh rendererer and add a material to it
-        //                MeshRenderer rend1 = obj1.AddComponent<MeshRenderer>();
-        //                rend1.material = meshMaterial;
-        //            }
-        //        }
-        //        _lastUpdate = Database.LastUpdate;
-        //    }
+            //                //add a mesh rendererer and add a material to it
+            //                MeshRenderer rend1 = obj1.AddComponent<MeshRenderer>();
+            //                rend1.material = meshMaterial;
+            //            }
+            //        }
+            //        _lastUpdate = Database.LastUpdate;
+            //    }
 
-        //    //Loading a mesh from a file for testing purposes.
-        //    if (Input.GetKeyDown("l"))
-        //    {
-        //        //Database.UpdateMesh(MeshSaver.Load("RoomMesh"));
-        //        var memoryStream = new MemoryStream(File.ReadAllBytes("RoomMesh"));
-        //        this.DeleteLocalRoomModelInfo();
-        //        Database.UpdateMesh(memoryStream.ToArray());
-        //    }
+            //    //Loading a mesh from a file for testing purposes.
+            //    if (Input.GetKeyDown("l"))
+            //    {
+            //        //Database.UpdateMesh(MeshSaver.Load("RoomMesh"));
+            //        var memoryStream = new MemoryStream(File.ReadAllBytes("RoomMesh"));
+            //        this.DeleteLocalRoomModelInfo();
+            //        Database.UpdateMesh(memoryStream.ToArray());
+            //    }
 
-        //    //Testcalls for the added functionality
-        //    if (Input.GetKeyDown("s"))
-        //    {
-        //        this.SendMesh();
-        //    }
+            //    //Testcalls for the added functionality
+            //    if (Input.GetKeyDown("s"))
+            //    {
+            //        this.SendMesh();
+            //    }
 
-        //    if (Input.GetKeyDown("d"))
-        //    {
-        //        this.DeleteRoomInfo();
-        //    }
+            //    if (Input.GetKeyDown("d"))
+            //    {
+            //        this.DeleteRoomInfo();
+            //    }
 
-        //    if (Input.GetKeyDown("a"))
-        //    {
-        //        this.SendAddMesh();
-        //    }
-        //}
+            //    if (Input.GetKeyDown("a"))
+            //    {
+            //        this.SendAddMesh();
+            //    }
+            if (TangoDatabase.LastUpdate != DateTime.MinValue && DateTime.Compare(_lastUpdate, TangoDatabase.LastUpdate) < 0)
+            {
+                for (int i = 0; i < TangoDatabase.Rooms.Count; i++)
+                {
+                    TangoDatabase.TangoRoom T = TangoDatabase.GetRoom(i);
+
+                    if (TangoDatabase.ID < T.ID)
+                    {
+                        TangoDatabase.ID = T.ID;
+                        //    Create a material to apply to the mesh
+                        Material meshMaterial = new Material(Shader.Find("Diffuse"));
+
+                        //    grab the meshes in the database
+                        IEnumerable<Mesh> temp = new List<Mesh>(TangoDatabase.GetMeshAsList(T));
+
+                        foreach (var mesh in temp)
+                        {
+                            //        for each mesh in the database, create a game object to represent
+                            //        and display the mesh in the scene
+                            GameObject obj1 = new GameObject(T.name);
+
+                            //        add a mesh filter to the object and assign it the mesh
+                            MeshFilter filter = obj1.AddComponent<MeshFilter>();
+                            filter.mesh = mesh;
+
+                            //        add a mesh rendererer and add a material to it
+                            MeshRenderer rend1 = obj1.AddComponent<MeshRenderer>();
+                            rend1.material = meshMaterial;
+
+                            rend1.material.shader = Shader.Find("Custom/UnlitVertexColor");
+
+                            obj1.tag = "Room";
+                            obj1.AddComponent<TangoRoom>();
+                        }
+                    }
+                }
+            }
+
+            if (_ThreadFinished == true)
+            {
+                if (TangoRoomStack.Count > 0)
+                {
+                    ReceiveTangoMeshStack();
+                }
+            }
+
+            Thread[] TL = threads.ToArray();
+            foreach (Thread T in TL)
+            {
+                if (T.ThreadState == ThreadState.Stopped)
+                {
+                    T.Join();
+                    //threads.Remove(T);
+                }
+            }
+        }
 
         /// <summary>
         /// After connect to master server, join the room that's specify by Laucher.RoomName
@@ -476,19 +535,78 @@ namespace UWBNetworkingPackage
         //    #endregion
 
         [PunRPC]
-        public override void ReceiveTangoMesh(string networkConfig)
+        public override void RecieveTangoRoomInfo(string data)
         {
-            this.DeleteLocalMesh();
-            var networkConfigArray = networkConfig.Split(':');
+            var dataArray = data.Split('~');
+            UnityEngine.Debug.Log("RecievedTangoInfo " + dataArray.Length);
+            List<String> RoomNames = new List<string>();
 
-            TcpClient client = new TcpClient();
-            client.Connect(IPAddress.Parse(networkConfigArray[0]), Int32.Parse(networkConfigArray[1]));
+            if (dataArray.Length > 1)
+            {
+                for (int i = 0; i < dataArray.Length; i += 2)
+                {
+                    TangoDatabase.TangoData T = new TangoDatabase.TangoData();
+                    T.name = dataArray[i];
+                    RoomNames.Add(T.name);
+                    T.size = System.Int32.Parse(dataArray[i + 1]);
+
+                    UnityEngine.Debug.Log(i + " " + T.name + " " + T.size);
+                    if (!TangoDatabase.LookUpName(T.name))
+                    {
+                        TangoRoomStack.Push(T);
+                    }
+                }
+            }
+            else
+            {
+                RoomNames.Add(" ");
+            }
+
+            TangoDatabase.CompareList(RoomNames);
+        }
+
+
+        public void ReceiveTangoMeshStack()
+        {
+            TangoDatabase.TangoData T = TangoRoomStack.Pop();
+
+            UnityEngine.Debug.Log("Pop");
+
+            if (!TangoDatabase.LookUpName(T.name))
+            {
+                _ThreadFinished = false;
+                Thread Th = new Thread(() => RecieveTangoMeshThread(T));
+                Th.IsBackground = true;
+                Th.Start();
+                threads.Add(Th);
+
+
+                photonView.RPC("SendTangoMeshByName", PhotonTargets.MasterClient, GetLocalIpAddress() + "~" + (Port + 1) + "~" + T.name);
+            }
+        }
+
+        void RecieveTangoMeshThread(TangoDatabase.TangoData T)
+        {
+            TcpListener receiveTcpListener = new TcpListener(IPAddress.Any, (Port + 1));
+            try
+            {
+                receiveTcpListener.Start();
+            }
+            catch (SocketException)
+            {
+                UnityEngine.Debug.Log("Error");
+                _ThreadFinished = true;
+                Thread.CurrentThread.Abort();
+            }
+
+
+            var client = receiveTcpListener.AcceptTcpClient();
 
             using (var stream = client.GetStream())
             {
-                byte[] data = new byte[1024];
+                byte[] data = new byte[T.size];
 
-                Debug.Log("Start receiving mesh.");
+                UnityEngine.Debug.Log("Start receiving mesh " + data.Length);
                 using (MemoryStream ms = new MemoryStream())
                 {
                     int numBytesRead;
@@ -496,71 +614,71 @@ namespace UWBNetworkingPackage
                     {
                         ms.Write(data, 0, numBytesRead);
                     }
-                    Debug.Log("Finish receiving mesh: size = " + ms.Length);
-                    client.Close();
-
-                    //DONE RECIEVING MESH FROM THE MASTER SERVER, NOW UPDATE IT
-
-                    TangoDatabase.UpdateMesh(ms.ToArray());
-                    Debug.Log("You updated the meshes in the database");
+                    UnityEngine.Debug.Log("finish receiving mesh: size = " + ms.Length);
+                    TangoDatabase.UpdateMesh(ms.ToArray(), T.name);
                 }
             }
 
             client.Close();
 
+            receiveTcpListener.Stop();
 
-            //CREATE AND DRAW THEM MESHES------------------------------------------------------
-            Debug.Log("Checking for them meshes in ze database");
+            _ThreadFinished = true;
 
-            //goes into the if statement if the database is not NULL
-            if (TangoDatabase.GetMeshAsList() != null)
-            {
-                //Create a material to apply to the mesh
-                Material meshMaterial = new Material(Shader.Find("Diffuse"));
-
-                //grab the meshes in the database
-                IEnumerable<Mesh> temp = new List<Mesh>(TangoDatabase.GetMeshAsList());
-
-                foreach (var mesh in temp)
-                {
-                    //for each mesh in the database, create a game object to represent
-                    //and display the mesh in the scene
-                    GameObject obj1 = new GameObject("mesh");
-
-                    //add a mesh filter to the object and assign it the mesh
-                    MeshFilter filter = obj1.AddComponent<MeshFilter>();
-                    filter.mesh = mesh;
-
-                    //add a mesh rendererer and add a material to it
-                    MeshRenderer rend1 = obj1.AddComponent<MeshRenderer>();
-                    rend1.material = meshMaterial;
-                }
-            }
-            else
-            {
-                UnityEngine.Debug.Log("YO... your mesh is empty...");
-            }
-            //END OF CREATING AND DRAWING THE MEESHES------------------------------------------
+            UnityEngine.Debug.Log("Join Thread");
+            Thread.CurrentThread.Join();
         }
+
 
         [PunRPC]
         public override void SendTangoMesh(string networkConfig)
         {
+            Thread T = new Thread(() => SendTangoMeshThread(networkConfig));
+            T.IsBackground = true;
+            T.Start();
+            threads.Add(T);
+        }
+
+        void SendTangoMeshThread(string networkConfig)
+        {
             var networkConfigArray = networkConfig.Split(':');
+
 
             TcpClient client = new TcpClient();
             client.Connect(IPAddress.Parse(networkConfigArray[0]), Int32.Parse(networkConfigArray[1]));
-            new Thread(() =>
-            {
-                using (NetworkStream stream = client.GetStream())
-                {
-                    var data = TangoDatabase.GetMeshAsBytes();
-                    stream.Write(data, 0, data.Length);
-                    Debug.Log("Mesh sent: mesh size = " + data.Length);
-                }
-                client.Close();
-            }).Start();
 
+            using (NetworkStream stream = client.GetStream())
+            {
+                var data = TangoDatabase.GetMeshAsBytes();
+                stream.Write(data, 0, data.Length);
+                Debug.Log("Mesh sent: mesh size = " + data.Length);
+            }
+            client.Close();
+
+
+            Thread.CurrentThread.Join();
+        }
+
+        private IPAddress GetLocalIpAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ip.AddressFamily.ToString() == "InterNetwork")
+                {
+                    return ip;
+                }
+            }
+            return null;
+        }
+
+        void OnApplicationQuit()
+        {
+            foreach (Thread T in threads)
+            {
+                T.Abort();
+                //threads.Remove(T);
+            }
         }
     }
 }
