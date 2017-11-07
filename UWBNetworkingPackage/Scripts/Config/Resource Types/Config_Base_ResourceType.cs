@@ -14,6 +14,8 @@ namespace UWBNetworkingPackage
 #elif UNITY_ANDROID
         private static string absoluteAssetRootFolder = "/data/data/" + Application.bundleIdentifier;
         // Application.bundleIdentifier may be replaced by Application.identifier in Unity 5.6.0+
+#elif UNITY_IOS
+        private static string absoluteAssetRootFolder = Path.Combine(Application.persistentDataPath, "Assets");
 #else
         private static string absoluteAssetRootFolder = Path.Combine(Directory.GetCurrentDirectory(), "Assets");
 #endif

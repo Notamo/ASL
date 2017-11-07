@@ -13,7 +13,8 @@ namespace UWBNetworkingPackage
         Oculus,
         Vive,
         PC,
-        Tango
+        Tango,
+        iOS
     };
 
     public class Config_Base
