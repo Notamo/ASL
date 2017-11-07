@@ -12,7 +12,8 @@ namespace ASL.Manipulation.Controllers.Vive
     /// </summary>
     public class TouchpadBehavior : VRTK_ControllerEvents
     {
-        private ASL.Manipulation.Objects.CreateObject objManager;
+        //private ASL.Manipulation.Objects.CreateObject objManager;
+        private ASL.Manipulation.Objects.ObjectInteractionManager objManager;
 
         public string PrefabString = "Sphere"; //"Trophy";
         private string ViveAvatarName = "ViveAvatar";
@@ -22,13 +23,14 @@ namespace ASL.Manipulation.Controllers.Vive
         /// </summary>
         void Start()
         {
+            objManager = GameObject.Find("ObjectInteractionManager").GetComponent<ASL.Manipulation.Objects.ObjectInteractionManager>();
+
             TouchpadPressed += OnTouchpadPressedHandler;
-            objManager = gameObject.GetComponent<ASL.Manipulation.Objects.CreateObject>();
+            //objManager = gameObject.GetComponent<ASL.Manipulation.Objects.CreateObject>();
         }
 
         /// <summary>
-        /// When the touchpad is pressed, instantiate a cube, located at the origin of the game
-        /// space
+        /// When the touchpad is pressed, instantiate a prefab
         /// </summary>
         /// <param name="obj">Reference to the controller that pressed the touchpad</param>
         /// <param name="e">Controller event arguments</param>
@@ -41,7 +43,8 @@ namespace ASL.Manipulation.Controllers.Vive
             Vector3 HeadPos = GameObject.Find(ViveAvatarName).GetComponent<ViveHead>().HeadPosition;
             Vector3 PrefabPos = HeadPos + new Vector3(0, 1, 0);
             //PhotonNetwork.Instantiate(PrefabString, PrefabPos, Quaternion.identity, 0);
-            objManager.CreatePUNObject(PrefabString, PrefabPos, Quaternion.identity);
+            //objManager.CreatePUNObject(PrefabString, PrefabPos, Quaternion.identity);
+            objManager.Instantiate(PrefabString, PrefabPos, Quaternion.identity);
         }
     }
 }

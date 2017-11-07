@@ -30,6 +30,7 @@ namespace UWBNetworkingPackage
 
         private const string SCENE_LOADER_NAME = "SceneLoaderObject";
         private ASL.UI.Menus.Networking.SceneVariableSetter globalVariables;
+        private ObjectManager objManager;
 
         /// <summary>
         /// When Awake, NetworkManager will add the correct Launcher script
@@ -57,6 +58,8 @@ namespace UWBNetworkingPackage
                 Config.Start(NodeType.PC);
 #endif
             }
+
+            objManager = gameObject.AddComponent<ObjectManager>();
             
             //Preprocessor directives to choose which component is added.  Note, master client still has to be hard coded
             //Haven't yet found a better solution for this
@@ -155,6 +158,37 @@ namespace UWBNetworkingPackage
 #endif
         }
 
+        public void Instantiate(GameObject go)
+        {
+            if(objManager != null)
+            {
+                objManager.Instantiate(go);
+            }
+        }
+
+        public void Instantiate(string prefabName)
+        {
+            if(objManager != null)
+            {
+                objManager.Instantiate(prefabName);
+            }
+        }
+
+        public void Instantiate(string prefabName, Vector3 position, Quaternion rotation)
+        {
+            if(objManager != null)
+            {
+                objManager.Instantiate(prefabName, position, rotation);
+            }
+        }
+
+        public void RequestOwnership(GameObject obj, int focuserID)
+        {
+            if (obj.GetPhotonView() != null)
+            {
+                obj.GetPhotonView().RPC("Grab", PhotonTargets.Others);
+            }
+        }
 
         //-----------------------------------------------------------------------------
         // Legacy Code:

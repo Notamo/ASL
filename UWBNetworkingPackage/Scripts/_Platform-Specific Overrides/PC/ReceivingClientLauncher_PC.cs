@@ -98,7 +98,7 @@ namespace UWBNetworkingPackage
 #if UNITY_EDITOR
                 if (File.Exists(Config.Current.Room.CompileAbsoluteAssetPath(roomBundle)))
                 {
-                    Debug.Error("Room asset bundle exists! File not copied to room directory to avoid potentially overwriting data. Manually copy from " + roomBundleStorageDirectory + " if you would like to update the room.");
+                    Debug.LogError("Room asset bundle exists! File not copied to room directory to avoid potentially overwriting data. Manually copy from " + roomBundleStorageDirectory + " if you would like to update the room.");
                 }
                 else
                 {

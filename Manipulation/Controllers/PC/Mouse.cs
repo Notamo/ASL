@@ -7,30 +7,27 @@ namespace ASL.Manipulation.Controllers.PC
 {
     public class Mouse : MonoBehaviour
     {
+        private ObjectInteractionManager objManager;
+
+        public void Awake()
+        {
+            objManager = GameObject.Find("ObjectInteractionManager").GetComponent<ObjectInteractionManager>();
+        }
+
         public void Update()
         {
             if (Input.GetMouseButtonDown(0))
             {
                 GameObject selectedObject = Select();
-                GameObject.Find("ObjectInteractionManager").GetComponent<ObjectInteractionManager>().RequestOwnership(selectedObject, PhotonNetwork.player.ID);
+                objManager.RequestOwnership(selectedObject, PhotonNetwork.player.ID);
             }
             if (Input.GetMouseButtonDown(1))
             {
-                //GameObject.CreatePrimitive(PrimitiveType.Cube);
-
-                //Debug.Log("Attempting to PUN-create object");
-                var a = gameObject.AddComponent<CreateObject>();
-                //a.CreatePUNObject("Sphere");
-                //a.CreatePUNObject("Sphere", new Vector3(2, 3, 4), Quaternion.identity);
-                a.CreatePUNObject("Sphere", new Vector3(0, 0, 2), Quaternion.identity);
-
-                //Debug.Log("Pun-created object instantiated.");
+                string prefabName = "Sphere";
+                Vector3 position = new Vector3(0, 0, 2);
+                Quaternion rotation = Quaternion.identity;
+                objManager.Instantiate(prefabName, position, rotation);
             }
-
-            //if (Input.GetMouseButtonDown(1))
-            //{
-            //    PhotonNetwork.Instantiate("PUNSphere", Vector3.zero, Quaternion.identity, 0);
-            //}
         }
 
         public GameObject Select()

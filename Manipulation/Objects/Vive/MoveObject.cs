@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ASL.Manipulation.Objects.Vive
 {
-    public class MoveObject : ASL.Manipulation.Objects.MoveObject
+    public class MoveObject : ASL.Manipulation.Objects.MoveBehavior
     {
         public override void Awake()
         {
