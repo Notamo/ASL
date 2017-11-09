@@ -566,7 +566,7 @@ namespace UWBNetworkingPackage
         }
 
 
-        public void ReceiveTangoMeshStack()
+        public virtual void ReceiveTangoMeshStack()
         {
             TangoDatabase.TangoData T = TangoRoomStack.Pop();
 

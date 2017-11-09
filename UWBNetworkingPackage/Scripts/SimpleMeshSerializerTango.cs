@@ -24,11 +24,11 @@ namespace NetworkingPackage {
             using (MemoryStream stream = new MemoryStream()) {
                 using (BinaryWriter writer = new BinaryWriter(stream)) {
                     foreach (Mesh mesh in meshes)
-                    {
+                    {   
                         WriteMesh(writer, mesh);
                     }
 
-                stream.Position = 0;
+                    stream.Position = 0;
                     data = new byte[stream.Length];
                     stream.Read(data, 0, data.Length);
                 }
@@ -91,6 +91,13 @@ namespace NetworkingPackage {
             int[] triangleIndices = ReadTriangleIndicies(reader, triangleIndexCount);
             Vector3[] normals = ReadNormalIndicies(reader, normalCount);
             Color32[] color32 = ReadColor32Indicies(reader, color32Count);
+
+//#if UNITY_ANDROID
+//            if (GameObject.Find("Canvas").GetComponent<switchCamera>())
+//            {
+//                vertices = GameObject.Find("Canvas").GetComponent<switchCamera>().ModifyMesh(vertices);
+//            }
+//#endif
 
             // Create the mesh.
             Mesh mesh = new Mesh();

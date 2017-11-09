@@ -164,6 +164,7 @@ namespace UWBNetworkingPackage
         public static void UpdateMesh(IEnumerable<Mesh> newMesh)
         {
             _meshes = NetworkingPackage.SimpleMeshSerializerTango.Serialize(newMesh);
+            
             LastUpdate = DateTime.Now;
         }
 
@@ -180,7 +181,12 @@ namespace UWBNetworkingPackage
             count++;
             T.ID = count;
             T.PhotonPlayer = playerID;
-            T.name = (string)(playerID + "_" + DateTime.Now);
+            string name = (string)(playerID + "_" + DateTime.Now);
+            name = name.Replace('/', '_');
+            name = name.Replace('\\', '_');
+            name = name.Replace(' ', '_');
+            name = name.Replace(':', '_');
+            T.name = name;
             lock (Rooms)
             {
                 Rooms.Add(T);

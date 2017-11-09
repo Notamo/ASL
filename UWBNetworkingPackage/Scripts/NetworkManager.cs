@@ -176,7 +176,7 @@ namespace UWBNetworkingPackage
         {
             if(objManager != null)
             {
-                objManager.Instantiate(prefabName, position, rotation);
+                //objManager.Instantiate(prefabName, position, rotation);
             }
         }
 
@@ -186,6 +186,11 @@ namespace UWBNetworkingPackage
             {
                 obj.GetPhotonView().RPC("Grab", PhotonTargets.Others);
             }
+        }
+
+        public void SendTangoMesh()
+        {
+            gameObject.GetComponent<ReceivingClientLauncher_Tango>().SendTangoMesh();
         }
 
         //-----------------------------------------------------------------------------
