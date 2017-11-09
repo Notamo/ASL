@@ -22,8 +22,8 @@ namespace UWBNetworkingPackage
         #region Private Properties
         private DateTime lastRoomUpdate = DateTime.MinValue;
         private DateTime _lastUpdate = DateTime.MinValue;
-        List<Thread> threads = new List<Thread>();
-        private float updateTime = 5f;
+        List<Thread> threads = new List<Thread>(); //list of threads created for TCP connections
+        private float updateTime = 5f; //time tracker to send a new room list to all clients
         #endregion
 
         /// <summary>
@@ -46,6 +46,7 @@ namespace UWBNetworkingPackage
             //    }
             //}
 
+            //Check to see if a new Tango Room Mesh has been recieved and create a gameobject and render the mesh in gamespace
             if (TangoDatabase.LastUpdate != DateTime.MinValue && DateTime.Compare(_lastUpdate, TangoDatabase.LastUpdate) < 0)
             {
                 for (int i = 0; i < TangoDatabase.Rooms.Count; i++)
@@ -91,6 +92,7 @@ namespace UWBNetworkingPackage
                 _lastUpdate = TangoDatabase.LastUpdate;
             }
 
+            //Check if the Thread has stopped and join if so
             Thread[] TL = threads.ToArray();
             foreach (Thread T in TL)
             {
@@ -101,8 +103,8 @@ namespace UWBNetworkingPackage
                 }
             }
 
+            //decrement updateTime which controls the TangoRoomInfo sending between clients
             updateTime -= Time.deltaTime;
-
             if (updateTime <= 0)
             {
                 SendTangoRoomInfoAll();
@@ -168,19 +170,11 @@ namespace UWBNetworkingPackage
             base.OnPhotonPlayerConnected(newPlayer);
         }
 
-        [PunRPC]
-        public override void SendTangoMesh(int id)
-        {
-            //if (TangoDatabase.GetMeshAsBytes() != null)
-            //{
-            //UnityEngine.Debug.Log("Sending Tango Mesh Master Client Initial");
-            if (TangoDatabase.ID > 0)
-            {
-                //photonView.RPC("ReceiveTangoRoomInfo", PhotonPlayer.Find(id), GetLocalIpAddress() + ":" + Port + ":" + TangoDatabase.ID);
-            }
-            //}
-        }
-
+        /// <summary>
+        /// Sends a list of all Tango Rooms currently being stored in the TangoDatabase.cs to the PhotonPlayer id
+        /// PunRPC enabled so that a client can request an update
+        /// </summary>
+        /// <param name="id"></param>
         [PunRPC]
         public override void SendTangoRoomInfo(int id)
         {
@@ -195,6 +189,9 @@ namespace UWBNetworkingPackage
 
         }
 
+        /// <summary>
+        /// Sends a list of all Tango Rooms currently being stored in the TangoDatabase.cs to all Players
+        /// </summary>
         public void SendTangoRoomInfoAll()
         {
             string data = "";
@@ -208,6 +205,11 @@ namespace UWBNetworkingPackage
 
         }
 
+        /// <summary>
+        /// PunRPC call that is sent by a client requesting a specific room mesh
+        /// Creates a Thread that handles sending the byte stream to the client
+        /// </summary>
+        /// <param name="networkConfig"></param>
         [PunRPC]
         public override void SendTangoMeshByName(string networkConfig)
         {
@@ -217,6 +219,12 @@ namespace UWBNetworkingPackage
             threads.Add(T);
         }
 
+        /// <summary>
+        /// Parses the networkConfig string for the clients TCP info and room name to send to the client
+        /// Retrieves the room from TangoDatabase based on it's name
+        /// Establishes a TCP connection with the client and sends the byte data for the room
+        /// </summary>
+        /// <param name="networkConfig"></param>
         void SendTangoMeshThread(string networkConfig)
         {
             var networkConfigArray = networkConfig.Split('~');
@@ -241,6 +249,15 @@ namespace UWBNetworkingPackage
 
         }
 
+        /// <summary>
+        /// Recieves a PunRPC request to recieve a new Tango Room Mesh
+        /// id is the Photon Player ID
+        /// Size is the mesh size in bytes
+        /// Creates a thread to handle the TCP connection
+        /// Sends an RPC call back to for the client to send the mesh
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="size"></param>
         [PunRPC]
         public override void ReceiveTangoMesh(int id, int size)
         {
@@ -257,6 +274,13 @@ namespace UWBNetworkingPackage
             photonView.RPC("SendTangoMesh", PhotonPlayer.Find(id), GetLocalIpAddress() + ":" + (Port + 1));
         }
 
+        /// <summary>
+        /// Establishes a TCPListener to recieve a connection from the client
+        /// Reads the byte stream and updates the mesh in the TangoDatabase.cs
+        /// Terminates the Thread once finished
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="size"></param>
         void RecieveTangoMeshThread(int id, int size)
         {
             TcpListener receiveTcpListener = new TcpListener(IPAddress.Any, Port + 1);

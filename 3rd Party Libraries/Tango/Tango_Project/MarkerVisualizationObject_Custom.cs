@@ -39,6 +39,6 @@ public class MarkerVisualizationObject_Custom : MonoBehaviour
         transform.position = marker.m_translation;
         transform.rotation = marker.m_orientation;
 
-        GameObject.Find("Canvas").GetComponent<switchCamera>().setWorldOffset(transform);
+        GameObject.Find("Canvas").GetComponent<switchCamera>().setWorldOffset(transform); //custom call to set the offset for Marker Sync
     }
 }

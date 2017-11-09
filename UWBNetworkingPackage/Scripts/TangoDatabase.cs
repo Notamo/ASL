@@ -14,6 +14,9 @@ namespace UWBNetworkingPackage
     {
         #region Private Properties
 
+        /// <summary>
+        /// Keeps track of each room gameobjects info
+        /// </summary>
         public struct TangoRoom
         {
             public byte[] _meshes;
@@ -23,15 +26,20 @@ namespace UWBNetworkingPackage
             public string name;
         }
 
+        /// <summary>
+        /// keeps track of data that needs to be requested
+        /// </summary>
         public struct TangoData
         {
             public string name;
             public int size;
         }
 
+        //values that keep track of the current count of rooms
         public static int count = 0;
         public static int ID = 0;
 
+        //List of TangoRooms to keep track of all rooms
         public static List<TangoRoom> Rooms = new List<TangoRoom>();
 
         private static byte[] _meshes;  // Stores the current Room Mesh data as a serialized byte array
@@ -57,6 +65,11 @@ namespace UWBNetworkingPackage
             return NetworkingPackage.SimpleMeshSerializerTango.Deserialize(T._meshes);
         }
 
+        /// <summary>
+        /// Check to see if the TangoRoom exists and returns true or false
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static bool LookUpName(string name)
         {
             lock (Rooms)
@@ -71,6 +84,10 @@ namespace UWBNetworkingPackage
             return false;
         }
 
+        /// <summary>
+        /// Compares a list of of Room Names against the list of current rooms and removes any that have been deleted from the MasterServer
+        /// </summary>
+        /// <param name="TData"></param>
         public static void CompareList(List<string> TData)
         {
             lock (Rooms)
@@ -103,11 +120,21 @@ namespace UWBNetworkingPackage
             return _meshes;
         }
 
+        /// <summary>
+        /// Retrieves a specific Room Mesh as a serialized byte array
+        /// </summary>
+        /// <param name="T"></param>
+        /// <returns>Serialized Room Mesh</returns>
         public static byte[] GetMeshAsBytes(TangoRoom T)
         {
             return T._meshes;
         }
 
+        /// <summary>
+        /// Returns the specific TangoRoom based on ID
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns>TangoRoom</returns>
         public static TangoRoom GetRoom(int ID)
         {
             lock (Rooms)
@@ -116,6 +143,10 @@ namespace UWBNetworkingPackage
             }
         }
 
+        /// <summary>
+        /// Deletes the TangoRoom from the Room List
+        /// </summary>
+        /// <param name="T"></param>
         public static void DeleteRoom(TangoRoom T)
         {
             lock (Rooms)
@@ -124,6 +155,10 @@ namespace UWBNetworkingPackage
             }
         }
 
+        /// <summary>
+        /// Gets a string of all Rooms currently in the list of Rooms
+        /// </summary>
+        /// <returns>string of all rooms</returns>
         public static string GetAllRooms()
         {
             string data = Rooms[0].name;
@@ -141,6 +176,11 @@ namespace UWBNetworkingPackage
             return data;
         }
 
+        /// <summary>
+        /// Returns a TangoRoom based on the input name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns>TangoRoom</returns>
         public static TangoRoom GetRoomByName(string name)
         {
             lock (Rooms)
@@ -176,12 +216,12 @@ namespace UWBNetworkingPackage
         public static void UpdateMesh(byte[] newMesh, int playerID)
         {
             TangoRoom T = new TangoRoom();
-            T.isDirty = true;
-            T._meshes = newMesh;
-            count++;
-            T.ID = count;
-            T.PhotonPlayer = playerID;
-            string name = (string)(playerID + "_" + DateTime.Now);
+            T.isDirty = true; //keeps track that room needs to be rendered
+            T._meshes = newMesh; //init the byte array
+            count++; //increment total count
+            T.ID = count; //ID = count
+            T.PhotonPlayer = playerID; //inits the player ID it was recieved from
+            string name = (string)(playerID + "_" + DateTime.Now); //creates a unique name based on ID and time
             name = name.Replace('/', '_');
             name = name.Replace('\\', '_');
             name = name.Replace(' ', '_');
@@ -189,24 +229,29 @@ namespace UWBNetworkingPackage
             T.name = name;
             lock (Rooms)
             {
-                Rooms.Add(T);
+                Rooms.Add(T); //adds room the list
             }
             //_meshes = newMesh;
             LastUpdate = DateTime.Now;
         }
 
+        /// <summary>
+        /// Updates room list with a new room with an established name
+        /// </summary>
+        /// <param name="newMesh"></param>
+        /// <param name="name"></param>
         public static void UpdateMesh(byte[] newMesh, string name)
         {
-            TangoRoom T = new TangoRoom();
-            T.isDirty = true;
-            T._meshes = newMesh;
-            count++;
-            T.ID = count;
+            TangoRoom T = new TangoRoom(); //creates a new room
+            T.isDirty = true; //marks that it needs to be rendered
+            T._meshes = newMesh; //init byte array
+            count++; //increment count
+            T.ID = count; //set id
             //T.PhotonPlayer = playerID;
-            T.name = (string)(name);
+            T.name = (string)(name); //creates name based on input name
             lock (Rooms)
             {
-                Rooms.Add(T);
+                Rooms.Add(T); //adds room to list
             }
             //_meshes = newMesh;
             LastUpdate = DateTime.Now;

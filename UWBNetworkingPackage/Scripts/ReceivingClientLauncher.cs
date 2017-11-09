@@ -18,9 +18,9 @@ namespace UWBNetworkingPackage
         #region Private Properties
         private DateTime lastRoomUpdate = DateTime.MinValue;
         private DateTime _lastUpdate = DateTime.MinValue;
-        List<Thread> threads = new List<Thread>();
-        Stack<TangoDatabase.TangoData> TangoRoomStack = new Stack<TangoDatabase.TangoData>();
-        private static bool _ThreadFinished = true;
+        List<Thread> threads = new List<Thread>(); //List of thread that manage TCP conncetions
+        Stack<TangoDatabase.TangoData> TangoRoomStack = new Stack<TangoDatabase.TangoData>(); //TangoRoomStack for requesting Rooms from Master Client
+        private static bool _ThreadFinished = true; //Check to see that a room request has finished
         #endregion
 
         //// Ensure not HoloLens
@@ -79,6 +79,8 @@ namespace UWBNetworkingPackage
             //    {
             //        this.SendAddMesh();
             //    }
+
+            //Check all current Rooms in the database and render any without a current gameobject and mesh renderer
             if (TangoDatabase.LastUpdate != DateTime.MinValue && DateTime.Compare(_lastUpdate, TangoDatabase.LastUpdate) < 0)
             {
                 for (int i = 0; i < TangoDatabase.Rooms.Count; i++)
@@ -117,6 +119,7 @@ namespace UWBNetworkingPackage
                 }
             }
 
+            //Check to see that no rooms are currently being recieved and then check if there is a room to request
             if (_ThreadFinished == true)
             {
                 if (TangoRoomStack.Count > 0)
@@ -125,6 +128,7 @@ namespace UWBNetworkingPackage
                 }
             }
 
+            //check to see if a thread has stopped and join it
             Thread[] TL = threads.ToArray();
             foreach (Thread T in TL)
             {
@@ -534,10 +538,15 @@ namespace UWBNetworkingPackage
 
         //    #endregion
 
+            /// <summary>
+            /// PunRPC call with the current MasterClient Room info
+            /// Traverses through the list and determines if any rooms have been added or removed
+            /// </summary>
+            /// <param name="data"></param>
         [PunRPC]
         public override void RecieveTangoRoomInfo(string data)
         {
-            var dataArray = data.Split('~');
+            var dataArray = data.Split('~'); //parse data
             UnityEngine.Debug.Log("RecievedTangoInfo " + dataArray.Length);
             List<String> RoomNames = new List<string>();
 
@@ -553,7 +562,7 @@ namespace UWBNetworkingPackage
                     UnityEngine.Debug.Log(i + " " + T.name + " " + T.size);
                     if (!TangoDatabase.LookUpName(T.name))
                     {
-                        TangoRoomStack.Push(T);
+                        TangoRoomStack.Push(T); //if room does not already exist, add to stack
                     }
                 }
             }
@@ -562,15 +571,16 @@ namespace UWBNetworkingPackage
                 RoomNames.Add(" ");
             }
 
-            TangoDatabase.CompareList(RoomNames);
+            TangoDatabase.CompareList(RoomNames); //delete any rooms missing
         }
 
-
+        /// <summary>
+        /// Creates a thread to recieve a TangoMesh based on the mesh currently at the top of the stack
+        /// Sends a RPC call to the masterclient with the name of the room
+        /// </summary>
         public virtual void ReceiveTangoMeshStack()
         {
             TangoDatabase.TangoData T = TangoRoomStack.Pop();
-
-            UnityEngine.Debug.Log("Pop");
 
             if (!TangoDatabase.LookUpName(T.name))
             {
@@ -585,6 +595,10 @@ namespace UWBNetworkingPackage
             }
         }
 
+        /// <summary>
+        /// Listens for the TCP connection from the master client and recieves the room mesh
+        /// </summary>
+        /// <param name="T"></param>
         void RecieveTangoMeshThread(TangoDatabase.TangoData T)
         {
             TcpListener receiveTcpListener = new TcpListener(IPAddress.Any, (Port + 1));
@@ -598,7 +612,6 @@ namespace UWBNetworkingPackage
                 _ThreadFinished = true;
                 Thread.CurrentThread.Abort();
             }
-
 
             var client = receiveTcpListener.AcceptTcpClient();
 
@@ -629,7 +642,10 @@ namespace UWBNetworkingPackage
             Thread.CurrentThread.Join();
         }
 
-
+        /// <summary>
+        /// Creates a thread to manage the TCP connection of sending a room mesh to master client
+        /// </summary>
+        /// <param name="networkConfig"></param>
         [PunRPC]
         public override void SendTangoMesh(string networkConfig)
         {
@@ -639,6 +655,10 @@ namespace UWBNetworkingPackage
             threads.Add(T);
         }
 
+        /// <summary>
+        /// thread function to establish TCP connection and send byte array of the Tango Mesh
+        /// </summary>
+        /// <param name="networkConfig"></param>
         void SendTangoMeshThread(string networkConfig)
         {
             var networkConfigArray = networkConfig.Split(':');

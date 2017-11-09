@@ -20,6 +20,7 @@ public class switchCamera : UnityEngine.MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //for each object, if object is a room or run time init object, set to marker transform
         foreach (GameObject G in GameObject.FindObjectsOfType<GameObject>())
         {
             if (G != Static && !G.transform.parent && G.tag != "Anchor")
@@ -42,19 +43,21 @@ public class switchCamera : UnityEngine.MonoBehaviour
 
             }
         }
-
-        //Dynamic.transform.Rotate(0, .5f, 0);
-
-        //Te.text = Dynamic.transform.position + " " + Dynamic.transform.rotation + " ";
-        //Te.text += GameObject.FindGameObjectWithTag("Room").transform.position;
     }
 
+    /// <summary>
+    /// Clears the Dynamic Mesh
+    /// </summary>
     public void Clear()
     {
         DynamicMesh.GetComponent<TangoDynamicMesh>().Clear();
         TangoManager.GetComponent<TangoApplication>().Tango3DRClear();
     }
 
+    /// <summary>
+    /// Sets the current Dynamic Parent Game Object to marker transform
+    /// </summary>
+    /// <param name="T"></param>
     public void setWorldOffset(Transform T)
     {
         if (QR == false)
@@ -62,10 +65,12 @@ public class switchCamera : UnityEngine.MonoBehaviour
             Dynamic.transform.position = T.transform.position;
             Dynamic.transform.rotation = T.transform.rotation;
             QR = true;
-            //Te.text = Dynamic.transform.position + " " /*+ T.transform.rotation + " "*/;
         }
     }
 
+    /// <summary>
+    /// Toggles on/off the Dynamic Mesh
+    /// </summary>
     public void ToggleCamera()
     {
         if (DynamicMesh.GetActive() == true)
@@ -79,8 +84,12 @@ public class switchCamera : UnityEngine.MonoBehaviour
         }
     }
 
-    public void SetText(Matrix4x4 M)
+    /// <summary>
+    /// Set Tango Debug Text
+    /// </summary>
+    /// <param name="M"></param>
+    public void SetText(string s)
     {
-        Te.text = M.ToString();
+        Te.text = s;
     }
 }
