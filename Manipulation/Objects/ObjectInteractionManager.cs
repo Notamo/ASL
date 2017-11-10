@@ -91,9 +91,9 @@ namespace ASL.Manipulation.Objects
             networkManager.Instantiate(prefabName);
         }
 
-        public void Instantiate(string prefabName, Vector3 position, Quaternion rotation)
+        public void Instantiate(string prefabName, Vector3 position, Quaternion rotation, Vector3 scale)
         {
-            networkManager.Instantiate(prefabName, position, rotation);
+            networkManager.Instantiate(prefabName, position, rotation, scale);
         }
 
         public T RegisterBehavior<T>()

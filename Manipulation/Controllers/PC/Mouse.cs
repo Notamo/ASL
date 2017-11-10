@@ -26,7 +26,8 @@ namespace ASL.Manipulation.Controllers.PC
                 string prefabName = "Sphere";
                 Vector3 position = new Vector3(0, 0, 2);
                 Quaternion rotation = Quaternion.identity;
-                objManager.Instantiate(prefabName, position, rotation);
+                Vector3 scale = Vector3.one;
+                objManager.Instantiate(prefabName, position, rotation, scale);
             }
         }
 

@@ -174,11 +174,11 @@ namespace UWBNetworkingPackage
             }
         }
 
-        public void Instantiate(string prefabName, Vector3 position, Quaternion rotation)
+        public void Instantiate(string prefabName, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             if(objManager != null)
             {
-                objManager.Instantiate(prefabName, position, rotation);
+                objManager.Instantiate(prefabName, position, rotation, scale);
             }
         }
 
