@@ -44,7 +44,7 @@ namespace ASL.Manipulation.Controllers.Vive
             Vector3 PrefabPos = HeadPos + new Vector3(0, 1, 0);
             //PhotonNetwork.Instantiate(PrefabString, PrefabPos, Quaternion.identity, 0);
             //objManager.CreatePUNObject(PrefabString, PrefabPos, Quaternion.identity);
-            objManager.Instantiate(PrefabString, PrefabPos, Quaternion.identity);
+            objManager.Instantiate(PrefabString, PrefabPos, Quaternion.identity, Vector3.one);
         }
     }
 }
