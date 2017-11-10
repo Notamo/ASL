@@ -9,7 +9,7 @@ namespace UWBNetworkingPackage
 {
     public class RoomSave : EditorWindow
     {
-
+#if UNITY_EDITOR
         List<GameObject> RL = new List<GameObject>(); //List of all Room objects
         DirectoryInfo root; //reference to the persistent data path for the application
         List<DirectoryInfo> Dir = new List<DirectoryInfo>(); //list of directories in the persistent data path
@@ -219,5 +219,6 @@ namespace UWBNetworkingPackage
                 ReadRoom(f.filePath, f.name);
             }
         }
+#endif
     }
 }
