@@ -163,7 +163,7 @@ namespace NetworkingPackage {
         /// <returns>Array of Vector3 structures representing the mesh's vertices.</returns>
         private static Vector3[] ReadVertices(BinaryReader reader, int vertexCount) {
             SysDiag.Debug.Assert(reader != null);
-
+            
             Vector3[] vertices = new Vector3[vertexCount];
 
             for (int i = 0; i < vertices.Length; i++) {

@@ -105,7 +105,6 @@ namespace UWBNetworkingPackage
             bool isTango = true;
             if (isTango)
             {
-                //gameObject.AddComponent<TangoLauncher>();
                 //Config.Start(NodeType.Tango);
                 RoomHandler.Start();
                 if (MasterClient)

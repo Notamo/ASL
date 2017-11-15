@@ -39,6 +39,53 @@ namespace UWBNetworkingPackage
             }
         }
 
+        private static string tagFilename = "ScannerPlatform";
+        private static string tagFileExtension = ".txt";
+        public static string TagFilename
+        {
+            get
+            {
+                return tagFilename + tagFileExtension;
+            }
+            set
+            {
+#if UNITY_WSA_10_0
+#elif UNITY_ANDROID
+#else
+                string[] components = value.Split('.');
+                tagFilename = components[0];
+                if(components.Length > 1)
+                {
+                    tagFileExtension = components[1];
+                }
+#endif
+            }
+        }
+
+        private static string tangoFileExtension = ".tngrm";
+        public static string TangoFileExtension
+        {
+            get
+            {
+                return tangoFileExtension;
+            }
+            set
+            {
+                if (value.Contains("."))
+                {
+                    tangoFileExtension = value;
+                }
+                else if (value.Length < 7)
+                {
+                    tangoFileExtension = "." + value;
+                }
+                else
+                {
+                    Debug.LogError("Tango file extension too long. Please shorten to less than 7 characters.");
+                }
+            }
+        }
+
         public static new string CompileAbsoluteAssetDirectory()
         {
             //string roomName = RoomManager.GetAllRoomNames()[0];
