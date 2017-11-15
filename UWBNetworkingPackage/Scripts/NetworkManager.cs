@@ -105,7 +105,6 @@ namespace UWBNetworkingPackage
             bool isTango = true;
             if (isTango)
             {
-                //gameObject.AddComponent<TangoLauncher>();
                 //Config.Start(NodeType.Tango);
                 RoomHandler.Start();
                 if (MasterClient)
@@ -186,6 +185,11 @@ namespace UWBNetworkingPackage
             {
                 obj.GetPhotonView().RPC("Grab", PhotonTargets.Others);
             }
+        }
+
+        public void SendTangoMesh()
+        {
+            gameObject.GetComponent<ReceivingClientLauncher_Tango>().SendTangoMesh();
         }
 
         //-----------------------------------------------------------------------------
