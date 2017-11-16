@@ -312,6 +312,7 @@ namespace ASL.UI.Menus.Scanning
                 if (!DirectoryInfoRegistered(RoomFolder))
                 {
                     RegisterDirectory(dirInfo);
+                    TagTangoRoomDirectory();
                 }
             }
             
