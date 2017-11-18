@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 // Upgrade NOTE: replaced '_Projector' with 'unity_Projector'
 // Upgrade NOTE: replaced '_ProjectorClip' with 'unity_ProjectorClip'
 
@@ -44,7 +46,7 @@ half DSPCalculateDiffuseShadowAlpha(float4 vertex, float3 normal)
 DSP_V2F_PROJECTOR_LIGHT DSPProjectorVertLightNoFalloff(float4 vertex : POSITION, float3 normal : NORMAL)
 {
 	DSP_V2F_PROJECTOR_LIGHT o;
-	o.pos = mul (UNITY_MATRIX_MVP, vertex);
+	o.pos = UnityObjectToClipPos (vertex);
 	o.uvShadow = mul (unity_Projector, vertex);
 	o.alpha.x = _ClipScale * mul(unity_ProjectorClip, vertex).x;
 	o.alpha.y = DSPCalculateDiffuseLightAlpha(vertex, normal);
@@ -55,7 +57,7 @@ DSP_V2F_PROJECTOR_LIGHT DSPProjectorVertLightNoFalloff(float4 vertex : POSITION,
 DSP_V2F_PROJECTOR DSPProjectorVertNoFalloff(float4 vertex : POSITION, float3 normal : NORMAL)
 {
 	DSP_V2F_PROJECTOR o;
-	o.pos = mul (UNITY_MATRIX_MVP, vertex);
+	o.pos = UnityObjectToClipPos (vertex);
 	o.uvShadow = mul (unity_Projector, vertex);
 	o.alpha.x = _ClipScale * mul(unity_ProjectorClip, vertex).x;
 	o.alpha.y = DSPCalculateDiffuseShadowAlpha(vertex, normal);
@@ -66,7 +68,7 @@ DSP_V2F_PROJECTOR DSPProjectorVertNoFalloff(float4 vertex : POSITION, float3 nor
 DSP_V2F_PROJECTOR_LIGHT DSPProjectorVertLightLinearFalloff(float4 vertex : POSITION, float3 normal : NORMAL)
 {
 	DSP_V2F_PROJECTOR_LIGHT o;
-	o.pos = mul (UNITY_MATRIX_MVP, vertex);
+	o.pos = UnityObjectToClipPos (vertex);
 	o.uvShadow = mul (unity_Projector, vertex);
 	float z = mul(unity_ProjectorClip, vertex).x;
 	o.alpha.x = _ClipScale * z;
@@ -78,7 +80,7 @@ DSP_V2F_PROJECTOR_LIGHT DSPProjectorVertLightLinearFalloff(float4 vertex : POSIT
 DSP_V2F_PROJECTOR DSPProjectorVertLinearFalloff(float4 vertex : POSITION, float3 normal : NORMAL)
 {
 	DSP_V2F_PROJECTOR o;
-	o.pos = mul (UNITY_MATRIX_MVP, vertex);
+	o.pos = UnityObjectToClipPos (vertex);
 	o.uvShadow = mul (unity_Projector, vertex);
 	float z = mul(unity_ProjectorClip, vertex).x;
 	o.alpha.x = _ClipScale * z;
