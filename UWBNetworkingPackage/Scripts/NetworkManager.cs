@@ -52,6 +52,8 @@ namespace UWBNetworkingPackage
                 Config.Start(NodeType.Hololens);
 #elif !UNITY_EDITOR && UNITY_ANDROID
                 Config.Start(NodeType.Tango);
+#elif !UNITY_EDITOR && UNITY_IOS
+                Config.Start(NodeType.iOS);
 #else
                 Config.Start(NodeType.PC);
 #endif

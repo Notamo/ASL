@@ -43,6 +43,8 @@ namespace UWBNetworkingPackage
                                 return Vive.AssetBundle.AssetSubFolder;
                             case NodeType.Hololens:
                                 return Hololens.AssetBundle.AssetSubFolder;
+							case NodeType.iOS:
+								return iOS.AssetBundle.AssetSubFolder;
                             default:
                                 throw new System.Exception(Messages.PlatformNotFound);
                         }
@@ -70,6 +72,9 @@ namespace UWBNetworkingPackage
                             case NodeType.Hololens:
                                 Hololens.AssetBundle.AssetSubFolder = value;
                                 break;
+							case NodeType.iOS:
+								iOS.AssetBundle.AssetSubFolder = value;
+								break;
                             default:
                                 throw new System.Exception(Messages.PlatformNotFound);
                         }
@@ -93,6 +98,8 @@ namespace UWBNetworkingPackage
                             return PC.AssetBundle.CompileAbsoluteAssetDirectory();
                         case NodeType.Hololens:
                             return Hololens.AssetBundle.CompileAbsoluteAssetDirectory();
+						case NodeType.iOS:
+							return iOS.AssetBundle.CompileAbsoluteAssetDirectory();
                         default:
                             throw new System.Exception(Messages.PlatformNotFound);
                     }
@@ -115,6 +122,8 @@ namespace UWBNetworkingPackage
                             return Vive.AssetBundle.CompileAbsoluteAssetPath(filename);
                         case NodeType.Hololens:
                             return Hololens.AssetBundle.CompileAbsoluteAssetPath(filename);
+						case NodeType.iOS:
+							return iOS.AssetBundle.CompileAbsoluteAssetPath(filename);
                         default:
                             throw new System.Exception(Messages.PlatformNotFound);
                     }
@@ -137,6 +146,8 @@ namespace UWBNetworkingPackage
                             return Vive.AssetBundle.CompileUnityAssetDirectory();
                         case NodeType.Hololens:
                             return Hololens.AssetBundle.CompileUnityAssetDirectory();
+						case NodeType.iOS:
+							return iOS.AssetBundle.CompileUnityAssetDirectory();
                         default:
                             throw new System.Exception(Messages.PlatformNotFound);
                     }
@@ -159,6 +170,8 @@ namespace UWBNetworkingPackage
                             return Vive.AssetBundle.CompileUnityAssetPath(filename);
                         case NodeType.Hololens:
                             return Hololens.AssetBundle.CompileUnityAssetPath(filename);
+						case NodeType.iOS:
+							return iOS.AssetBundle.CompileUnityAssetPath(filename);
                         default:
                             throw new System.Exception(Messages.PlatformNotFound);
                     }
@@ -181,6 +194,8 @@ namespace UWBNetworkingPackage
                             return Vive.AssetBundle.CompileResourcesLoadPath(assetNameWithoutExtension);
                         case NodeType.Hololens:
                             return Hololens.AssetBundle.CompileResourcesLoadPath(assetNameWithoutExtension);
+						case NodeType.iOS:
+							return iOS.AssetBundle.CompileResourcesLoadPath(assetNameWithoutExtension);
                         default:
                             throw new System.Exception(Messages.PlatformNotFound);
                     }
@@ -312,6 +327,8 @@ namespace UWBNetworkingPackage
                             return Oculus.Room.CompileAbsoluteAssetDirectory();
                         case NodeType.Vive:
                             return Vive.Room.CompileAbsoluteAssetDirectory();
+						case NodeType.iOS:
+							return iOS.Room.CompileAbsoluteAssetDirectory();
                         default:
                             throw new System.Exception("Unrecognized platform.");
                     }
@@ -334,6 +351,8 @@ namespace UWBNetworkingPackage
                             return Oculus.Room.CompileAbsoluteAssetDirectory(roomName);
                         case NodeType.Vive:
                             return Vive.Room.CompileAbsoluteAssetDirectory(roomName);
+						case NodeType.iOS:
+							return iOS.Room.CompileAbsoluteAssetDirectory(roomName);
                         default:
                             throw new System.Exception("Unrecognized platform.");
                     }
@@ -356,6 +375,8 @@ namespace UWBNetworkingPackage
                             return Oculus.Room.CompileAbsoluteAssetPath(filename);
                         case NodeType.Vive:
                             return Vive.Room.CompileAbsoluteAssetPath(filename);
+						case NodeType.iOS:
+							return iOS.Room.CompileAbsoluteAssetPath(filename);
                         default:
                             throw new System.Exception("Unrecognized platform.");
                     }
@@ -378,6 +399,8 @@ namespace UWBNetworkingPackage
                             return Oculus.Room.CompileAbsoluteAssetPath(roomName, filename);
                         case NodeType.Vive:
                             return Vive.Room.CompileAbsoluteAssetPath(roomName, filename);
+						case NodeType.iOS:
+							return iOS.Room.CompileAbsoluteAssetPath(roomName, filename);
                         default:
                             throw new System.Exception("Unrecognized platform.");
                     }
@@ -400,6 +423,8 @@ namespace UWBNetworkingPackage
                             return Oculus.Room.CompileUnityAssetDirectory();
                         case NodeType.Vive:
                             return Vive.Room.CompileUnityAssetDirectory();
+						case NodeType.iOS:
+							return  iOS.Room.CompileUnityAssetDirectory();
                         default:
                             throw new System.Exception("Unrecognized platform.");
                     }
@@ -422,6 +447,8 @@ namespace UWBNetworkingPackage
                             return Oculus.Room.CompileUnityAssetDirectory(roomName);
                         case NodeType.Vive:
                             return Vive.Room.CompileUnityAssetDirectory(roomName);
+						case NodeType.iOS:
+							return iOS.Room.CompileUnityAssetDirectory(roomName);
                         default:
                             throw new System.Exception("Unrecognized platform.");
                     }
@@ -444,6 +471,8 @@ namespace UWBNetworkingPackage
                             return Oculus.Room.CompileUnityAssetPath(filename);
                         case NodeType.Vive:
                             return Vive.Room.CompileUnityAssetPath(filename);
+						case NodeType.iOS:
+							return iOS.Room.CompileUnityAssetPath(filename);
                         default:
                             throw new System.Exception("Unrecognized platform.");
                     }
@@ -466,6 +495,8 @@ namespace UWBNetworkingPackage
                             return Oculus.Room.CompileUnityAssetPath(roomName, filename);
                         case NodeType.Vive:
                             return Vive.Room.CompileUnityAssetPath(roomName, filename);
+						case NodeType.iOS:
+							return iOS.Room.CompileUnityAssetPath(roomName, filename);
                         default:
                             throw new System.Exception("Unrecognized platform.");
                     }
@@ -488,6 +519,8 @@ namespace UWBNetworkingPackage
                             return Oculus.Room.CompileResourcesLoadPath(assetNameWithoutExtension);
                         case NodeType.Vive:
                             return Vive.Room.CompileResourcesLoadPath(assetNameWithoutExtension);
+						case NodeType.iOS:
+							return iOS.Room.CompileResourcesLoadPath(assetNameWithoutExtension);
                         default:
                             throw new System.Exception("Unrecognized platform.");
                     }
@@ -510,6 +543,8 @@ namespace UWBNetworkingPackage
                             return Oculus.Room.CompileResourcesLoadPath(roomName, assetNameWithoutExtension);
                         case NodeType.Vive:
                             return Vive.Room.CompileResourcesLoadPath(roomName, assetNameWithoutExtension);
+						case NodeType.iOS:
+							return iOS.Room.CompileResourcesLoadPath(roomName, assetNameWithoutExtension);
                         default:
                             throw new System.Exception("Unrecognized platform.");
                     }
@@ -868,7 +903,65 @@ namespace UWBNetworkingPackage
             }
         }
 
+		public class iOS
+		{
+			public class AssetBundle : Config_Base_AssetBundle
+			{
+				static AssetBundle()
+				{
+					Directory.CreateDirectory(CompileAbsoluteAssetDirectory());
+				}
 
+				private static string assetSubFolder = Config_Base_AssetBundle.AssetSubFolder + "/AssetBundlesPC";
+				public static new string AssetSubFolder
+				{
+					get
+					{
+						return assetSubFolder;
+					}
+					set
+					{
+						#if UNITY_WSA_10_0
+						#else
+						assetSubFolder = value;
+						#endif
+					}
+				}
+
+				public static new string CompileAbsoluteAssetDirectory()
+				{
+					return Path.Combine(Application.persistentDataPath, AssetSubFolder);
+				}
+
+				public static new string CompileAbsoluteAssetPath(string filename)
+				{
+					return Path.Combine(CompileAbsoluteAssetDirectory(), filename);
+				}
+
+				public static new string CompileUnityAssetDirectory()
+				{
+					return "Assets/" + AssetSubFolder;
+				}
+
+				public static new string CompileUnityAssetPath(string filename)
+				{
+					return CompileUnityAssetDirectory() + '/' + filename;
+				}
+
+				public static new string CompileResourcesLoadPath(string assetNameWithoutExtension)
+				{
+					return AssetSubFolder.Substring(AssetSubFolder.IndexOf("Resources") + "Resources".Length + 1) + '/' + assetNameWithoutExtension;
+				}
+			}
+
+			public class Room : Config_Base_Room
+			{
+				static Room()
+				{
+					Directory.CreateDirectory(Path.Combine(Application.persistentDataPath, AssetSubFolder));
+				}
+			}
+		}
 
 
 
