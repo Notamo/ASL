@@ -15,6 +15,8 @@ public class switchCamera : UnityEngine.MonoBehaviour
     private bool CameraToggle = true;
     public Text Te;
 
+    int count = 0;
+
     // Use this for initialization
 
     // Update is called once per frame
@@ -25,7 +27,7 @@ public class switchCamera : UnityEngine.MonoBehaviour
         {
             if (G != Static && !G.transform.parent && G.tag != "Anchor")
             {
-                
+
                 //G.transform.position = Dynamic.transform.position;
                 if (G.tag == "Room")
                 {
@@ -43,6 +45,19 @@ public class switchCamera : UnityEngine.MonoBehaviour
 
             }
         }
+
+        if (count < 180)
+        {
+
+            SetText(Dynamic.transform.position.ToString() + " " + Dynamic.transform.rotation.eulerAngles.ToString(), Color.white);
+            count++;
+
+            if(count == 180)
+            {
+                SetText(" ", Color.white);
+            }
+        }
+
     }
 
     /// <summary>
@@ -65,6 +80,7 @@ public class switchCamera : UnityEngine.MonoBehaviour
             Dynamic.transform.position = T.transform.position;
             Dynamic.transform.rotation = T.transform.rotation;
             QR = true;
+
         }
     }
 
@@ -84,12 +100,25 @@ public class switchCamera : UnityEngine.MonoBehaviour
         }
     }
 
+    public void ToggleARCamera()
+    {
+        if (Camera.GetComponent<Camera>().clearFlags == CameraClearFlags.Skybox)
+        {
+            Camera.GetComponent<Camera>().clearFlags = CameraClearFlags.Nothing;
+        }
+        else
+        {
+            Camera.GetComponent<Camera>().clearFlags = CameraClearFlags.Skybox;
+        }
+    }
+
     /// <summary>
     /// Set Tango Debug Text
     /// </summary>
     /// <param name="M"></param>
-    public void SetText(string s)
+    public void SetText(string s, Color c)
     {
         Te.text = s;
+        Te.color = c;
     }
 }

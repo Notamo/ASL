@@ -178,15 +178,24 @@ namespace UWBNetworkingPackage
         [PunRPC]
         public override void SendTangoRoomInfo(int id)
         {
-            string data = "";
-
             if (TangoDatabase.Rooms.Count > 0)
             {
-                data = TangoDatabase.GetAllRooms();
+                bool allSent = false;
+                int i = 1;
+
+                while (allSent == false)
+                {
+                    string data = "";
+
+
+                    data = TangoDatabase.GetAllRooms(i, out allSent);
+
+
+                    photonView.RPC("RecieveTangoRoomInfo", PhotonPlayer.Find(id), data, allSent);
+
+                    i++;
+                }
             }
-
-            photonView.RPC("RecieveTangoRoomInfo", PhotonPlayer.Find(id), data);
-
         }
 
         /// <summary>
@@ -194,15 +203,23 @@ namespace UWBNetworkingPackage
         /// </summary>
         public void SendTangoRoomInfoAll()
         {
-            string data = "";
-
             if (TangoDatabase.Rooms.Count > 0)
             {
-                data = TangoDatabase.GetAllRooms();
+                bool allSent = false;
+                int i = 1;
+                string data = "";
+
+                while (allSent == false)
+                {
+                    data = "";
+
+                    data = TangoDatabase.GetAllRooms(i, out allSent);
+
+                    photonView.RPC("RecieveTangoRoomInfo", PhotonTargets.All, data, allSent);
+
+                    i++;
+                }
             }
-
-            photonView.RPC("RecieveTangoRoomInfo", PhotonTargets.All, data);
-
         }
 
         /// <summary>

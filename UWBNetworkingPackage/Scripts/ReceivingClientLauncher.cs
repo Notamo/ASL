@@ -21,6 +21,7 @@ namespace UWBNetworkingPackage
         List<Thread> threads = new List<Thread>(); //List of thread that manage TCP conncetions
         Stack<TangoDatabase.TangoData> TangoRoomStack = new Stack<TangoDatabase.TangoData>(); //TangoRoomStack for requesting Rooms from Master Client
         private static bool _ThreadFinished = true; //Check to see that a room request has finished
+        private List<String> RoomNames = new List<string>();
         #endregion
 
         //// Ensure not HoloLens
@@ -544,12 +545,11 @@ namespace UWBNetworkingPackage
             /// </summary>
             /// <param name="data"></param>
         [PunRPC]
-        public override void RecieveTangoRoomInfo(string data)
+        public override void RecieveTangoRoomInfo(string data, bool checkNames)
         {
             var dataArray = data.Split('~'); //parse data
             UnityEngine.Debug.Log("RecievedTangoInfo " + dataArray.Length);
-            List<String> RoomNames = new List<string>();
-
+           
             if (dataArray.Length > 1)
             {
                 for (int i = 0; i < dataArray.Length; i += 2)
@@ -571,7 +571,11 @@ namespace UWBNetworkingPackage
                 RoomNames.Add(" ");
             }
 
-            TangoDatabase.CompareList(RoomNames); //delete any rooms missing
+            if (checkNames == true)
+            {
+                TangoDatabase.CompareList(RoomNames); //delete any rooms missing
+                RoomNames.Clear();
+            }
         }
 
         /// <summary>
@@ -663,9 +667,9 @@ namespace UWBNetworkingPackage
         {
             var networkConfigArray = networkConfig.Split(':');
 
-
             TcpClient client = new TcpClient();
             client.Connect(IPAddress.Parse(networkConfigArray[0]), Int32.Parse(networkConfigArray[1]));
+
 
             using (NetworkStream stream = client.GetStream())
             {

@@ -50,7 +50,7 @@ namespace UWBNetworkingPackage
             float angle;
             Vector3 axis;
             Q.ToAngleAxis(out angle, out axis);
-            Q = Quaternion.AngleAxis(-angle, axis);
+            Q = Quaternion.AngleAxis(-angle, new Vector3(axis.x, axis.y, axis.z));
 
             for (int i = 0; i < vertices.Count; i++)
             {

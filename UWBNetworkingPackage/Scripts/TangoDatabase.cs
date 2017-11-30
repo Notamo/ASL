@@ -38,6 +38,7 @@ namespace UWBNetworkingPackage
         //values that keep track of the current count of rooms
         public static int count = 0;
         public static int ID = 0;
+        public static int maxRoomsPerSend = 100;
 
         //List of TangoRooms to keep track of all rooms
         public static List<TangoRoom> Rooms = new List<TangoRoom>();
@@ -159,18 +160,36 @@ namespace UWBNetworkingPackage
         /// Gets a string of all Rooms currently in the list of Rooms
         /// </summary>
         /// <returns>string of all rooms</returns>
-        public static string GetAllRooms()
+        public static string GetAllRooms(int index, out bool r)
         {
-            string data = Rooms[0].name;
-            data += '~';
-            data += Rooms[0]._meshes.Length;
+            r = false;
+            string data = "";
 
-            for (int i = 1; i < Rooms.Count; i++)
+            if (0 + (maxRoomsPerSend * (index - 1)) < Rooms.Count)
             {
+                data = Rooms[0 + (maxRoomsPerSend * (index - 1))].name;
                 data += '~';
-                data += Rooms[i].name;
-                data += '~';
-                data += Rooms[i]._meshes.Length;
+                data += Rooms[0 + (maxRoomsPerSend * (index - 1))]._meshes.Length;
+            }
+            else
+            {
+                r = true;
+            }
+
+            for (int i = (1 + (maxRoomsPerSend * (index - 1))); i < (maxRoomsPerSend * index); i++)
+            {
+                if (i < Rooms.Count)
+                {
+                    data += '~';
+                    data += Rooms[i].name;
+                    data += '~';
+                    data += Rooms[i]._meshes.Length;
+                }
+                else
+                {
+                    r = true;
+                    break;
+                }
             }
 
             return data;

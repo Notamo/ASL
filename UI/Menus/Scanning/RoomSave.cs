@@ -32,13 +32,7 @@ namespace ASL.UI.Menus.Scanning
         public string RoomFolder = "";
 
         public string TangoTag = "Tango";
-
-        /// <summary>
-        /// Keeps track of whether the window has been initialized since it 
-        /// can run in Editor mode
-        /// </summary>
-        private bool initialized = false;
-
+        
         /// <summary>
         /// List of all Room objects
         /// </summary>
@@ -104,7 +98,7 @@ namespace ASL.UI.Menus.Scanning
                 // Create the load lable
                 // GUI.Label(new Rect(10, 85, position.width - 20, 20), "Directory to Load Rooms From: ");
                 GUI.Label(new Rect(10, 85, position.width - 20, 20), "Room: ");
-
+                
                 // Get the currently selected item in the drop down
                 //selected = EditorGUI.Popup(new Rect(10, 110, position.width - 20, 20), selected, DirNames.ToArray());
                 selected = EditorGUI.Popup(new Rect(10, 110, position.width - 20, 20), selected, roomNameList.ToArray());
@@ -183,19 +177,26 @@ namespace ASL.UI.Menus.Scanning
             foreach (FileInfo f in Dir.GetFiles())
             {
                 fileToLoad file = new fileToLoad();
+                int numNameComponents = f.Name.Split('.').Length;
+
                 file.filePath = f.FullName;
-                file.name = f.Name;
-                bool cached = false;
-                foreach(GameObject g in roomList)
+                file.name = f.Name.Split('.')[0];
+                string extension = '.' + f.Name.Split('.')[numNameComponents-1];
+                
+                if (extension.Equals(Config.Current.Room.TangoFileExtension))
                 {
-                    if(g.name == file.name)
+                    bool cached = false;
+                    foreach (GameObject g in roomList)
                     {
-                        cached = true;
+                        if (g.name == file.name)
+                        {
+                            cached = true;
+                        }
                     }
-                }
-                if (cached == false)
-                {
-                    FilesToLoad.Push(file);
+                    if (cached == false)
+                    {
+                        FilesToLoad.Push(file);
+                    }
                 }
             }
         }
@@ -210,25 +211,26 @@ namespace ASL.UI.Menus.Scanning
             {
                 foreach (GameObject g in roomList)
                 {
-                    if (g.name == f.Name)
+                    string fileName = f.Name.Split('.')[0];
+                    if (g.name.Equals(fileName))
                     {
                         Destroy(g);
                     }
                 }
             }
         }
-        
+
+        private void OnEnable()
+        {
+            Initialize();
+        }
+
         /// <summary>
         /// Goes through each of the files to be loaded and load one per update
         /// </summary>
         [ExecuteInEditMode]
         void Update()
         {
-            if (!initialized)
-            {
-                Initialize();
-            }
-
             if (FilesToLoad.Count > 0)
             {
                 fileToLoad f = FilesToLoad.Pop();
@@ -264,8 +266,6 @@ namespace ASL.UI.Menus.Scanning
 
             // Get all game objects with the "Room" tag
             RegisterAllTangoRooms();
-
-            initialized = true;
         }
 
         private void Reset()
@@ -274,8 +274,7 @@ namespace ASL.UI.Menus.Scanning
             roomList.Clear();
             directoryInfoList.Clear();
             directoryPathList.Clear();
-
-            initialized = false;
+            roomNameList.Clear();
         }
 
         private DirectoryInfo SetRoot()
@@ -313,6 +312,7 @@ namespace ASL.UI.Menus.Scanning
                 if (!DirectoryInfoRegistered(RoomFolder))
                 {
                     RegisterDirectory(dirInfo);
+                    TagTangoRoomDirectory();
                 }
             }
             
@@ -364,9 +364,12 @@ namespace ASL.UI.Menus.Scanning
         {
             if(dirInfo != null)
             {
-                directoryInfoList.Add(dirInfo);
-                directoryPathList.Add(dirInfo.FullName);
-                roomNameList.Add(dirInfo.Name);
+                if (!directoryInfoList.Contains(dirInfo))
+                {
+                    directoryInfoList.Add(dirInfo);
+                    directoryPathList.Add(dirInfo.FullName);
+                    roomNameList.Add(dirInfo.Name);
+                }
             }
         }
 
@@ -480,6 +483,10 @@ namespace ASL.UI.Menus.Scanning
             foreach(GameObject roomToRemove in roomsToRemove)
             {
                 roomList.Remove(roomToRemove);
+                if(roomToRemove != null)
+                {
+                    roomNameList.Remove(roomToRemove.name);
+                }
             }
 
             return roomsToRemove.Count > 0;

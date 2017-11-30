@@ -34,8 +34,6 @@ public class MarkerVisualizationObject_Custom : MonoBehaviour
     /// </param>
     public void SetMarker(TangoSupport.Marker marker)
     {
-        // Apply the pose of the marker to the object. 
-        // This also applies implicitly to the axis object.
         transform.position = marker.m_translation;
         transform.rotation = marker.m_orientation;
 

@@ -82,11 +82,9 @@ public class MarkerDetectionUIController_Custom : MonoBehaviour, ITangoVideoOver
     /// <param name="imageBuffer">
     /// Color camera image buffer.
     /// </param>
-    public void OnTangoImageAvailableEventHandler(TangoEnums.TangoCameraId cameraId,
-        TangoUnityImageData imageBuffer)
+    public void OnTangoImageAvailableEventHandler(TangoEnums.TangoCameraId cameraId, TangoUnityImageData imageBuffer)
     {
-        TangoSupport.DetectMarkers(imageBuffer, cameraId,
-            TangoSupport.MarkerType.ARTAG, MARKER_SIZE, m_markerList);
+        TangoSupport.DetectMarkers(imageBuffer, cameraId, TangoSupport.MarkerType.ARTAG, MARKER_SIZE, m_markerList);
 
         for (int i = 0; i < m_markerList.Count; ++i)
         {
@@ -95,7 +93,7 @@ public class MarkerDetectionUIController_Custom : MonoBehaviour, ITangoVideoOver
             if (m_markerObjects.ContainsKey(marker.m_content))
             {
                 GameObject markerObject = m_markerObjects[marker.m_content];
-                markerObject.GetComponent<MarkerVisualizationObject>().SetMarker(marker);
+                markerObject.GetComponent<MarkerVisualizationObject_Custom>().SetMarker(marker);
             }
             else
             {

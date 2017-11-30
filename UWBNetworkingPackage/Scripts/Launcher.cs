@@ -475,7 +475,7 @@ namespace UWBNetworkingPackage
         }
 
         [PunRPC]
-        public virtual void RecieveTangoRoomInfo(string data)
+        public virtual void RecieveTangoRoomInfo(string data, bool checkNames)
         {
 
         }
