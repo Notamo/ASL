@@ -33,10 +33,8 @@ namespace UWBNetworkingPackage
         /// </summary>
         public override void Update()
         {
-            // ERROR TESTING - REMOVE THIS METHOD - NOTHING SPECIAL HAPPENS IN IT ANYMORE
             base.Update();
-
-
+            
             //    //AssetBundle object instantiation for testing purposes
             //    if (Input.GetKeyDown("i"))
             //    {
