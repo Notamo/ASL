@@ -445,7 +445,7 @@ public class AreaLearningInGameController : MonoBehaviour, ITangoPose, ITangoEve
         }
 
         bool saveConfirmed = m_guiTextInputResult;
-#else
+#elif UNITY_ANDROID
         if (TouchScreenKeyboard.visible || m_saveThread != null)
         {
             yield break;
@@ -459,6 +459,7 @@ public class AreaLearningInGameController : MonoBehaviour, ITangoPose, ITangoEve
 
         bool saveConfirmed = kb.done;
 #endif
+#if UNITY_ANDROID || UNITY_EDITOR
         if (saveConfirmed)
         {
             // Disable interaction before saving.
@@ -492,6 +493,9 @@ public class AreaLearningInGameController : MonoBehaviour, ITangoPose, ITangoEve
                 #pragma warning restore 618
             }
         }
+#else
+        yield return null;
+#endif
     }
 
     /// <summary>

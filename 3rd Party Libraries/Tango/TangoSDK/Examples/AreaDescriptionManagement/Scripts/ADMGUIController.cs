@@ -459,6 +459,7 @@ public class ADMGUIController : MonoBehaviour, ITangoLifecycle, ITangoEvent
     /// <returns>Coroutine IEnumerator.</returns>
     private IEnumerator _DoImportAreaDescription()
     {
+#if UNITY_ANDROID
         if (TouchScreenKeyboard.visible)
         {
             yield break;
@@ -474,6 +475,9 @@ public class ADMGUIController : MonoBehaviour, ITangoLifecycle, ITangoEvent
         {
             AreaDescription.ImportFromFile(kb.text);
         }
+#else
+        yield return null;
+#endif
     }
 
     /// <summary>
@@ -485,6 +489,7 @@ public class ADMGUIController : MonoBehaviour, ITangoLifecycle, ITangoEvent
     /// <param name="areaDescription">Area Description to export.</param>
     private IEnumerator _DoExportAreaDescription(AreaDescription areaDescription)
     {
+#if UNITY_ANDROID
         if (TouchScreenKeyboard.visible)
         {
             yield break;
@@ -500,6 +505,9 @@ public class ADMGUIController : MonoBehaviour, ITangoLifecycle, ITangoEvent
         {
             areaDescription.ExportToFile(kb.text);
         }
+#else
+        yield return null;
+#endif
     }
 
     /// <summary>
@@ -569,7 +577,7 @@ public class ADMGUIController : MonoBehaviour, ITangoLifecycle, ITangoEvent
         {
             yield return null;
         }
-#else
+#elif UNITY_ANDROID
         if (TouchScreenKeyboard.visible || m_saveThread != null)
         {
             yield break;
@@ -584,7 +592,7 @@ public class ADMGUIController : MonoBehaviour, ITangoLifecycle, ITangoEvent
         // Store name so it is available when we use it from thread delegate.
         var fileNameFromKeyboard = kb.text;
 #endif
-
+#if UNITY_ANDROID || UNITY_EDITOR
         // Save the text in a background thread.
         m_savingTextParent.gameObject.SetActive(true);
         m_saveThread = new Thread(delegate()
@@ -601,5 +609,8 @@ public class ADMGUIController : MonoBehaviour, ITangoLifecycle, ITangoEvent
         });
 
         m_saveThread.Start();
+#else
+        yield return null;
+#endif
     }
 }
