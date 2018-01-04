@@ -52,7 +52,8 @@ namespace ASL.Manipulation.Controllers.PC
             {
                 //gameObject.GetComponent<CreateObject>().CreatePUNObject("Rooms/Room2/Room2");
                 string prefabName = "Rooms/Room2/Room2";
-                objManager.Instantiate(prefabName);
+                //objManager.Instantiate(prefabName);
+                objManager.InstantiateOwnedObject(prefabName);
             }
         }
 

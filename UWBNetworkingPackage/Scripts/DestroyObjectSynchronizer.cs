@@ -25,7 +25,7 @@ namespace UWBNetworkingPackage
             if(view != null)
             {
                 int viewID = view.viewID;
-                objManager.DestroyObject(this.name, viewID);
+                objManager.DestroyHandler(this.name, viewID);
             }
         }
     }

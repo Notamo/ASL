@@ -19,7 +19,7 @@ namespace ASL.Manipulation.Controllers.PC
             if (Input.GetMouseButtonDown(0))
             {
                 GameObject selectedObject = Select();
-                objManager.RequestOwnership(selectedObject, PhotonNetwork.player.ID);
+                objManager.RequestOwnership(selectedObject);
             }
             if (Input.GetMouseButtonDown(1))
             {
@@ -27,7 +27,15 @@ namespace ASL.Manipulation.Controllers.PC
                 Vector3 position = new Vector3(0, 0, 2);
                 Quaternion rotation = Quaternion.identity;
                 Vector3 scale = Vector3.one;
-                objManager.Instantiate(prefabName, position, rotation, scale);
+                //objManager.Instantiate(prefabName, position, rotation, scale);
+                GameObject go = objManager.Instantiate(prefabName);
+                go.transform.Translate(position);
+
+                UWBNetworkingPackage.NetworkManager nm = GameObject.Find("NetworkManager").GetComponent<UWBNetworkingPackage.NetworkManager>();
+                List<int> IDsToAdd = new List<int>();
+                IDsToAdd.Add(1);
+                //nm.WhiteListOwnership(go, IDsToAdd);
+                nm.RestrictOwnership(go, IDsToAdd);
             }
         }
 

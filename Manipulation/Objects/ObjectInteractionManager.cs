@@ -10,19 +10,20 @@ namespace ASL.Manipulation.Objects
         private UWBNetworkingPackage.NetworkManager networkManager;
         public event ObjectSelectedEventHandler FocusObjectChangedEvent;
 
-        public void RequestOwnership(GameObject obj, int focuserID)
+        public void RequestOwnership(GameObject obj)
         {
-            OnObjectSelected(obj, focuserID);
-            networkManager.RequestOwnership(obj, focuserID);
+            OnObjectSelected(obj);
+            networkManager.RequestOwnership(obj);
         }
 
-        public void Focus(GameObject obj, int focuserID)
+        public void Focus(GameObject obj)
         {
-            OnObjectSelected(obj, focuserID);
+            OnObjectSelected(obj);
         }
 
-        protected void OnObjectSelected(GameObject obj, int focuserID)
+        protected void OnObjectSelected(GameObject obj)
         {
+            int focuserID = PhotonNetwork.player.ID;
             //Debug.Log("About to trigger On Object Selected event");
             if (obj != null)
             {
@@ -81,21 +82,31 @@ namespace ASL.Manipulation.Objects
             }
         }
 
-        public void Instantiate(GameObject go)
+        public GameObject Instantiate(GameObject go)
         {
-            networkManager.Instantiate(go);
+            return networkManager.Instantiate(go);
         }
 
-        public void Instantiate(string prefabName)
+        public GameObject Instantiate(string prefabName)
         {
-            networkManager.Instantiate(prefabName);
+            return networkManager.Instantiate(prefabName);
         }
 
-        public void Instantiate(string prefabName, Vector3 position, Quaternion rotation, Vector3 scale)
+        public GameObject Instantiate(string prefabName, Vector3 position, Quaternion rotation, Vector3 scale)
         {
-            networkManager.Instantiate(prefabName, position, rotation, scale);
+            return networkManager.Instantiate(prefabName, position, rotation, scale);
         }
 
+        public GameObject InstantiateOwnedObject(string prefabName)
+        {
+            return networkManager.InstantiateOwnedObject(prefabName);
+        }
+
+        public bool Destroy(GameObject go)
+        {
+            return networkManager.Destroy(go);
+        }
+        
         public T RegisterBehavior<T>()
         {
             if(gameObject.GetComponent<T>() != null)

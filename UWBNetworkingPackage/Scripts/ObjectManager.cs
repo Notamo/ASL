@@ -34,43 +34,50 @@ namespace UWBNetworkingPackage
 
         public GameObject Instantiate(GameObject go)
         {
-            if (PhotonNetwork.connectedAndReady)
-            {
-                go = HandleLocalLogic(go);
-                RaiseInstantiateEventHandler(go);
+            go = HandleLocalLogic(go);
+            RaiseInstantiateEventHandler(go);
 
-                return go;
-            }
-            else
-            {
-                Debug.LogError("Photon network not yet connected. State = " + PhotonNetwork.connectionState);
-                return null;
-            }
+            return go;
         }
 
         // Emulates PUN object creation across the PUN network
         public GameObject Instantiate(string prefabName)
         {
-            if (PhotonNetwork.connectedAndReady)
-            {
-                GameObject localObj = InstantiateLocally(prefabName);
+            GameObject localObj = InstantiateLocally(prefabName);
 
-                if (localObj != null)
-                {
-                    RaiseInstantiateEventHandler(localObj);
-                }
-                return localObj;
-            }
-            else
+            if (localObj != null)
             {
-                Debug.LogError("Photon Network not yet connected. State = " + PhotonNetwork.connectionState);
-                return null;
+                RaiseInstantiateEventHandler(localObj);
             }
+            return localObj;
+        }
+
+        public GameObject InstantiateOwnedObject(string prefabName)
+        {
+            GameObject localObj = InstantiateLocally(prefabName);
+
+            if(localObj != null)
+            {
+                RaiseInstantiateEventHandler(localObj);
+                int[] whiteListIDs = new int[1];
+                whiteListIDs[0] = PhotonNetwork.player.ID;
+                UnityEngine.Debug.Log("About to raise restriction event.");
+                RaiseObjectOwnershipRestrictionEventHandler(localObj, true, whiteListIDs);
+            }
+            return localObj;
+        }
+
+        public void SetObjectRestrictions(GameObject go, bool restricted, List<int> whiteListIDs)
+        {
+            int[] ids = new int[whiteListIDs.Count];
+            whiteListIDs.CopyTo(ids);
+
+            RaiseObjectOwnershipRestrictionEventHandler(go, restricted, ids);
         }
 
         // This function exists to be called when a gameobject is destroyed 
         // since OnDestroy callbacks are local to the GameObject being destroyed
-        public void DestroyObject(string objectName, int viewID)
+        public void DestroyHandler(string objectName, int viewID)
         {
             GameObject go = LocateObjectToDestroy(objectName, viewID);
             RaiseDestroyObjectEventHandler(objectName, viewID);
@@ -491,6 +498,12 @@ namespace UWBNetworkingPackage
                     syncSceneData[(byte)7] = PhotonNetwork.ServerTimestamp;
                     syncSceneData[(byte)8] = go.GetPhotonView().instantiationId;
 
+                    OwnableObject ownershipManager = go.GetComponent<OwnableObject>();
+                    syncSceneData[(byte)9] = ownershipManager.IsOwnershipRestricted;
+                    List<int> whiteListIDs = ownershipManager.OwnablePlayerIDs;
+                    int[] idList = new int[whiteListIDs.Count];
+                    syncSceneData[(byte)10] = idList;
+
                     //RaiseEventOptions options = new RaiseEventOptions();
                     //options.CachingOption = (isGlobalObject) ? EventCaching.AddToRoomCacheGlobal : EventCaching.AddToRoomCache;
 
@@ -523,6 +536,24 @@ namespace UWBNetworkingPackage
             options.Receivers = ReceiverGroup.Others;
             PhotonNetwork.RaiseEvent(ASLEventCode.EV_DESTROYOBJECT, destroyObjectEvent, true, options);
         }
+
+        private void RaiseObjectOwnershipRestrictionEventHandler(GameObject go, bool restricted, int[] ownableIDs)
+        {
+            NetworkingPeer peer = PhotonNetwork.networkingPeer;
+
+            ExitGames.Client.Photon.Hashtable restrictionEvent = new ExitGames.Client.Photon.Hashtable();
+            PhotonView pv = go.GetComponent<PhotonView>();
+            restrictionEvent[(byte)0] = go.name;
+            restrictionEvent[(byte)1] = (pv == null) ? 0 : pv.viewID;
+            restrictionEvent[(byte)2] = restricted;
+            restrictionEvent[(byte)3] = ownableIDs;
+            restrictionEvent[(byte)4] = PhotonNetwork.ServerTimestamp;
+
+            RaiseEventOptions options = new RaiseEventOptions();
+            options.Receivers = ReceiverGroup.All;
+            
+            PhotonNetwork.RaiseEvent(ASLEventCode.EV_SYNC_OBJECT_OWNERSHIP_RESTRICTION, restrictionEvent, true, options);
+        }
         
         private void OnEvent(byte eventCode, object content, int senderID)
         {
@@ -548,6 +579,10 @@ namespace UWBNetworkingPackage
             else if (eventCode.Equals(ASLEventCode.EV_SYNCSCENE))
             {
                 HandleSyncSceneEvent((ExitGames.Client.Photon.Hashtable)content);
+            }
+            else if (eventCode.Equals(ASLEventCode.EV_SYNC_OBJECT_OWNERSHIP_RESTRICTION))
+            {
+                HandleSyncObjectOwnershipRestriction((ExitGames.Client.Photon.Hashtable)content);
             }
         }
 
@@ -580,13 +615,13 @@ namespace UWBNetworkingPackage
             InstantiateLocally(prefabName, viewIDs, position, rotation, scale);
         }
         
-        private void InstantiateLocally(string prefabName, int[] viewIDs, Vector3 position, Quaternion rotation, Vector3 scale)
+        private GameObject InstantiateLocally(string prefabName, int[] viewIDs, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             GameObject prefabGo;
             if (!RetrieveFromPUNCache(prefabName, out prefabGo))
             {
                 Debug.LogError("Failed to Instantiate prefab: " + prefabName + ".");
-                return;
+                return null;
             }
 
 #if UNITY_EDITOR
@@ -602,6 +637,8 @@ namespace UWBNetworkingPackage
             go.transform.localScale = scale;
 
             RegisterObjectCreation(go, prefabName);
+
+            return go;
         }
 
         private GameObject HandleLocalLogic(GameObject go, int[] viewIDs)
@@ -678,7 +715,46 @@ namespace UWBNetworkingPackage
                 int serverTimeStamp = (int)eventData[(byte)7];
                 int instantiationID = (int)eventData[(byte)8];
 
-                InstantiateLocally(prefabName, viewIDs, position, rotation, scale);
+                GameObject go = InstantiateLocally(prefabName, viewIDs, position, rotation, scale);
+
+                OwnableObject ownershipManager = go.GetComponent<OwnableObject>();
+                bool isOwnershipRestricted = (bool)eventData[(byte)9];
+                int[] whiteListIDs = (int[])eventData[(byte)10];
+                ownershipManager.SetRestrictions(isOwnershipRestricted, whiteListIDs);
+            }
+        }
+
+        private void HandleSyncObjectOwnershipRestriction(ExitGames.Client.Photon.Hashtable eventData)
+        {
+            string objectName = (string)eventData[(byte)0];
+            int viewID = (int)eventData[(byte)1];
+            bool restricted = (bool)eventData[(byte)2];
+            int[] ownableIDs = (int[])eventData[(byte)3];
+            int serverTimeStamp = (int)eventData[(byte)4];
+
+            GameObject[] objs = GameObject.FindObjectsOfType<GameObject>();
+            GameObject go = null;
+            foreach(GameObject obj in objs)
+            {
+                if (obj.name.Equals(objectName))
+                {
+                    PhotonView pv = obj.GetComponent<PhotonView>();
+                    if(pv == null)
+                    {
+                        continue;
+                    }
+                    else if(pv.viewID == viewID)
+                    {
+                        go = obj;
+                        break;
+                    }
+                }
+            }
+
+            if(go != null)
+            {
+                OwnableObject ownershipManager = go.GetComponent<OwnableObject>();
+                ownershipManager.SetRestrictions(restricted, ownableIDs);
             }
         }
 #endregion
