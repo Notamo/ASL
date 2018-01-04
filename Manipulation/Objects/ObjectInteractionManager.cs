@@ -29,7 +29,7 @@ namespace ASL.Manipulation.Objects
             {
                 if (obj.GetPhotonView() != null)
                 {
-                    FocusObjectChangedEvent(new ObjectSelectedEventArgs(obj, obj.GetPhotonView().owner.ID, focuserID));
+                    FocusObjectChangedEvent(new ObjectSelectedEventArgs(obj, obj.GetPhotonView().ownerId, focuserID));
                 }
                 else
                 {

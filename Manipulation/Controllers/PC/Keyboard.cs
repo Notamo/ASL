@@ -55,6 +55,13 @@ namespace ASL.Manipulation.Controllers.PC
                 //objManager.Instantiate(prefabName);
                 objManager.InstantiateOwnedObject(prefabName);
             }
+
+            if (Input.GetKey(KeyCode.P))
+            {
+                GameObject go = GameObject.Find("Sphere");
+                UWBNetworkingPackage.NetworkManager nm = GameObject.Find("NetworkManager").GetComponent<UWBNetworkingPackage.NetworkManager>();
+                nm.UnRestrictOwnership(go);
+            }
         }
 
         public MoveBehavior MoveBehavior
