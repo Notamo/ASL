@@ -133,7 +133,7 @@ namespace UWBNetworkingPackage
                 }
 
                 PhotonView pv = gameObject.GetPhotonView();
-                pv.ownershipTransfer = OwnershipOption.Request;
+                pv.ownershipTransfer = OwnershipOption.Fixed;
 
                 return OwnablePlayerIDs;
             }
@@ -200,7 +200,7 @@ namespace UWBNetworkingPackage
             if (isRestricted)
             {
                 PhotonView pv = gameObject.GetPhotonView();
-                pv.ownershipTransfer = OwnershipOption.Request;
+                pv.ownershipTransfer = OwnershipOption.Fixed;
             }
             else
             {

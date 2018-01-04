@@ -28,14 +28,15 @@ namespace ASL.Manipulation.Controllers.PC
                 Quaternion rotation = Quaternion.identity;
                 Vector3 scale = Vector3.one;
                 //objManager.Instantiate(prefabName, position, rotation, scale);
-                GameObject go = objManager.Instantiate(prefabName);
+                //GameObject go = objManager.Instantiate(prefabName);
+                GameObject go = objManager.InstantiateOwnedObject(prefabName);
                 go.transform.Translate(position);
 
                 UWBNetworkingPackage.NetworkManager nm = GameObject.Find("NetworkManager").GetComponent<UWBNetworkingPackage.NetworkManager>();
                 List<int> IDsToAdd = new List<int>();
-                IDsToAdd.Add(1);
-                //nm.WhiteListOwnership(go, IDsToAdd);
-                nm.RestrictOwnership(go, IDsToAdd);
+                IDsToAdd.Add(2);
+                nm.WhiteListOwnership(go, IDsToAdd);
+                //nm.RestrictOwnership(go, IDsToAdd);
             }
         }
 

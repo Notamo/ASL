@@ -62,6 +62,8 @@ namespace UWBNetworkingPackage
                 int[] whiteListIDs = new int[1];
                 whiteListIDs[0] = PhotonNetwork.player.ID;
                 UnityEngine.Debug.Log("About to raise restriction event.");
+                OwnableObject ownershipManager = localObj.GetComponent<OwnableObject>();
+                ownershipManager.SetRestrictions(true, whiteListIDs);
                 RaiseObjectOwnershipRestrictionEventHandler(localObj, true, whiteListIDs);
             }
             return localObj;
@@ -541,6 +543,8 @@ namespace UWBNetworkingPackage
         {
             NetworkingPeer peer = PhotonNetwork.networkingPeer;
 
+            UnityEngine.Debug.Log("restricted = " + ((restricted) ? "true" : "false"));
+
             ExitGames.Client.Photon.Hashtable restrictionEvent = new ExitGames.Client.Photon.Hashtable();
             PhotonView pv = go.GetComponent<PhotonView>();
             restrictionEvent[(byte)0] = go.name;
@@ -731,6 +735,8 @@ namespace UWBNetworkingPackage
             bool restricted = (bool)eventData[(byte)2];
             int[] ownableIDs = (int[])eventData[(byte)3];
             int serverTimeStamp = (int)eventData[(byte)4];
+            
+            UnityEngine.Debug.Log("restricted = " + ((restricted) ? "true" : "false"));
 
             GameObject[] objs = GameObject.FindObjectsOfType<GameObject>();
             GameObject go = null;
