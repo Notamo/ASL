@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Photon;
 using UnityEngine;
 //using UnityEditor;
@@ -157,36 +158,120 @@ namespace UWBNetworkingPackage
 #endif
         }
 
-        public void Instantiate(GameObject go)
+        public GameObject Instantiate(GameObject go)
         {
             if(objManager != null)
             {
-                objManager.Instantiate(go);
+                return objManager.Instantiate(go);
+            }
+            else
+            {
+                return null;
             }
         }
 
-        public void Instantiate(string prefabName)
+        public GameObject Instantiate(string prefabName)
         {
             if(objManager != null)
             {
-                objManager.Instantiate(prefabName);
+                return objManager.Instantiate(prefabName);
+            }
+            else
+            {
+                return null;
             }
         }
 
-        public void Instantiate(string prefabName, Vector3 position, Quaternion rotation, Vector3 scale)
+        public GameObject Instantiate(string prefabName, Vector3 position, Quaternion rotation, Vector3 scale)
         {
             if(objManager != null)
             {
-                objManager.Instantiate(prefabName, position, rotation, scale);
+                return objManager.Instantiate(prefabName, position, rotation, scale);
+            }
+            else
+            {
+                return null;
             }
         }
 
-        public void RequestOwnership(GameObject obj, int focuserID)
+        public GameObject InstantiateOwnedObject(string prefabName)
         {
-            if (obj.GetPhotonView() != null)
+            if(objManager != null)
             {
-                obj.GetPhotonView().RPC("Grab", PhotonTargets.Others);
+                return objManager.InstantiateOwnedObject(prefabName);
             }
+            else
+            {
+                return null;
+            }
+        }
+
+        public bool Destroy(GameObject go)
+        {
+            if (go == null)
+            {
+                return true;
+            }
+            else
+            {
+                OwnableObject ownershipManager = go.GetComponent<OwnableObject>();
+                if (ownershipManager.Take())
+                {
+                    UnityEngine.GameObject.Destroy(go);
+                    // Calling Unity's Destroy mechanism kills the object by triggering an OnDestroy call in the ObjectManager
+                }
+
+                return true;
+            }
+        }
+
+        public bool RequestOwnership(GameObject obj)
+        {
+            OwnableObject ownershipManager = obj.GetComponent<OwnableObject>();
+            if(ownershipManager != null)
+            {
+                return ownershipManager.Take();
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool RestrictOwnership(GameObject obj, List<int> whiteListIDs)
+        {
+            OwnableObject ownershipManager = obj.GetComponent<OwnableObject>();
+            List<int> returnValue = ownershipManager.RestrictToYourself();
+            if (returnValue != null)
+            {
+                if (whiteListIDs != null)
+                {
+                    ownershipManager.WhiteListPlayerID(whiteListIDs);
+                }
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool UnRestrictOwnership(GameObject obj)
+        {
+            OwnableObject ownershipManager = obj.GetComponent<OwnableObject>();
+            return ownershipManager.UnRestrict();
+        }
+
+        public void WhiteListOwnership(GameObject obj, List<int> playerIDs)
+        {
+            obj.GetComponent<OwnableObject>().WhiteListPlayerID(playerIDs);
+        }
+
+        // Ownership must be restricted before blacklisting can take effect
+        public void BlackListOwnership(GameObject obj, List<int> playerIDs)
+        {
+            obj.GetComponent<OwnableObject>().BlackListPlayerID(playerIDs);
         }
 
         public void SendTangoMesh()

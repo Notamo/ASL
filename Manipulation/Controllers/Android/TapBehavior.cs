@@ -30,7 +30,7 @@ namespace ASL.Manipulation.Controllers.Android
                     break;
                 case TouchPhase.Stationary:
                     GameObject go = selectBehavior.Select(touchInfo);
-                    objManager.RequestOwnership(go, PhotonNetwork.player.ID);
+                    objManager.RequestOwnership(go);
                     break;
                 case TouchPhase.Moved:
                     moveBehavior.Drag(touchInfo.deltaPosition);

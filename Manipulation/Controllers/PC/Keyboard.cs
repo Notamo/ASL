@@ -52,7 +52,24 @@ namespace ASL.Manipulation.Controllers.PC
             {
                 //gameObject.GetComponent<CreateObject>().CreatePUNObject("Rooms/Room2/Room2");
                 string prefabName = "Rooms/Room2/Room2";
-                objManager.Instantiate(prefabName);
+                //objManager.Instantiate(prefabName);
+                objManager.InstantiateOwnedObject(prefabName);
+            }
+
+            if (Input.GetKey(KeyCode.P))
+            {
+                GameObject go = GameObject.Find("Sphere");
+                UWBNetworkingPackage.NetworkManager nm = GameObject.Find("NetworkManager").GetComponent<UWBNetworkingPackage.NetworkManager>();
+                nm.UnRestrictOwnership(go);
+            }
+
+            if (Input.GetKey(KeyCode.O))
+            {
+                List<int> IDsToAdd = new List<int>();
+                IDsToAdd.Add(2);
+                UWBNetworkingPackage.NetworkManager nm = GameObject.Find("NetworkManager").GetComponent<UWBNetworkingPackage.NetworkManager>();
+                GameObject go = GameObject.Find("Sphere");
+                nm.WhiteListOwnership(go, IDsToAdd);
             }
         }
 

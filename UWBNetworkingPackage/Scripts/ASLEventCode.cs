@@ -10,5 +10,6 @@ namespace UWBNetworkingPackage
         public const byte EV_DESTROYOBJECT = 98;
         public const byte EV_SYNCSCENE = 97;
         public const byte EV_JOIN = 55;
+        public const byte EV_SYNC_OBJECT_OWNERSHIP_RESTRICTION = 96;
     }
 }

@@ -78,7 +78,7 @@ namespace ASL.Manipulation.Controllers.Vive
             }
 
             //objManager.GetComponent<ObjectInteractionManager>().RequestOwnership(hit.collider.gameObject, PhotonNetwork.player.ID);
-            objManager.RequestOwnership(hit.collider.gameObject, PhotonNetwork.player.ID);
+            objManager.RequestOwnership(hit.collider.gameObject);
         }
 
         public void Unselect(object sender, ControllerInteractionEventArgs e)
@@ -86,7 +86,7 @@ namespace ASL.Manipulation.Controllers.Vive
             bool isLeftController;
             GameObject controllerAvatar = GetViveControllerAvatar(e.controllerReference, out isLeftController);
             //objManager.GetComponent<ObjectInteractionManager>().Focus(null, PhotonNetwork.player.ID);
-            objManager.Focus(null, PhotonNetwork.player.ID);
+            objManager.Focus(null);
             if (isLeftController)
             {
                 leftSelectedObject = null;

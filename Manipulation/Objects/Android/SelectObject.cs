@@ -42,7 +42,7 @@ namespace ASL.Manipulation.Objects.Android
 
         public void Unselect(Touch touchInfo)
         {
-            objManager.Focus(null, PhotonNetwork.player.ID);
+            objManager.Focus(null);
         }
     }
 }
