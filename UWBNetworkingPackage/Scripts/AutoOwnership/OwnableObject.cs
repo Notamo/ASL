@@ -92,6 +92,7 @@ namespace UWBNetworkingPackage
                 if (StoredInScene)
                 {
                     pv.RequestOwnership();
+                    pv.ownerId = PhotonNetwork.player.ID;
                 }
                 else if (CanTake() && !owned)
                 {

@@ -163,7 +163,7 @@ namespace UWBNetworkingPackage
         {
             SendTangoRoomInfo(newPlayer.ID);
 
-            UnityEngine.Debug.Log("Player Connected, Send Tango Mesh");
+            //UnityEngine.Debug.Log("Player Connected, Send Tango Mesh");
 
             base.OnPhotonPlayerConnected(newPlayer);
         }

@@ -61,7 +61,7 @@ namespace UWBNetworkingPackage
                 RaiseInstantiateEventHandler(localObj);
                 int[] whiteListIDs = new int[1];
                 whiteListIDs[0] = PhotonNetwork.player.ID;
-                UnityEngine.Debug.Log("About to raise restriction event.");
+                //UnityEngine.Debug.Log("About to raise restriction event.");
                 OwnableObject ownershipManager = localObj.GetComponent<OwnableObject>();
                 ownershipManager.SetRestrictions(true, whiteListIDs);
                 RaiseObjectOwnershipRestrictionEventHandler(localObj, true, whiteListIDs);
@@ -475,7 +475,7 @@ namespace UWBNetworkingPackage
                     //string prefabName = go.name;
                     string prefabName = ObjectInstantiationDatabase.GetPrefabName(go);
 #endif
-                    UnityEngine.Debug.Log("Prefab name = " + prefabName);
+                    //UnityEngine.Debug.Log("Prefab name = " + prefabName);
                     syncSceneData[(byte)1] = prefabName;
 
                     if (go.transform.position != Vector3.zero)
@@ -504,6 +504,7 @@ namespace UWBNetworkingPackage
                     syncSceneData[(byte)9] = ownershipManager.IsOwnershipRestricted;
                     List<int> whiteListIDs = ownershipManager.OwnablePlayerIDs;
                     int[] idList = new int[whiteListIDs.Count];
+                    whiteListIDs.CopyTo(idList);
                     syncSceneData[(byte)10] = idList;
 
                     //RaiseEventOptions options = new RaiseEventOptions();
@@ -543,7 +544,7 @@ namespace UWBNetworkingPackage
         {
             NetworkingPeer peer = PhotonNetwork.networkingPeer;
 
-            UnityEngine.Debug.Log("restricted = " + ((restricted) ? "true" : "false"));
+            //UnityEngine.Debug.Log("restricted = " + ((restricted) ? "true" : "false"));
 
             ExitGames.Client.Photon.Hashtable restrictionEvent = new ExitGames.Client.Photon.Hashtable();
             PhotonView pv = go.GetComponent<PhotonView>();
@@ -552,6 +553,11 @@ namespace UWBNetworkingPackage
             restrictionEvent[(byte)2] = restricted;
             restrictionEvent[(byte)3] = ownableIDs;
             restrictionEvent[(byte)4] = PhotonNetwork.ServerTimestamp;
+
+            //foreach(int id in ownableIDs)
+            //{
+            //    UnityEngine.Debug.Log("Sending ownableID of " + id);
+            //}
 
             RaiseEventOptions options = new RaiseEventOptions();
             options.Receivers = ReceiverGroup.All;
@@ -736,7 +742,7 @@ namespace UWBNetworkingPackage
             int[] ownableIDs = (int[])eventData[(byte)3];
             int serverTimeStamp = (int)eventData[(byte)4];
             
-            UnityEngine.Debug.Log("restricted = " + ((restricted) ? "true" : "false"));
+            //UnityEngine.Debug.Log("restricted = " + ((restricted) ? "true" : "false"));
 
             GameObject[] objs = GameObject.FindObjectsOfType<GameObject>();
             GameObject go = null;
