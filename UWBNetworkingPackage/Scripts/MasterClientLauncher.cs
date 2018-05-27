@@ -64,7 +64,7 @@ namespace UWBNetworkingPackage
                         {
                             //        for each mesh in the database, create a game object to represent
                             //        and display the mesh in the scene
-                            GameObject obj1 = new GameObject(T.name);
+                            GameObject obj1 = new GameObject(T.name);    
 
                             //        add a mesh filter to the object and assign it the mesh
                             MeshFilter filter = obj1.AddComponent<MeshFilter>();
@@ -78,6 +78,9 @@ namespace UWBNetworkingPackage
 
                             obj1.tag = "Room";
                             obj1.AddComponent<TangoRoom>();
+
+                            Transform parentXform = PhotonView.Find(T.parentID).transform;
+                            obj1.transform.SetParent(parentXform, false);
                         }
                     }
                 }
@@ -237,6 +240,11 @@ namespace UWBNetworkingPackage
             using (NetworkStream stream = client.GetStream())
             {
                 TangoDatabase.TangoRoom T = TangoDatabase.GetRoomByName(name);
+
+                //write the parent id
+                var parentData = BitConverter.GetBytes(T.parentID);
+                stream.Write(parentData, 0, parentData.Length);
+
                 var data = T._meshes;
                 stream.Write(data, 0, data.Length);
                 UnityEngine.Debug.Log("Mesh sent: mesh size = " + data.Length);
