@@ -17,6 +17,23 @@
 using ExitGames.Client.Photon;
 using UnityEngine;
 
+//Data struct used for properties across the network
+[System.Serializable]
+public struct AvatarInfo
+{
+    [SerializeField] public int playerID;
+    [SerializeField] public int viewID;
+    [SerializeField] public Vector3 spawnPosition;
+    [SerializeField] public Color color;
+
+    public AvatarInfo(int playerID, int viewID, Vector3 spawnPosition, Color color)
+    {
+        this.playerID = playerID;
+        this.viewID = viewID;
+        this.spawnPosition = spawnPosition;
+        this.color = color;
+    }
+}
 
 /// <summary>
 /// Internally used class, containing de/serialization methods for various Unity-specific classes.
