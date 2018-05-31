@@ -167,7 +167,7 @@ namespace ASL.PortalSystem
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
                     Vector3 pos = transform.position;
-                    mPortalManager.MakePortal(pos, -transform.forward, transform.up, Portal.ViewType.VIRTUAL, "CircularPortal");
+                    mPortalManager.MakePortal(pos, -transform.forward, transform.up, Portal.ViewType.VIRTUAL);
                 }
 
                 //Create physical portal
